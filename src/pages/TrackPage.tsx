@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { SupabaseSetupMessage } from '../components/SupabaseSetupMessage';
 import { Auth } from '../components/Auth';
-import { StatusBar } from '../components/StatusBar';
-import { useLang, type Status } from '../lib/i18n';
+import { RepairProgress } from '../components/RepairProgress';
+import { useLang, type Status, type StepKey } from '../lib/i18n';
 
 type PublicRequest = {
   track_code: string;
   device: string;
   status: Status;
+  steps: StepKey[];
   created_at: string;
   updated_at: string;
 };
@@ -66,7 +67,7 @@ export function TrackPage() {
   async function loadMine() {
     const { data } = await supabase
       .from('repair_requests')
-      .select('id, track_code, device, problem, status, created_at, updated_at')
+      .select('id, track_code, device, problem, status, steps, created_at, updated_at')
       .order('created_at', { ascending: false });
     setMine((data as OwnRequest[]) ?? []);
   }
@@ -137,7 +138,7 @@ export function TrackPage() {
           <p className="req__device">
             {t.trackDevice}: {found.device}
           </p>
-          <StatusBar status={found.status} />
+          <RepairProgress steps={found.steps} />
           <p className="req__hint">{t.statusHints[found.status]}</p>
           <p className="req__meta">
             {t.trackAccepted}: {formatDate(found.created_at, lang)} · {t.trackUpdated}:{' '}
@@ -176,7 +177,7 @@ export function TrackPage() {
                   <p className="req__device">
                     {t.trackDevice}: {r.device}
                   </p>
-                  <StatusBar status={r.status} />
+                  <RepairProgress steps={r.steps} />
                   <p className="req__hint">{t.statusHints[r.status]}</p>
                   <p className="req__meta">
                     {t.trackAccepted}: {formatDate(r.created_at, lang)}

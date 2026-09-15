@@ -11,6 +11,19 @@ export const LANGS: { id: Lang; short: string; title: string }[] = [
 
 export type Status = 'new' | 'diagnostics' | 'repair' | 'ready' | 'done';
 
+// Этапы ремонта. Мастер отмечает галочки в админке — клиент видит,
+// как заполняется полоска. Порядок важен: по нему считается процент.
+export type StepKey = 'accepted' | 'diagnosed' | 'approved' | 'repaired' | 'tested' | 'delivered';
+
+export const STEP_ORDER: StepKey[] = [
+  'accepted',
+  'diagnosed',
+  'approved',
+  'repaired',
+  'tested',
+  'delivered',
+];
+
 type Pair = { t: string; d: string };
 type Service = { icon: string; t: string; d: string };
 type Faq = { q: string; a: string };
@@ -96,6 +109,8 @@ export type Dict = {
 
   statuses: Record<Status, string>;
   statusHints: Record<Status, string>;
+  repairSteps: Record<StepKey, string>;
+  trackProgress: string;
 
   auth: {
     signin: string;
@@ -147,6 +162,36 @@ export type Dict = {
     markDone: string;
     doneLabel: string;
     refresh: string;
+
+    statsTotal: string;
+    search: string;
+    searchPh: string;
+    filterStatus: string;
+    filterAll: string;
+    period: string;
+    periodDays: string;
+    periodAll: string;
+    nothingFound: string;
+    shown: string;
+    more: string;
+
+    notes: string;
+    notesPh: string;
+    notesSave: string;
+
+    stepsLabel: string;
+    pickedUp: string;
+
+    photos: string;
+    photoAdd: string;
+    photoUploading: string;
+    photoDelete: string;
+    photoDeleteAsk: string;
+
+    selected: string;
+    bulkStep: string;
+    bulkApply: string;
+    clearSel: string;
   };
 
   backHome: string;
@@ -321,6 +366,15 @@ export const DICT: Record<Lang, Dict> = {
       ready: 'Можно забирать — ждём вас с 10:00 до 20:00.',
       done: 'Устройство выдано. Гарантия — один год.',
     },
+    repairSteps: {
+      accepted: 'Принята',
+      diagnosed: 'Диагностика',
+      approved: 'Цена согласована',
+      repaired: 'Ремонт сделан',
+      tested: 'Проверено',
+      delivered: 'Выдано клиенту',
+    },
+    trackProgress: 'Ход ремонта',
 
     auth: {
       signin: 'Вход',
@@ -373,6 +427,36 @@ export const DICT: Record<Lang, Dict> = {
       markDone: 'Отметить решённым',
       doneLabel: 'Решено',
       refresh: 'Обновить',
+
+      statsTotal: 'Всего',
+      search: 'Поиск',
+      searchPh: 'Код, имя, телефон или устройство',
+      filterStatus: 'Статус',
+      filterAll: 'Любой',
+      period: 'Период',
+      periodDays: 'дней',
+      periodAll: 'Всё время',
+      nothingFound: 'Ничего не найдено. Измените поиск или период.',
+      shown: 'Показано',
+      more: 'Показать ещё',
+
+      notes: 'Заметки мастера',
+      notesPh: 'Что нашли, какие запчасти нужны, что сказать клиенту…',
+      notesSave: 'Сохранить заметку',
+
+      stepsLabel: 'Этапы ремонта',
+      pickedUp: 'Выдано',
+
+      photos: 'Фото устройства',
+      photoAdd: 'Добавить фото',
+      photoUploading: 'Загружаем…',
+      photoDelete: 'Удалить',
+      photoDeleteAsk: 'Удалить это фото?',
+
+      selected: 'Выбрано',
+      bulkStep: 'Отметить этап у выбранных',
+      bulkApply: 'Применить',
+      clearSel: 'Снять выделение',
     },
 
     backHome: 'На главную',
@@ -546,6 +630,15 @@ export const DICT: Record<Lang, Dict> = {
       ready: 'Алуға болады — 10:00-ден 20:00-ге дейін күтеміз.',
       done: 'Құрылғы берілді. Кепілдік — бір жыл.',
     },
+    repairSteps: {
+      accepted: 'Қабылданды',
+      diagnosed: 'Диагностика жасалды',
+      approved: 'Баға келісілді',
+      repaired: 'Жөндеу бітті',
+      tested: 'Тексерілді',
+      delivered: 'Клиентке берілді',
+    },
+    trackProgress: 'Жөндеу барысы',
 
     auth: {
       signin: 'Кіру',
@@ -598,6 +691,36 @@ export const DICT: Record<Lang, Dict> = {
       markDone: 'Шешілді деп белгілеу',
       doneLabel: 'Шешілді',
       refresh: 'Жаңарту',
+
+      statsTotal: 'Барлығы',
+      search: 'Іздеу',
+      searchPh: 'Код, аты, телефон немесе құрылғы',
+      filterStatus: 'Күйі',
+      filterAll: 'Кез келген',
+      period: 'Кезең',
+      periodDays: 'күн',
+      periodAll: 'Бүкіл уақыт',
+      nothingFound: 'Ештеңе табылмады. Іздеуді немесе кезеңді өзгертіңіз.',
+      shown: 'Көрсетілді',
+      more: 'Тағы көрсету',
+
+      notes: 'Шебердің жазбалары',
+      notesPh: 'Не таптыңыз, қандай бөлшек керек, клиентке не айту керек…',
+      notesSave: 'Жазбаны сақтау',
+
+      stepsLabel: 'Жөндеу кезеңдері',
+      pickedUp: 'Берілді',
+
+      photos: 'Құрылғы фотосы',
+      photoAdd: 'Фото қосу',
+      photoUploading: 'Жүктеп жатырмыз…',
+      photoDelete: 'Жою',
+      photoDeleteAsk: 'Осы фотоны жоясыз ба?',
+
+      selected: 'Таңдалды',
+      bulkStep: 'Таңдалғандарға кезең белгілеу',
+      bulkApply: 'Қолдану',
+      clearSel: 'Таңдауды алып тастау',
     },
 
     backHome: 'Басты бетке',
@@ -771,6 +894,15 @@ export const DICT: Record<Lang, Dict> = {
       ready: 'Ready to collect — we are open 10:00 to 20:00.',
       done: 'Device collected. Warranty runs for one year.',
     },
+    repairSteps: {
+      accepted: 'Accepted',
+      diagnosed: 'Diagnosed',
+      approved: 'Price approved',
+      repaired: 'Repaired',
+      tested: 'Tested',
+      delivered: 'Handed over',
+    },
+    trackProgress: 'Repair progress',
 
     auth: {
       signin: 'Sign in',
@@ -823,6 +955,36 @@ export const DICT: Record<Lang, Dict> = {
       markDone: 'Mark as done',
       doneLabel: 'Done',
       refresh: 'Refresh',
+
+      statsTotal: 'Total',
+      search: 'Search',
+      searchPh: 'Code, name, phone or device',
+      filterStatus: 'Status',
+      filterAll: 'Any',
+      period: 'Period',
+      periodDays: 'days',
+      periodAll: 'All time',
+      nothingFound: 'Nothing found. Try a different search or period.',
+      shown: 'Showing',
+      more: 'Show more',
+
+      notes: 'Technician notes',
+      notesPh: 'What you found, parts needed, what to tell the customer…',
+      notesSave: 'Save note',
+
+      stepsLabel: 'Repair steps',
+      pickedUp: 'Collected',
+
+      photos: 'Device photos',
+      photoAdd: 'Add photo',
+      photoUploading: 'Uploading…',
+      photoDelete: 'Delete',
+      photoDeleteAsk: 'Delete this photo?',
+
+      selected: 'Selected',
+      bulkStep: 'Mark step on selected',
+      bulkApply: 'Apply',
+      clearSel: 'Clear selection',
     },
 
     backHome: 'Back to home',
