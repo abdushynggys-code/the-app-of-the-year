@@ -37,9 +37,6 @@ export function AdminPage() {
   const [savingId, setSavingId] = useState('');
   const [googleError, setGoogleError] = useState('');
   const [dbError, setDbError] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<Status | ''>('');
-  const [daysBack, setDaysBack] = useState(30);
 
   const fmt = (iso: string) =>
     new Date(iso).toLocaleDateString(LOCALE[lang] ?? 'ru-RU', {
@@ -48,32 +45,6 @@ export function AdminPage() {
       hour: '2-digit',
       minute: '2-digit',
     });
-
-  // Count requests by status for dashboard stats
-  const stats = {
-    total: requests.length,
-    new: requests.filter((r) => r.status === 'new').length,
-    diagnostics: requests.filter((r) => r.status === 'diagnostics').length,
-    repair: requests.filter((r) => r.status === 'repair').length,
-    ready: requests.filter((r) => r.status === 'ready').length,
-    done: requests.filter((r) => r.status === 'done').length,
-  };
-
-  // Filter requests: by search term, status, and date range
-  const filtered = requests.filter((r) => {
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - daysBack);
-    const created = new Date(r.created_at);
-    if (created < cutoff) return false;
-    if (statusFilter && r.status !== statusFilter) return false;
-    const search = searchTerm.toLowerCase();
-    return (
-      r.track_code.toLowerCase().includes(search) ||
-      r.name.toLowerCase().includes(search) ||
-      r.phone.includes(search) ||
-      r.device.toLowerCase().includes(search)
-    );
-  });
 
   useEffect(() => {
     if (!isSupabaseConfigured) return;
@@ -256,20 +227,6 @@ export function AdminPage() {
         </button>
       </div>
 
-      {/* Dashboard stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 12, marginBottom: 32 }}>
-        <div className="card card--soft" style={{ padding: 16, textAlign: 'center' }}>
-          <p style={{ fontSize: 24, fontWeight: 700, margin: 0, color: 'var(--ink)' }}>{stats.total}</p>
-          <p style={{ fontSize: 12, color: 'var(--body)', margin: '4px 0 0' }}>Всего</p>
-        </div>
-        {(['new', 'diagnostics', 'repair', 'ready', 'done'] as const).map((s) => (
-          <div key={s} className="card card--soft" style={{ padding: 16, textAlign: 'center' }}>
-            <p style={{ fontSize: 20, fontWeight: 700, margin: 0, color: 'var(--ink)' }}>{stats[s]}</p>
-            <p style={{ fontSize: 11, color: 'var(--body)', margin: '4px 0 0' }}>{t.statuses[s]}</p>
-          </div>
-        ))}
-      </div>
-
       <div className="tabs" style={{ maxWidth: 460, marginBottom: 32 }}>
         <button
           type="button"
@@ -287,86 +244,12 @@ export function AdminPage() {
         </button>
       </div>
 
-      {/* Search & filter — only for requests tab */}
-      {tab === 'requests' && requests.length > 0 && (
-        <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-          <label style={{ flex: 1, minWidth: 200 }}>
-            <span style={{ display: 'block', fontSize: 12, fontWeight: 500, marginBottom: 4, color: 'var(--body)' }}>
-              Поиск (код, имя, телефон)
-            </span>
-            <input
-              type="text"
-              placeholder="RS-0001 или Иван"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                border: '1px solid var(--hairline)',
-                borderRadius: 'var(--r-md)',
-                fontFamily: 'inherit',
-                fontSize: 14,
-              }}
-            />
-          </label>
-
-          <label style={{ minWidth: 140 }}>
-            <span style={{ display: 'block', fontSize: 12, fontWeight: 500, marginBottom: 4, color: 'var(--body)' }}>
-              Статус
-            </span>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as Status | '')}
-              style={{
-                padding: '8px 12px',
-                border: '1px solid var(--hairline)',
-                borderRadius: 'var(--r-md)',
-                fontFamily: 'inherit',
-                fontSize: 14,
-                backgroundColor: 'var(--canvas)',
-              }}
-            >
-              <option value="">Все</option>
-              <option value="new">{t.statuses.new}</option>
-              <option value="diagnostics">{t.statuses.diagnostics}</option>
-              <option value="repair">{t.statuses.repair}</option>
-              <option value="ready">{t.statuses.ready}</option>
-              <option value="done">{t.statuses.done}</option>
-            </select>
-          </label>
-
-          <label style={{ minWidth: 120 }}>
-            <span style={{ display: 'block', fontSize: 12, fontWeight: 500, marginBottom: 4, color: 'var(--body)' }}>
-              Дней назад
-            </span>
-            <select
-              value={daysBack}
-              onChange={(e) => setDaysBack(Number(e.target.value))}
-              style={{
-                padding: '8px 12px',
-                border: '1px solid var(--hairline)',
-                borderRadius: 'var(--r-md)',
-                fontFamily: 'inherit',
-                fontSize: 14,
-                backgroundColor: 'var(--canvas)',
-              }}
-            >
-              <option value={7}>7</option>
-              <option value={14}>14</option>
-              <option value={30}>30</option>
-              <option value={90}>90</option>
-              <option value={999}>Все</option>
-            </select>
-          </label>
-        </div>
-      )}
-
       {tab === 'requests' ? (
-        filtered.length === 0 ? (
-          <p className="empty">{requests.length === 0 ? t.admin.empty : 'Ничего не найдено'}</p>
+        requests.length === 0 ? (
+          <p className="empty">{t.admin.empty}</p>
         ) : (
           <div className="admin__list">
-            {filtered.map((r) => (
+            {requests.map((r) => (
               <article key={r.id} className="card card--soft admin__row">
                 <div className="admin__main">
                   <p className="req__code">{r.track_code}</p>
