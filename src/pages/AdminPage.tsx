@@ -57,6 +57,9 @@ export function AdminPage() {
   const [checked, setChecked] = useState(false);
   const [access, setAccess] = useState<AccessRow[]>([]);
   const [requesting, setRequesting] = useState(false);
+  const [allowlist, setAllowlist] = useState<string[]>([]);
+  const [newEmail, setNewEmail] = useState('');
+  const [addingEmail, setAddingEmail] = useState(false);
   const [dbError, setDbError] = useState('');
   const [googleError, setGoogleError] = useState('');
   const [tab, setTab] = useState<'active' | 'history' | 'reports' | 'access'>('active');
@@ -142,7 +145,10 @@ export function AdminPage() {
     if (row?.status === 'approved') {
       void loadStats();
       void loadReports();
-      if (row.role === 'owner') void loadAccess();
+      if (row.role === 'owner') {
+        void loadAccess();
+        void loadAllowlist();
+      }
     }
   }
 
@@ -184,19 +190,53 @@ export function AdminPage() {
     setSavingId('');
   }
 
-  // Роль владельца передаёт база одной операцией, чтобы мастерская
-  // ни на мгновение не осталась без хозяина.
-  async function transferOwnership(id: string) {
-    if (!confirm(t.admin.transferAsk)) return;
+  // Роль меняет база — она же не даёт снять последнего владельца.
+  async function setRole(id: string, role: Role) {
+    if (!confirm(role === 'owner' ? t.admin.transferAsk : t.admin.demoteAsk)) return;
     setSavingId(id);
-    const { error } = await supabase.rpc('transfer_ownership', { new_owner: id });
+    setDbError('');
+    const { error } = await supabase.rpc('set_admin_role', { target: id, new_role: role });
     setSavingId('');
     if (error) {
       setDbError(error.message);
       return;
     }
+    await loadAccess();
+    // Могли снять роль с себя — перечитываем, кто мы теперь.
     const { data } = await supabase.auth.getUser();
     void handleSession(data.user ? { id: data.user.id, email: data.user.email } : null);
+  }
+
+  async function loadAllowlist() {
+    const { data } = await supabase.from('admin_emails').select('email').order('email');
+    setAllowlist(((data as { email: string }[]) ?? []).map((r) => r.email));
+  }
+
+  // Если человек с такой почтой уже зарегистрирован, база откроет
+  // ему доступ сразу — не придётся регистрироваться заново.
+  async function addEmail(e: React.FormEvent) {
+    e.preventDefault();
+    const mail = newEmail.trim();
+    if (!mail) return;
+    setAddingEmail(true);
+    setDbError('');
+    const { error } = await supabase.rpc('add_admin_email', { new_email: mail });
+    setAddingEmail(false);
+    if (error) {
+      setDbError(error.message);
+      return;
+    }
+    setNewEmail('');
+    await loadAllowlist();
+    await loadAccess();
+  }
+
+  async function removeEmail(mail: string) {
+    if (!confirm(t.admin.allowlistRemoveAsk)) return;
+    setDbError('');
+    const { error } = await supabase.from('admin_emails').delete().eq('email', mail);
+    if (error) setDbError(error.message);
+    await loadAllowlist();
   }
 
   // Считает база и сразу по всем заявкам — цифры верные, даже когда
@@ -629,29 +669,81 @@ export function AdminPage() {
                       )}
                     </p>
                   </div>
-                  {a.role !== 'owner' && (
-                    <div className="btn-row">
+                  <div className="btn-row">
+                    {a.role === 'owner' ? (
                       <button
                         className="btn btn--secondary"
                         disabled={savingId === a.user_id}
-                        onClick={() => transferOwnership(a.user_id)}
+                        onClick={() => setRole(a.user_id, 'admin')}
                       >
-                        {t.admin.transferBtn}
+                        {t.admin.demoteBtn}
                       </button>
-                      <button
-                        className="btn btn--secondary"
-                        disabled={savingId === a.user_id}
-                        onClick={() => revokeAccess(a.user_id)}
-                      >
-                        {t.admin.revoke}
-                      </button>
-                    </div>
-                  )}
+                    ) : (
+                      <>
+                        <button
+                          className="btn btn--secondary"
+                          disabled={savingId === a.user_id}
+                          onClick={() => setRole(a.user_id, 'owner')}
+                        >
+                          {t.admin.transferBtn}
+                        </button>
+                        <button
+                          className="btn btn--secondary"
+                          disabled={savingId === a.user_id}
+                          onClick={() => revokeAccess(a.user_id)}
+                        >
+                          {t.admin.revoke}
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </article>
               ))}
             </div>
             <p className="form__hint" style={{ marginTop: 16 }}>
               <b>{t.admin.transferTitle}.</b> {t.admin.transferText}
+            </p>
+          </div>
+
+          <div className="block" style={{ marginTop: 40 }}>
+            <span className="block__label">{t.admin.allowlistTitle}</span>
+
+            <form
+              onSubmit={addEmail}
+              style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}
+            >
+              <label className="field" style={{ flex: 1, minWidth: 220 }}>
+                <input
+                  type="email"
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                  placeholder={t.admin.allowlistPh}
+                />
+              </label>
+              <button className="btn btn--primary" type="submit" disabled={addingEmail}>
+                {addingEmail ? t.admin.allowlistAdding : t.admin.allowlistAdd}
+              </button>
+            </form>
+
+            {allowlist.length === 0 ? (
+              <p className="empty">{t.admin.allowlistEmpty}</p>
+            ) : (
+              <div className="admin__list">
+                {allowlist.map((mail) => (
+                  <article key={mail} className="card card--soft admin__row">
+                    <div className="admin__main">
+                      <p className="req__code">{mail}</p>
+                    </div>
+                    <button className="btn btn--secondary" onClick={() => removeEmail(mail)}>
+                      {t.admin.allowlistRemove}
+                    </button>
+                  </article>
+                ))}
+              </div>
+            )}
+
+            <p className="form__hint" style={{ marginTop: 16 }}>
+              {t.admin.allowlistText}
             </p>
           </div>
 

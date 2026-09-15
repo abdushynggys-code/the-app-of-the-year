@@ -213,6 +213,16 @@ export type Dict = {
     transferText: string;
     transferBtn: string;
     transferAsk: string;
+    demoteBtn: string;
+    demoteAsk: string;
+    allowlistTitle: string;
+    allowlistText: string;
+    allowlistPh: string;
+    allowlistAdd: string;
+    allowlistAdding: string;
+    allowlistEmpty: string;
+    allowlistRemove: string;
+    allowlistRemoveAsk: string;
     noPending: string;
   };
 
@@ -496,10 +506,20 @@ export const DICT: Record<Lang, Dict> = {
       roleOwner: 'Владелец',
       roleAdmin: 'Админ',
       you: 'это вы',
-      transferTitle: 'Передать роль владельца',
-      transferText: 'Владелец один: он одобряет новых админов. После передачи вы останетесь обычным админом — вернуть роль сможет только новый владелец.',
-      transferBtn: 'Передать',
-      transferAsk: 'Передать роль владельца? Вы станете обычным админом.',
+      transferTitle: 'Владельцы',
+      transferText: 'Владельцы одобряют доступы, ведут белый список и назначают других владельцев. Последнего владельца снять нельзя.',
+      transferBtn: 'Сделать владельцем',
+      transferAsk: 'Сделать этого человека владельцем? Он сможет одобрять доступы и назначать других владельцев.',
+      demoteBtn: 'Снять владельца',
+      demoteAsk: 'Снять роль владельца с этого человека?',
+      allowlistTitle: 'Белый список',
+      allowlistText: 'Кто в списке — заходит сразу, без одобрения. Если у человека уже есть аккаунт, доступ откроется тут же.',
+      allowlistPh: 'почта@пример.kz',
+      allowlistAdd: 'Добавить',
+      allowlistAdding: 'Добавляем…',
+      allowlistEmpty: 'Список пуст.',
+      allowlistRemove: 'Убрать',
+      allowlistRemoveAsk: 'Убрать email из списка? У того, кто уже вошёл, доступ останется — его забирают отдельно.',
       noPending: 'Новых запросов нет.',
     },
 
@@ -782,10 +802,20 @@ export const DICT: Record<Lang, Dict> = {
       roleOwner: 'Иесі',
       roleAdmin: 'Әкімші',
       you: 'бұл сіз',
-      transferTitle: 'Иелік рөлін беру',
-      transferText: 'Иесі біреу: ол жаңа әкімшілерді мақұлдайды. Бергеннен кейін сіз қарапайым әкімші боласыз — рөлді тек жаңа иесі қайтара алады.',
-      transferBtn: 'Беру',
-      transferAsk: 'Иелік рөлін бересіз бе? Сіз қарапайым әкімші боласыз.',
+      transferTitle: 'Иелер',
+      transferText: 'Иелер рұқсаттарды мақұлдайды, ақ тізімді жүргізеді және басқа иелерді тағайындайды. Соңғы иені алып тастауға болмайды.',
+      transferBtn: 'Иесі ету',
+      transferAsk: 'Бұл адамды иесі етесіз бе? Ол рұқсат мақұлдап, басқа иелерді тағайындай алады.',
+      demoteBtn: 'Иелікті алу',
+      demoteAsk: 'Бұл адамнан иелік рөлін аласыз ба?',
+      allowlistTitle: 'Ақ тізім',
+      allowlistText: 'Тізімдегілер мақұлдаусыз бірден кіреді. Аккаунты бар болса, рұқсат сол сәтте ашылады.',
+      allowlistPh: 'пошта@мысал.kz',
+      allowlistAdd: 'Қосу',
+      allowlistAdding: 'Қосып жатырмыз…',
+      allowlistEmpty: 'Тізім бос.',
+      allowlistRemove: 'Алып тастау',
+      allowlistRemoveAsk: 'Email-ды тізімнен аласыз ба? Кіріп қойған адамның рұқсаты қалады — оны бөлек алады.',
       noPending: 'Жаңа сұраулар жоқ.',
     },
 
@@ -1068,10 +1098,20 @@ export const DICT: Record<Lang, Dict> = {
       roleOwner: 'Owner',
       roleAdmin: 'Admin',
       you: 'you',
-      transferTitle: 'Transfer ownership',
-      transferText: 'There is one owner, and they approve new admins. After transferring you stay an ordinary admin — only the new owner can hand it back.',
-      transferBtn: 'Transfer',
-      transferAsk: 'Transfer ownership? You will become an ordinary admin.',
+      transferTitle: 'Owners',
+      transferText: 'Owners approve access, keep the allowlist and appoint other owners. The last owner cannot be stepped down.',
+      transferBtn: 'Make owner',
+      transferAsk: 'Make this person an owner? They will be able to approve access and appoint other owners.',
+      demoteBtn: 'Remove owner role',
+      demoteAsk: 'Remove the owner role from this person?',
+      allowlistTitle: 'Allowlist',
+      allowlistText: 'Anyone on this list gets in straight away, with no approval. If they already have an account, access opens immediately.',
+      allowlistPh: 'name@example.kz',
+      allowlistAdd: 'Add',
+      allowlistAdding: 'Adding…',
+      allowlistEmpty: 'The list is empty.',
+      allowlistRemove: 'Remove',
+      allowlistRemoveAsk: 'Remove this email from the list? Anyone already signed in keeps access — revoke that separately.',
       noPending: 'No new requests.',
     },
 
