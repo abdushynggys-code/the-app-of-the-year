@@ -1479,6 +1479,9 @@ p {
 }
 
 .reqrow__tel {
+  display: inline-block;
+  min-width: 13ch;
+  text-align: right;
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;

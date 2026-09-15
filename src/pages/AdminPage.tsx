@@ -54,6 +54,7 @@ export function AdminPage() {
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(false);
   const [savingId, setSavingId] = useState('');
+  const [copiedId, setCopiedId] = useState('');
 
   // Поиск набирают быстрее, чем отвечает база: ждём паузу в 300 мс,
   // иначе на каждую букву уходил бы отдельный запрос.
@@ -277,6 +278,18 @@ export function AdminPage() {
       else next.add(id);
       return next;
     });
+  }
+
+  // Нажатие делает сразу два дела: на телефоне начинается звонок,
+  // а на компьютере tel: обычно ничего не открывает — зато номер уже в буфере.
+  async function copyPhone(id: string, phone: string) {
+    try {
+      await navigator.clipboard.writeText(phone);
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(''), 1500);
+    } catch {
+      // Буфер недоступен — звонок всё равно сработает.
+    }
   }
 
   async function closeReport(id: string) {
@@ -525,8 +538,13 @@ export function AdminPage() {
                         </span>
                         <span className="reqrow__status">{t.statuses[r.status]}</span>
                       </button>
-                      <a className="reqrow__tel" href={`tel:${r.phone.replace(/[^+\d]/g, '')}`}>
-                        {r.phone}
+                      <a
+                        className="reqrow__tel"
+                        href={`tel:${r.phone.replace(/[^+\d]/g, '')}`}
+                        title={r.phone}
+                        onClick={() => copyPhone(r.id, r.phone)}
+                      >
+                        {copiedId === r.id ? t.fOkCopied : r.phone}
                       </a>
                     </div>
 
