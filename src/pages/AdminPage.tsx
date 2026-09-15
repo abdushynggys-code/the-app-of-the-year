@@ -36,6 +36,7 @@ export function AdminPage() {
   const [reports, setReports] = useState<Report[]>([]);
   const [savingId, setSavingId] = useState('');
   const [googleError, setGoogleError] = useState('');
+  const [dbError, setDbError] = useState('');
 
   const fmt = (iso: string) =>
     new Date(iso).toLocaleDateString(LOCALE[lang] ?? 'ru-RU', {
@@ -63,7 +64,14 @@ export function AdminPage() {
       return;
     }
     // Спрашиваем базу, админ ли текущий пользователь.
-    const { data } = await supabase.rpc('is_admin');
+    const { data, error } = await supabase.rpc('is_admin');
+    if (error) {
+      // База не отвечает или миграции не применены — это не «нет доступа».
+      // Показываем настоящую причину, иначе искать проблему невозможно.
+      setDbError(error.message);
+      setIsAdmin(false);
+      return;
+    }
     const ok = data === true;
     setIsAdmin(ok);
     if (ok) void loadAll();
@@ -176,6 +184,11 @@ export function AdminPage() {
           <h1>{t.admin.noAccess}</h1>
           <p>{t.admin.noAccessText}</p>
         </div>
+        {dbError && (
+          <p className="message message--error" style={{ marginBottom: 16 }}>
+            {dbError}
+          </p>
+        )}
         <div className="card card--soft">
           <p className="form__hint">{email}</p>
           <button className="btn btn--secondary" style={{ marginTop: 16 }} onClick={() => supabase.auth.signOut()}>
