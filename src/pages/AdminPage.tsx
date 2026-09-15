@@ -30,7 +30,9 @@ type Report = {
 type Photo = { path: string; url: string };
 
 const PAGE = 25;
-const STATUSES: Status[] = ['new', 'diagnostics', 'repair', 'ready', 'done'];
+// В работе — всё, кроме выданного. Выданное уходит во вкладку «История»,
+// чтобы список текущих заявок не рос бесконечно.
+const ACTIVE: Status[] = ['new', 'diagnostics', 'repair', 'ready'];
 const PERIODS = [7, 30, 90, 9999];
 const LOCALE: Record<string, string> = { ru: 'ru-RU', kk: 'kk-KZ', en: 'en-GB' };
 
@@ -46,7 +48,7 @@ export function AdminPage() {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [dbError, setDbError] = useState('');
   const [googleError, setGoogleError] = useState('');
-  const [tab, setTab] = useState<'requests' | 'reports'>('requests');
+  const [tab, setTab] = useState<'active' | 'history' | 'reports'>('active');
 
   const [requests, setRequests] = useState<Req[]>([]);
   const [reports, setReports] = useState<Report[]>([]);
@@ -96,7 +98,7 @@ export function AdminPage() {
 
   useEffect(() => {
     if (isAdmin) void loadRequests(0);
-  }, [query, statusFilter, days, isAdmin]);
+  }, [query, statusFilter, days, isAdmin, tab]);
 
   async function handleSession(mail: string | null) {
     setEmail(mail);
@@ -149,6 +151,10 @@ export function AdminPage() {
       )
       .order('created_at', { ascending: false })
       .range(from, from + PAGE - 1);
+
+    // Выданные заказы живут отдельно, в «Истории».
+    if (tab === 'history') q = q.eq('status', 'done');
+    else q = q.neq('status', 'done');
 
     if (statusFilter) q = q.eq('status', statusFilter);
     if (query) q = q.ilike('search_text', `%${query.toLowerCase()}%`);
@@ -280,6 +286,16 @@ export function AdminPage() {
     });
   }
 
+  function switchTab(next: 'active' | 'history' | 'reports') {
+    setTab(next);
+    setPicked(new Set());
+    setStatusFilter('');
+    setSearch('');
+    // В истории ищут старые заказы, поэтому период сразу «всё время»:
+    // иначе поиск прошлогодней заявки не нашёл бы ничего.
+    setDays(next === 'history' ? 9999 : 30);
+  }
+
   // Нажатие делает сразу два дела: на телефоне начинается звонок,
   // а на компьютере tel: обычно ничего не открывает — зато номер уже в буфере.
   async function copyPhone(id: string, phone: string) {
@@ -370,7 +386,8 @@ export function AdminPage() {
   }
 
   const newReports = reports.filter((r) => r.status === 'new').length;
-  const total = STATUSES.reduce((sum, s) => sum + (stats[s] ?? 0), 0);
+  const activeTotal = ACTIVE.reduce((sum, s) => sum + (stats[s] ?? 0), 0);
+  const doneTotal = stats.done ?? 0;
 
   return (
     <main className="wrap page">
@@ -397,46 +414,55 @@ export function AdminPage() {
       </div>
 
       {/* Счётчики заодно работают фильтром: нажал «Готово» — увидел только готовые */}
-      <div className="stats">
-        <button
-          type="button"
-          className={`stats__card${statusFilter === '' ? ' is-active' : ''}`}
-          onClick={() => setStatusFilter('')}
-        >
-          <b>{total}</b>
-          <span>{t.admin.statsTotal}</span>
-        </button>
-        {STATUSES.map((s) => (
+      {tab === 'active' && (
+        <div className="stats">
           <button
-            key={s}
             type="button"
-            className={`stats__card${statusFilter === s ? ' is-active' : ''}`}
-            onClick={() => setStatusFilter(statusFilter === s ? '' : s)}
+            className={`stats__card${statusFilter === '' ? ' is-active' : ''}`}
+            onClick={() => setStatusFilter('')}
           >
-            <b>{stats[s] ?? 0}</b>
-            <span>{t.statuses[s]}</span>
+            <b>{activeTotal}</b>
+            <span>{t.admin.statsActive}</span>
           </button>
-        ))}
-      </div>
+          {ACTIVE.map((s) => (
+            <button
+              key={s}
+              type="button"
+              className={`stats__card${statusFilter === s ? ' is-active' : ''}`}
+              onClick={() => setStatusFilter(statusFilter === s ? '' : s)}
+            >
+              <b>{stats[s] ?? 0}</b>
+              <span>{t.statuses[s]}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
-      <div className="tabs" style={{ maxWidth: 460, marginBottom: 24 }}>
+      <div className="tabs" style={{ maxWidth: 620, marginBottom: 24 }}>
         <button
           type="button"
-          className={tab === 'requests' ? 'is-active' : ''}
-          onClick={() => setTab('requests')}
+          className={tab === 'active' ? 'is-active' : ''}
+          onClick={() => switchTab('active')}
         >
-          {t.admin.tabRequests} ({total})
+          {t.admin.tabRequests} ({activeTotal})
+        </button>
+        <button
+          type="button"
+          className={tab === 'history' ? 'is-active' : ''}
+          onClick={() => switchTab('history')}
+        >
+          {t.admin.tabHistory} ({doneTotal})
         </button>
         <button
           type="button"
           className={tab === 'reports' ? 'is-active' : ''}
-          onClick={() => setTab('reports')}
+          onClick={() => switchTab('reports')}
         >
           {t.admin.tabReports} ({newReports})
         </button>
       </div>
 
-      {tab === 'requests' ? (
+      {tab !== 'reports' ? (
         <>
           <div className="filters">
             <label className="field field--grow">
@@ -447,20 +473,23 @@ export function AdminPage() {
                 placeholder={t.admin.searchPh}
               />
             </label>
-            <label className="field">
-              <span>{t.admin.filterStatus}</span>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as Status | '')}
-              >
-                <option value="">{t.admin.filterAll}</option>
-                {STATUSES.map((s) => (
-                  <option key={s} value={s}>
-                    {t.statuses[s]}
-                  </option>
-                ))}
-              </select>
-            </label>
+            {/* В истории все заявки выданы — выбирать статус там не из чего */}
+            {tab === 'active' && (
+              <label className="field">
+                <span>{t.admin.filterStatus}</span>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value as Status | '')}
+                >
+                  <option value="">{t.admin.filterAll}</option>
+                  {ACTIVE.map((s) => (
+                    <option key={s} value={s}>
+                      {t.statuses[s]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
             <label className="field">
               <span>{t.admin.period}</span>
               <select value={days} onChange={(e) => setDays(Number(e.target.value))}>

@@ -150,6 +150,7 @@ export type Dict = {
     noAccess: string;
     noAccessText: string;
     tabRequests: string;
+    tabHistory: string;
     tabReports: string;
     empty: string;
     phone: string;
@@ -164,6 +165,7 @@ export type Dict = {
     refresh: string;
 
     statsTotal: string;
+    statsActive: string;
     search: string;
     searchPh: string;
     filterStatus: string;
@@ -415,6 +417,7 @@ export const DICT: Record<Lang, Dict> = {
       noAccessText:
         'Этот аккаунт не в списке администраторов. Добавьте его user_id в таблицу admins через дашборд Supabase.',
       tabRequests: 'Заявки',
+      tabHistory: 'История',
       tabReports: 'Ошибки сайта',
       empty: 'Пока пусто.',
       phone: 'Телефон',
@@ -429,6 +432,7 @@ export const DICT: Record<Lang, Dict> = {
       refresh: 'Обновить',
 
       statsTotal: 'Всего',
+      statsActive: 'В работе',
       search: 'Поиск',
       searchPh: 'Код, имя, телефон или устройство',
       filterStatus: 'Статус',
@@ -679,6 +683,7 @@ export const DICT: Record<Lang, Dict> = {
       noAccessText:
         'Бұл аккаунт әкімшілер тізімінде жоқ. Supabase дашбордындағы admins кестесіне оның user_id-ін қосыңыз.',
       tabRequests: 'Өтінімдер',
+      tabHistory: 'Тарих',
       tabReports: 'Сайт қателері',
       empty: 'Әзірге бос.',
       phone: 'Телефон',
@@ -693,6 +698,7 @@ export const DICT: Record<Lang, Dict> = {
       refresh: 'Жаңарту',
 
       statsTotal: 'Барлығы',
+      statsActive: 'Жұмыста',
       search: 'Іздеу',
       searchPh: 'Код, аты, телефон немесе құрылғы',
       filterStatus: 'Күйі',
@@ -943,6 +949,7 @@ export const DICT: Record<Lang, Dict> = {
       noAccessText:
         'This account is not on the admin list. Add its user_id to the admins table in the Supabase dashboard.',
       tabRequests: 'Repair requests',
+      tabHistory: 'History',
       tabReports: 'Site problems',
       empty: 'Nothing here yet.',
       phone: 'Phone',
@@ -957,6 +964,7 @@ export const DICT: Record<Lang, Dict> = {
       refresh: 'Refresh',
 
       statsTotal: 'Total',
+      statsActive: 'In progress',
       search: 'Search',
       searchPh: 'Code, name, phone or device',
       filterStatus: 'Status',
