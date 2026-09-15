@@ -5,13 +5,14 @@ export function NotFoundPage() {
   const { t } = useLang();
 
   return (
-    <main className="wrap wrap--narrow section">
-      <h1 className="page__title">{t.notFound}</h1>
-      <p className="page__text">
-        <Link href="/" className="link">
-          {t.backHome} →
-        </Link>
-      </p>
+    <main className="wrap wrap--narrow page">
+      <div className="page__head">
+        <h1>{t.notFound}</h1>
+        <p>{t.notFoundText}</p>
+      </div>
+      <Link href="/" className="btn btn--primary">
+        {t.backHome}
+      </Link>
     </main>
   );
 }

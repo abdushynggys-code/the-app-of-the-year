@@ -15,8 +15,10 @@ type PublicRequest = {
 
 type OwnRequest = PublicRequest & { id: string; problem: string };
 
+const LOCALE: Record<string, string> = { ru: 'ru-RU', kk: 'kk-KZ', en: 'en-GB' };
+
 function formatDate(iso: string, lang: string) {
-  return new Date(iso).toLocaleDateString(lang === 'kk' ? 'kk-KZ' : 'ru-RU', {
+  return new Date(iso).toLocaleDateString(LOCALE[lang] ?? 'ru-RU', {
     day: 'numeric',
     month: 'long',
     hour: '2-digit',
@@ -34,7 +36,7 @@ export function TrackPage() {
   const [email, setEmail] = useState<string | null>(null);
   const [mine, setMine] = useState<OwnRequest[]>([]);
 
-  // Код может прийти ссылкой сразу после заявки: /track?code=RS-4821
+  // Код может прийти ссылкой с главной или сразу после заявки: /track?code=RS-4821
   useEffect(() => {
     const fromUrl = new URLSearchParams(window.location.search).get('code');
     if (fromUrl) {
@@ -90,50 +92,54 @@ export function TrackPage() {
 
   if (!isSupabaseConfigured) {
     return (
-      <main className="wrap wrap--narrow section">
+      <main className="wrap wrap--narrow page">
         <SupabaseSetupMessage />
       </main>
     );
   }
 
   return (
-    <main className="wrap wrap--narrow section">
-      <h1 className="page__title">{t.trackTitle}</h1>
-      <p className="page__text">{t.trackText}</p>
+    <main className="wrap wrap--narrow page">
+      <div className="page__head">
+        <h1>{t.trackTitle}</h1>
+        <p>{t.trackText}</p>
+      </div>
 
       <form
-        className="card form"
+        className="trackform"
         onSubmit={(e) => {
           e.preventDefault();
           void lookup(code);
         }}
       >
-        <div className="form__row">
-          <input
-            className="input--code"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            placeholder={t.trackPh}
-            maxLength={12}
-            required
-          />
-          <button className="btn btn--primary" type="submit" disabled={busy}>
-            {busy ? '…' : t.trackBtn}
-          </button>
-        </div>
-
-        {notFound && <p className="message message--error">{t.trackNotFound}</p>}
+        <input
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          placeholder={t.trackPh}
+          maxLength={12}
+          required
+          aria-label={t.trackTitle}
+        />
+        <button className="btn btn--primary" type="submit" disabled={busy}>
+          {busy ? '…' : t.trackBtn}
+        </button>
       </form>
 
+      {notFound && (
+        <p className="message message--error" style={{ marginTop: 16 }}>
+          {t.trackNotFound}
+        </p>
+      )}
+
       {found && (
-        <article className="card">
-          <p className="request__code">{found.track_code}</p>
-          <p className="request__device">
-            {t.trackDevice}: <strong>{found.device}</strong>
+        <article className="card card--soft" style={{ marginTop: 24 }}>
+          <p className="req__code">{found.track_code}</p>
+          <p className="req__device">
+            {t.trackDevice}: {found.device}
           </p>
           <StatusBar status={found.status} />
-          <p className="request__hint">{t.statusHints[found.status]}</p>
-          <p className="request__meta">
+          <p className="req__hint">{t.statusHints[found.status]}</p>
+          <p className="req__meta">
             {t.trackAccepted}: {formatDate(found.created_at, lang)} · {t.trackUpdated}:{' '}
             {formatDate(found.updated_at, lang)}
           </p>
@@ -141,33 +147,38 @@ export function TrackPage() {
       )}
 
       {/* Личный кабинет: все свои заявки сразу */}
-      <section className="section--tight">
+      <section style={{ marginTop: 56 }}>
         {!email ? (
           <>
-            <p className="page__text page__text--center">{t.orLogin}</p>
+            <p className="form__hint" style={{ marginBottom: 16 }}>
+              {t.orLogin}
+            </p>
             <Auth />
           </>
         ) : (
           <>
-            <div className="mine__head">
+            <div className="page__head" style={{ marginBottom: 20 }}>
               <h2>{t.myTitle}</h2>
-              <button className="ghost" onClick={() => supabase.auth.signOut()}>
-                {t.signOut}
-              </button>
+              <p>
+                {email} ·{' '}
+                <button className="ghost" onClick={() => supabase.auth.signOut()}>
+                  {t.signOut}
+                </button>
+              </p>
             </div>
 
             {mine.length === 0 ? (
               <p className="empty">{t.myEmpty}</p>
             ) : (
               mine.map((r) => (
-                <article key={r.id} className="card">
-                  <p className="request__code">{r.track_code}</p>
-                  <p className="request__device">
-                    {t.trackDevice}: <strong>{r.device}</strong>
+                <article key={r.id} className="card card--soft">
+                  <p className="req__code">{r.track_code}</p>
+                  <p className="req__device">
+                    {t.trackDevice}: {r.device}
                   </p>
                   <StatusBar status={r.status} />
-                  <p className="request__hint">{t.statusHints[r.status]}</p>
-                  <p className="request__meta">
+                  <p className="req__hint">{t.statusHints[r.status]}</p>
+                  <p className="req__meta">
                     {t.trackAccepted}: {formatDate(r.created_at, lang)}
                   </p>
                 </article>

@@ -8,11 +8,15 @@ import { TrackPage } from './pages/TrackPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { LangContext, type Lang } from './lib/i18n';
 
+const SAVED = ['ru', 'kk', 'en'];
+
 // Здесь живут только маршруты и выбранный язык. Сами экраны — в src/pages/.
 export default function App() {
   const [lang, setLang] = useState<Lang>(() => {
     const saved = localStorage.getItem('lang');
-    return saved === 'kk' || saved === 'ru' ? saved : 'ru';
+    if (saved && SAVED.includes(saved)) return saved as Lang;
+    // Первый заход: если браузер английский — показываем английский.
+    return navigator.language.startsWith('en') ? 'en' : 'ru';
   });
 
   // Запоминаем выбор языка, чтобы он не сбрасывался при перезагрузке.

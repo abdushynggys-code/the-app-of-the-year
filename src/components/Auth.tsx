@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { SupabaseSetupMessage } from './SupabaseSetupMessage';
+import { useLang } from '../lib/i18n';
 
-// Вход и регистрация по email + паролю. Это пример — Codex поможет улучшить (Google-вход и т.д.).
+// Вход и регистрация по email + паролю.
 export function Auth() {
+  const { t } = useLang();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
@@ -17,54 +19,66 @@ export function Auth() {
     setBusy(true);
     setMessage('');
     try {
-      const fn =
-        mode === 'signup'
-          ? supabase.auth.signUp({
-              email,
-              password,
-              options: { emailRedirectTo: window.location.origin },
-            })
-          : supabase.auth.signInWithPassword({ email, password });
-      const { error } = await fn;
+      const { error } = await (mode === 'signup'
+        ? supabase.auth.signUp({
+            email,
+            password,
+            options: { emailRedirectTo: window.location.origin },
+          })
+        : supabase.auth.signInWithPassword({ email, password }));
+
       if (error) setMessage(error.message);
-      else if (mode === 'signup') setMessage('Готово! Проверь почту, если нужна подтверждалка.');
+      else if (mode === 'signup') setMessage(t.auth.checkEmail);
     } catch {
-      setMessage('Что-то пошло не так. Попробуй ещё раз.');
+      setMessage(t.auth.failed);
     } finally {
       setBusy(false);
     }
   }
 
   return (
-    <section className="card">
-      <h2>{mode === 'signin' ? 'Вход' : 'Регистрация'}</h2>
+    <section className="card card--soft">
+      <h3 style={{ marginBottom: 16 }}>
+        {mode === 'signin' ? t.auth.signin : t.auth.signup}
+      </h3>
+
       <form onSubmit={handleSubmit} className="form">
-        <input
-          type="email"
-          placeholder="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="пароль (6+ символов)"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          minLength={6}
-          required
-        />
-        <button type="submit" disabled={busy}>
-          {busy ? '…' : mode === 'signin' ? 'Войти' : 'Создать аккаунт'}
+        <label className="field">
+          <span>{t.auth.email}</span>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </label>
+
+        <label className="field">
+          <span>{t.auth.password}</span>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            minLength={6}
+            required
+          />
+        </label>
+
+        {message && <p className="message">{message}</p>}
+
+        <button className="btn btn--primary" type="submit" disabled={busy}>
+          {busy ? '…' : mode === 'signin' ? t.auth.doSignin : t.auth.doSignup}
         </button>
       </form>
-      {message && <p className="message">{message}</p>}
-      <button
-        className="ghost"
-        onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')}
-      >
-        {mode === 'signin' ? 'Нет аккаунта? Зарегистрируйся' : 'Уже есть аккаунт? Войти'}
-      </button>
+
+      <p style={{ marginTop: 16 }}>
+        <button
+          className="ghost"
+          onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')}
+        >
+          {mode === 'signin' ? t.auth.toSignup : t.auth.toSignin}
+        </button>
+      </p>
     </section>
   );
 }

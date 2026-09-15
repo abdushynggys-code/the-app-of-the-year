@@ -1,10 +1,10 @@
 export function SupabaseSetupMessage() {
   return (
-    <section className="card">
-      <h2>Сначала подключи Supabase</h2>
-      <p className="message">
-        Скопируй <code>.env.example</code> в <code>.env</code> и вставь URL и Publishable key
-        своего проекта.
+    <section className="card card--soft">
+      <h3 style={{ marginBottom: 12 }}>Сначала подключи Supabase</h3>
+      <p className="form__hint">
+        Скопируй <code>.env.example</code> в <code>.env</code>, вставь URL и Publishable key
+        своего проекта, затем выполни <code>npm run db:push</code>.
       </p>
     </section>
   );

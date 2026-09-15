@@ -10,12 +10,17 @@ function makeTrackCode() {
   return `RS-${Math.floor(1000 + Math.random() * 9000)}`;
 }
 
+// Карточка на главной может передать сюда уже заполненные поля.
+function fromUrl(key: string) {
+  return new URLSearchParams(window.location.search).get(key) ?? '';
+}
+
 export function RequestPage() {
   const { t } = useLang();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [device, setDevice] = useState('');
-  const [problem, setProblem] = useState('');
+  const [device, setDevice] = useState(() => fromUrl('device'));
+  const [problem, setProblem] = useState(() => fromUrl('problem'));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [code, setCode] = useState('');
@@ -23,7 +28,7 @@ export function RequestPage() {
 
   if (!isSupabaseConfigured) {
     return (
-      <main className="wrap wrap--narrow section">
+      <main className="wrap wrap--narrow page">
         <SupabaseSetupMessage />
       </main>
     );
@@ -34,7 +39,7 @@ export function RequestPage() {
     setBusy(true);
     setError('');
     try {
-      // Если клиент вошёл — привязываем заявку к аккаунту, чтобы она попала в «Мои заявки».
+      // Если клиент вошёл — заявка привязана к аккаунту и попадёт в «Мои заявки».
       const { data: userData } = await supabase.auth.getUser();
       const trackCode = makeTrackCode();
 
@@ -62,7 +67,7 @@ export function RequestPage() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Если браузер не разрешил копирование — код и так виден на экране.
+      // Браузер не разрешил копирование — код и так виден на экране.
     }
   }
 
@@ -74,39 +79,43 @@ export function RequestPage() {
     setProblem('');
   }
 
-  // Экран «спасибо» с кодом отслеживания
+  // Экран «заявка принята»
   if (code) {
     return (
-      <main className="wrap wrap--narrow section">
-        <div className="card card--success">
-          <span className="card__check" aria-hidden="true">
+      <main className="wrap wrap--narrow page">
+        <div className="card card--soft done">
+          <span className="done__mark" aria-hidden="true">
             ✓
           </span>
           <h1>{t.fOkTitle}</h1>
           <p>{t.fOkText}</p>
-          <p className="trackcode">{code}</p>
-          <div className="form__row">
-            <button className="btn btn--outline" onClick={copyCode} type="button">
+          <p className="code">{code}</p>
+          <div className="btn-row" style={{ justifyContent: 'center' }}>
+            <button className="btn btn--secondary" onClick={copyCode} type="button">
               {copied ? t.fOkCopied : t.fOkCopy}
             </button>
             <Link href={`/track?code=${code}`} className="btn btn--primary">
               {t.fOkTrack}
             </Link>
           </div>
-          <button className="ghost" onClick={reset} type="button">
-            {t.fOkMore}
-          </button>
+          <p style={{ marginTop: 20 }}>
+            <button className="ghost" onClick={reset} type="button">
+              {t.fOkMore}
+            </button>
+          </p>
         </div>
       </main>
     );
   }
 
   return (
-    <main className="wrap wrap--narrow section">
-      <h1 className="page__title">{t.formTitle}</h1>
-      <p className="page__text">{t.formText}</p>
+    <main className="wrap wrap--narrow page">
+      <div className="page__head">
+        <h1>{t.formTitle}</h1>
+        <p>{t.formText}</p>
+      </div>
 
-      <form className="card form" onSubmit={submit}>
+      <form className="card card--soft form" onSubmit={submit}>
         <label className="field">
           <span>{t.fName}</span>
           <input value={name} onChange={(e) => setName(e.target.value)} required maxLength={80} />
@@ -154,13 +163,16 @@ export function RequestPage() {
         </button>
 
         <p className="form__hint">
-          {t.fLoginHint} <Link href="/track">{t.nav.track} →</Link>
+          {t.fLoginHint}{' '}
+          <Link href="/track" className="textlink">
+            {t.nav.track}
+          </Link>
         </p>
       </form>
 
-      <p className="page__text page__text--center">
-        <a className="link" href={SHOP.whatsapp} target="_blank" rel="noreferrer">
-          {t.writeUs} →
+      <p className="form__hint" style={{ marginTop: 24 }}>
+        <a className="textlink" href={SHOP.whatsapp} target="_blank" rel="noreferrer">
+          {t.writeUs}
         </a>
       </p>
     </main>
