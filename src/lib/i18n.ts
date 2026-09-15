@@ -110,6 +110,45 @@ export type Dict = {
     failed: string;
   };
 
+  report: {
+    link: string;
+    title: string;
+    text: string;
+    message: string;
+    messagePh: string;
+    contact: string;
+    contactPh: string;
+    send: string;
+    sending: string;
+    okTitle: string;
+    okText: string;
+    close: string;
+    failed: string;
+  };
+
+  admin: {
+    title: string;
+    signInText: string;
+    google: string;
+    googleHint: string;
+    or: string;
+    noAccess: string;
+    noAccessText: string;
+    tabRequests: string;
+    tabReports: string;
+    empty: string;
+    phone: string;
+    problem: string;
+    statusLabel: string;
+    saving: string;
+    saved: string;
+    reportPage: string;
+    reportContact: string;
+    markDone: string;
+    doneLabel: string;
+    refresh: string;
+  };
+
   backHome: string;
   notFound: string;
   notFoundText: string;
@@ -294,6 +333,46 @@ export const DICT: Record<Lang, Dict> = {
       toSignin: 'Уже есть аккаунт? Войти',
       checkEmail: 'Готово. Проверьте почту, если нужно подтверждение.',
       failed: 'Что-то пошло не так. Попробуйте ещё раз.',
+    },
+
+    report: {
+      link: 'Нашли ошибку на сайте?',
+      title: 'Сообщить о проблеме',
+      text: 'Что-то не открывается, съехало или выглядит неправильно? Напишите — починим.',
+      message: 'Что не работает',
+      messagePh: 'Например: на телефоне кнопка «Отправить» уезжает за край экрана',
+      contact: 'Как с вами связаться (необязательно)',
+      contactPh: 'email или телефон',
+      send: 'Отправить',
+      sending: 'Отправляем…',
+      okTitle: 'Спасибо!',
+      okText: 'Сообщение получено — разберёмся.',
+      close: 'Закрыть',
+      failed: 'Не получилось отправить. Попробуйте позже.',
+    },
+
+    admin: {
+      title: 'Админка',
+      signInText: 'Войдите, чтобы управлять заявками.',
+      google: 'Войти через Google',
+      googleHint: 'Если вход через Google не работает — включите провайдера в Supabase: Authentication → Providers → Google.',
+      or: 'или по email',
+      noAccess: 'Нет доступа',
+      noAccessText:
+        'Этот аккаунт не в списке администраторов. Добавьте его user_id в таблицу admins через дашборд Supabase.',
+      tabRequests: 'Заявки',
+      tabReports: 'Ошибки сайта',
+      empty: 'Пока пусто.',
+      phone: 'Телефон',
+      problem: 'Проблема',
+      statusLabel: 'Статус',
+      saving: 'Сохраняем…',
+      saved: 'Сохранено',
+      reportPage: 'Страница',
+      reportContact: 'Контакт',
+      markDone: 'Отметить решённым',
+      doneLabel: 'Решено',
+      refresh: 'Обновить',
     },
 
     backHome: 'На главную',
@@ -481,6 +560,46 @@ export const DICT: Record<Lang, Dict> = {
       failed: 'Бірдеңе дұрыс болмады. Қайталап көріңіз.',
     },
 
+    report: {
+      link: 'Сайттан қате таптыңыз ба?',
+      title: 'Мәселе туралы хабарлау',
+      text: 'Бірдеңе ашылмай тұр, жылжып кеткен немесе дұрыс көрінбей ме? Жазыңыз — түзетеміз.',
+      message: 'Не жұмыс істемейді',
+      messagePh: 'Мысалы: телефонда «Жіберу» түймесі экраннан шығып кетеді',
+      contact: 'Сізбен қалай байланысамыз (міндетті емес)',
+      contactPh: 'email немесе телефон',
+      send: 'Жіберу',
+      sending: 'Жіберілуде…',
+      okTitle: 'Рақмет!',
+      okText: 'Хабарлама алынды — қарап шығамыз.',
+      close: 'Жабу',
+      failed: 'Жіберілмеді. Кейінірек қайталап көріңіз.',
+    },
+
+    admin: {
+      title: 'Әкімші панелі',
+      signInText: 'Өтінімдерді басқару үшін кіріңіз.',
+      google: 'Google арқылы кіру',
+      googleHint: 'Google арқылы кіру жұмыс істемесе — Supabase-те қосыңыз: Authentication → Providers → Google.',
+      or: 'немесе email арқылы',
+      noAccess: 'Қатынас жоқ',
+      noAccessText:
+        'Бұл аккаунт әкімшілер тізімінде жоқ. Supabase дашбордындағы admins кестесіне оның user_id-ін қосыңыз.',
+      tabRequests: 'Өтінімдер',
+      tabReports: 'Сайт қателері',
+      empty: 'Әзірге бос.',
+      phone: 'Телефон',
+      problem: 'Мәселе',
+      statusLabel: 'Күйі',
+      saving: 'Сақталуда…',
+      saved: 'Сақталды',
+      reportPage: 'Бет',
+      reportContact: 'Байланыс',
+      markDone: 'Шешілді деп белгілеу',
+      doneLabel: 'Шешілді',
+      refresh: 'Жаңарту',
+    },
+
     backHome: 'Басты бетке',
     notFound: 'Мұндай бет жоқ',
     notFoundText: 'Сілтеме ескірген болуы мүмкін. Басты бетке оралыңыз — бәрі сол жерден табылады.',
@@ -664,6 +783,46 @@ export const DICT: Record<Lang, Dict> = {
       toSignin: 'Already have an account? Sign in',
       checkEmail: 'Done. Check your email if confirmation is needed.',
       failed: 'Something went wrong. Please try again.',
+    },
+
+    report: {
+      link: 'Found a problem on this site?',
+      title: 'Report a problem',
+      text: 'Something not loading, out of place, or just looking wrong? Tell us and we will fix it.',
+      message: 'What is not working',
+      messagePh: 'For example: on my phone the Send button runs off the edge of the screen',
+      contact: 'How to reach you (optional)',
+      contactPh: 'email or phone',
+      send: 'Send',
+      sending: 'Sending…',
+      okTitle: 'Thank you',
+      okText: 'We have your message and will look into it.',
+      close: 'Close',
+      failed: 'That did not send. Please try again later.',
+    },
+
+    admin: {
+      title: 'Admin',
+      signInText: 'Sign in to manage repair requests.',
+      google: 'Sign in with Google',
+      googleHint: 'If Google sign-in fails, enable the provider in Supabase: Authentication → Providers → Google.',
+      or: 'or with email',
+      noAccess: 'No access',
+      noAccessText:
+        'This account is not on the admin list. Add its user_id to the admins table in the Supabase dashboard.',
+      tabRequests: 'Repair requests',
+      tabReports: 'Site problems',
+      empty: 'Nothing here yet.',
+      phone: 'Phone',
+      problem: 'Problem',
+      statusLabel: 'Status',
+      saving: 'Saving…',
+      saved: 'Saved',
+      reportPage: 'Page',
+      reportContact: 'Contact',
+      markDone: 'Mark as done',
+      doneLabel: 'Done',
+      refresh: 'Refresh',
     },
 
     backHome: 'Back to home',

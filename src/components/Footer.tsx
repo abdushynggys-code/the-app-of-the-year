@@ -1,6 +1,7 @@
 import { Link } from 'wouter';
 import { useLang } from '../lib/i18n';
 import { SHOP } from '../lib/shop';
+import { ReportProblem } from './ReportProblem';
 
 // Подвал на чёрном: описание, разделы, контакты и мессенджеры.
 export function Footer() {
@@ -46,7 +47,9 @@ export function Footer() {
         </div>
 
         <div className="footer__bottom">
-          <p>© 2026 RESET. {t.footerRights}</p>
+          <p>
+            © 2026 RESET. {t.footerRights} <ReportProblem />
+          </p>
           <div className="footer__social">
             <a href={SHOP.whatsapp} target="_blank" rel="noreferrer">
               WhatsApp

@@ -1159,3 +1159,124 @@ p {
     font-size: 10px;
   }
 }
+
+/* ─────────────── Сообщить о проблеме ─────────────── */
+
+/* Незаметная ссылка в подвале — подчёркнута пунктиром, не кричит */
+.reportlink {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--mute);
+  cursor: pointer;
+  border-bottom: 1px dotted var(--mute);
+}
+
+.reportlink:hover {
+  color: var(--on-ink);
+  border-bottom-color: var(--on-ink);
+}
+
+.modal {
+  width: min(520px, calc(100vw - 32px));
+  border: none;
+  border-radius: var(--r-xl);
+  padding: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  box-shadow: var(--shadow-card);
+}
+
+.modal::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.modal__body {
+  padding: var(--s-2xl);
+}
+
+/* ─────────────── Админка ─────────────── */
+
+.admin__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s-lg);
+  flex-wrap: wrap;
+  margin-bottom: var(--s-3xl);
+}
+
+.admin__list {
+  display: grid;
+  gap: var(--s-md);
+}
+
+.admin__row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s-2xl);
+  margin: 0;
+}
+
+.admin__main {
+  min-width: 0;
+  flex: 1;
+}
+
+.admin__problem {
+  margin-top: var(--s-md);
+  font-size: 14px;
+  line-height: 22px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.admin__status {
+  flex: none;
+  display: grid;
+  gap: var(--s-sm);
+}
+
+.admin__status > span {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--body);
+}
+
+.admin__status select {
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-pill);
+  padding: 10px var(--s-lg);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.admin__status select:focus {
+  outline: none;
+  border-color: var(--ink);
+}
+
+@media (max-width: 700px) {
+  .admin__row {
+    flex-direction: column;
+    gap: var(--s-lg);
+  }
+
+  .admin__status {
+    width: 100%;
+  }
+
+  .admin__status select {
+    width: 100%;
+  }
+}

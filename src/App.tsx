@@ -5,6 +5,7 @@ import { Footer } from './components/Footer';
 import { HomePage } from './pages/HomePage';
 import { RequestPage } from './pages/RequestPage';
 import { TrackPage } from './pages/TrackPage';
+import { AdminPage } from './pages/AdminPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { LangContext, type Lang } from './lib/i18n';
 
@@ -32,6 +33,7 @@ export default function App() {
         <Route path="/" component={HomePage} />
         <Route path="/request" component={RequestPage} />
         <Route path="/track" component={TrackPage} />
+        <Route path="/admin" component={AdminPage} />
         <Route component={NotFoundPage} />
       </Switch>
       <Footer />
