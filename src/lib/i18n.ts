@@ -194,6 +194,26 @@ export type Dict = {
     bulkStep: string;
     bulkApply: string;
     clearSel: string;
+
+    tabAccess: string;
+    requestAccess: string;
+    requestSending: string;
+    pendingTitle: string;
+    pendingText: string;
+    accessPending: string;
+    accessAdmins: string;
+    approve: string;
+    reject: string;
+    revoke: string;
+    revokeAsk: string;
+    roleOwner: string;
+    roleAdmin: string;
+    you: string;
+    transferTitle: string;
+    transferText: string;
+    transferBtn: string;
+    transferAsk: string;
+    noPending: string;
   };
 
   backHome: string;
@@ -415,7 +435,7 @@ export const DICT: Record<Lang, Dict> = {
       or: 'или по email',
       noAccess: 'Нет доступа',
       noAccessText:
-        'Этот аккаунт не в списке администраторов. Добавьте его user_id в таблицу admins через дашборд Supabase.',
+        'Нажмите кнопку ниже — владелец получит запрос и сможет открыть доступ.',
       tabRequests: 'Заявки',
       tabHistory: 'История',
       tabReports: 'Ошибки сайта',
@@ -461,6 +481,26 @@ export const DICT: Record<Lang, Dict> = {
       bulkStep: 'Отметить этап у выбранных',
       bulkApply: 'Применить',
       clearSel: 'Снять выделение',
+
+      tabAccess: 'Доступы',
+      requestAccess: 'Запросить доступ',
+      requestSending: 'Отправляем…',
+      pendingTitle: 'Ждём подтверждения',
+      pendingText: 'Запрос ушёл владельцу. Как только он одобрит, админка откроется — обновите страницу.',
+      accessPending: 'Запросы на доступ',
+      accessAdmins: 'У кого есть доступ',
+      approve: 'Одобрить',
+      reject: 'Отклонить',
+      revoke: 'Забрать доступ',
+      revokeAsk: 'Забрать доступ у этого человека?',
+      roleOwner: 'Владелец',
+      roleAdmin: 'Админ',
+      you: 'это вы',
+      transferTitle: 'Передать роль владельца',
+      transferText: 'Владелец один: он одобряет новых админов. После передачи вы останетесь обычным админом — вернуть роль сможет только новый владелец.',
+      transferBtn: 'Передать',
+      transferAsk: 'Передать роль владельца? Вы станете обычным админом.',
+      noPending: 'Новых запросов нет.',
     },
 
     backHome: 'На главную',
@@ -681,7 +721,7 @@ export const DICT: Record<Lang, Dict> = {
       or: 'немесе email арқылы',
       noAccess: 'Қатынас жоқ',
       noAccessText:
-        'Бұл аккаунт әкімшілер тізімінде жоқ. Supabase дашбордындағы admins кестесіне оның user_id-ін қосыңыз.',
+        'Төмендегі түймені басыңыз — иесі сұрау алып, рұқсат аша алады.',
       tabRequests: 'Өтінімдер',
       tabHistory: 'Тарих',
       tabReports: 'Сайт қателері',
@@ -727,6 +767,26 @@ export const DICT: Record<Lang, Dict> = {
       bulkStep: 'Таңдалғандарға кезең белгілеу',
       bulkApply: 'Қолдану',
       clearSel: 'Таңдауды алып тастау',
+
+      tabAccess: 'Рұқсаттар',
+      requestAccess: 'Рұқсат сұрау',
+      requestSending: 'Жіберіп жатырмыз…',
+      pendingTitle: 'Растауды күтудеміз',
+      pendingText: 'Сұрау иесіне жіберілді. Ол мақұлдаған бойда админ ашылады — бетті жаңартыңыз.',
+      accessPending: 'Рұқсат сұраулары',
+      accessAdmins: 'Кімде рұқсат бар',
+      approve: 'Мақұлдау',
+      reject: 'Бас тарту',
+      revoke: 'Рұқсатты алу',
+      revokeAsk: 'Бұл адамның рұқсатын аласыз ба?',
+      roleOwner: 'Иесі',
+      roleAdmin: 'Әкімші',
+      you: 'бұл сіз',
+      transferTitle: 'Иелік рөлін беру',
+      transferText: 'Иесі біреу: ол жаңа әкімшілерді мақұлдайды. Бергеннен кейін сіз қарапайым әкімші боласыз — рөлді тек жаңа иесі қайтара алады.',
+      transferBtn: 'Беру',
+      transferAsk: 'Иелік рөлін бересіз бе? Сіз қарапайым әкімші боласыз.',
+      noPending: 'Жаңа сұраулар жоқ.',
     },
 
     backHome: 'Басты бетке',
@@ -947,7 +1007,7 @@ export const DICT: Record<Lang, Dict> = {
       or: 'or with email',
       noAccess: 'No access',
       noAccessText:
-        'This account is not on the admin list. Add its user_id to the admins table in the Supabase dashboard.',
+        'Press the button below — the owner receives your request and can open access.',
       tabRequests: 'Repair requests',
       tabHistory: 'History',
       tabReports: 'Site problems',
@@ -993,6 +1053,26 @@ export const DICT: Record<Lang, Dict> = {
       bulkStep: 'Mark step on selected',
       bulkApply: 'Apply',
       clearSel: 'Clear selection',
+
+      tabAccess: 'Access',
+      requestAccess: 'Request access',
+      requestSending: 'Sending…',
+      pendingTitle: 'Waiting for approval',
+      pendingText: 'Your request went to the owner. The panel opens as soon as they approve it — refresh the page.',
+      accessPending: 'Access requests',
+      accessAdmins: 'Who has access',
+      approve: 'Approve',
+      reject: 'Reject',
+      revoke: 'Revoke access',
+      revokeAsk: 'Revoke this person access?',
+      roleOwner: 'Owner',
+      roleAdmin: 'Admin',
+      you: 'you',
+      transferTitle: 'Transfer ownership',
+      transferText: 'There is one owner, and they approve new admins. After transferring you stay an ordinary admin — only the new owner can hand it back.',
+      transferBtn: 'Transfer',
+      transferAsk: 'Transfer ownership? You will become an ordinary admin.',
+      noPending: 'No new requests.',
     },
 
     backHome: 'Back to home',

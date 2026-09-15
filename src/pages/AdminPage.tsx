@@ -29,6 +29,13 @@ type Report = {
 
 type Photo = { path: string; url: string };
 
+type Role = 'owner' | 'admin';
+
+// Своя строка в таблице admins: одобрили меня или ещё нет, и в какой роли.
+type Me = { user_id: string; email: string; role: Role; status: 'pending' | 'approved' };
+
+type AccessRow = Me & { requested_at: string };
+
 const PAGE = 25;
 // В работе — всё, кроме выданного. Выданное уходит во вкладку «История»,
 // чтобы список текущих заявок не рос бесконечно.
@@ -45,10 +52,14 @@ function stepsUpTo(key: StepKey): StepKey[] {
 export function AdminPage() {
   const { t, lang } = useLang();
   const [email, setEmail] = useState<string | null>(null);
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [me, setMe] = useState<Me | null>(null);
+  const [checked, setChecked] = useState(false);
+  const [access, setAccess] = useState<AccessRow[]>([]);
+  const [requesting, setRequesting] = useState(false);
   const [dbError, setDbError] = useState('');
   const [googleError, setGoogleError] = useState('');
-  const [tab, setTab] = useState<'active' | 'history' | 'reports'>('active');
+  const [tab, setTab] = useState<'active' | 'history' | 'reports' | 'access'>('active');
 
   const [requests, setRequests] = useState<Req[]>([]);
   const [reports, setReports] = useState<Report[]>([]);
@@ -84,9 +95,9 @@ export function AdminPage() {
 
   useEffect(() => {
     if (!isSupabaseConfigured) return;
-    supabase.auth.getSession().then(({ data }) => handleSession(data.session?.user.email ?? null));
+    supabase.auth.getSession().then(({ data }) => handleSession(data.session?.user ?? null));
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) =>
-      handleSession(session?.user.email ?? null),
+      handleSession(session?.user ?? null),
     );
     return () => sub.subscription.unsubscribe();
   }, []);
@@ -97,28 +108,95 @@ export function AdminPage() {
   }, [search]);
 
   useEffect(() => {
-    if (isAdmin) void loadRequests(0);
-  }, [query, statusFilter, days, isAdmin, tab]);
+    if (me?.status === 'approved') void loadRequests(0);
+  }, [query, statusFilter, days, me?.status, tab]);
 
-  async function handleSession(mail: string | null) {
-    setEmail(mail);
-    if (!mail) {
-      setIsAdmin(null);
+  async function handleSession(user: { id: string; email?: string } | null) {
+    setEmail(user?.email ?? null);
+    setUserId(user?.id ?? null);
+    if (!user) {
+      setMe(null);
+      setChecked(false);
       return;
     }
-    const { data, error } = await supabase.rpc('is_admin');
+
+    // Читаем свою строку: она же говорит, одобрили нас и какая у нас роль.
+    const { data, error } = await supabase
+      .from('admins')
+      .select('user_id, email, role, status')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
     if (error) {
       // База не отвечает или миграции не применены — это не «нет доступа».
       setDbError(error.message);
-      setIsAdmin(false);
+      setMe(null);
+      setChecked(true);
       return;
     }
-    const ok = data === true;
-    setIsAdmin(ok);
-    if (ok) {
+
+    const row = (data as Me) ?? null;
+    setMe(row);
+    setChecked(true);
+
+    if (row?.status === 'approved') {
       void loadStats();
       void loadReports();
+      if (row.role === 'owner') void loadAccess();
     }
+  }
+
+  // Список видит только владелец — так решает сама база.
+  async function loadAccess() {
+    const { data } = await supabase
+      .from('admins')
+      .select('user_id, email, role, status, requested_at')
+      .order('requested_at', { ascending: false });
+    setAccess((data as AccessRow[]) ?? []);
+  }
+
+  async function requestAccess() {
+    if (!userId || !email) return;
+    setRequesting(true);
+    const { error } = await supabase
+      .from('admins')
+      .insert({ user_id: userId, email, role: 'admin', status: 'pending' });
+    if (!error) setMe({ user_id: userId, email, role: 'admin', status: 'pending' });
+    else setDbError(error.message);
+    setRequesting(false);
+  }
+
+  async function approveAccess(id: string) {
+    setSavingId(id);
+    await supabase
+      .from('admins')
+      .update({ status: 'approved', approved_at: new Date().toISOString(), approved_by: userId })
+      .eq('user_id', id);
+    await loadAccess();
+    setSavingId('');
+  }
+
+  async function revokeAccess(id: string) {
+    if (!confirm(t.admin.revokeAsk)) return;
+    setSavingId(id);
+    await supabase.from('admins').delete().eq('user_id', id);
+    await loadAccess();
+    setSavingId('');
+  }
+
+  // Роль владельца передаёт база одной операцией, чтобы мастерская
+  // ни на мгновение не осталась без хозяина.
+  async function transferOwnership(id: string) {
+    if (!confirm(t.admin.transferAsk)) return;
+    setSavingId(id);
+    const { error } = await supabase.rpc('transfer_ownership', { new_owner: id });
+    setSavingId('');
+    if (error) {
+      setDbError(error.message);
+      return;
+    }
+    const { data } = await supabase.auth.getUser();
+    void handleSession(data.user ? { id: data.user.id, email: data.user.email } : null);
   }
 
   // Считает база и сразу по всем заявкам — цифры верные, даже когда
@@ -286,7 +364,7 @@ export function AdminPage() {
     });
   }
 
-  function switchTab(next: 'active' | 'history' | 'reports') {
+  function switchTab(next: 'active' | 'history' | 'reports' | 'access') {
     setTab(next);
     setPicked(new Set());
     setStatusFilter('');
@@ -355,7 +433,16 @@ export function AdminPage() {
     );
   }
 
-  if (isAdmin === false) {
+  if (!checked) {
+    return (
+      <main className="wrap wrap--narrow page">
+        <p className="empty">…</p>
+      </main>
+    );
+  }
+
+  // Доступа нет — но его можно попросить, владелец увидит запрос.
+  if (!me) {
     return (
       <main className="wrap wrap--narrow page">
         <div className="page__head">
@@ -363,6 +450,29 @@ export function AdminPage() {
           <p>{t.admin.noAccessText}</p>
         </div>
         {dbError && <p className="message message--error">{dbError}</p>}
+        <div className="card card--soft">
+          <p className="form__hint">{email}</p>
+          <div className="btn-row" style={{ marginTop: 16 }}>
+            <button className="btn btn--primary" disabled={requesting} onClick={requestAccess}>
+              {requesting ? t.admin.requestSending : t.admin.requestAccess}
+            </button>
+            <button className="btn btn--secondary" onClick={() => supabase.auth.signOut()}>
+              {t.signOut}
+            </button>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  // Запрос отправлен — ждём, пока владелец его откроет.
+  if (me.status === 'pending') {
+    return (
+      <main className="wrap wrap--narrow page">
+        <div className="page__head">
+          <h1>{t.admin.pendingTitle}</h1>
+          <p>{t.admin.pendingText}</p>
+        </div>
         <div className="card card--soft">
           <p className="form__hint">{email}</p>
           <button
@@ -377,17 +487,12 @@ export function AdminPage() {
     );
   }
 
-  if (isAdmin === null) {
-    return (
-      <main className="wrap wrap--narrow page">
-        <p className="empty">…</p>
-      </main>
-    );
-  }
-
   const newReports = reports.filter((r) => r.status === 'new').length;
   const activeTotal = ACTIVE.reduce((sum, s) => sum + (stats[s] ?? 0), 0);
   const doneTotal = stats.done ?? 0;
+  const isOwner = me.role === 'owner';
+  const pendingRows = access.filter((a) => a.status === 'pending');
+  const approvedRows = access.filter((a) => a.status === 'approved');
 
   return (
     <main className="wrap page">
@@ -395,7 +500,7 @@ export function AdminPage() {
         <div>
           <h1>{t.admin.title}</h1>
           <p className="form__hint">
-            {email} ·{' '}
+            {email} · {isOwner ? t.admin.roleOwner : t.admin.roleAdmin} ·{' '}
             <button className="ghost" onClick={() => supabase.auth.signOut()}>
               {t.signOut}
             </button>
@@ -460,9 +565,103 @@ export function AdminPage() {
         >
           {t.admin.tabReports} ({newReports})
         </button>
+        {/* Раздавать доступы может только владелец */}
+        {isOwner && (
+          <button
+            type="button"
+            className={tab === 'access' ? 'is-active' : ''}
+            onClick={() => switchTab('access')}
+          >
+            {t.admin.tabAccess} ({pendingRows.length})
+          </button>
+        )}
       </div>
 
-      {tab !== 'reports' ? (
+      {tab === 'access' ? (
+        <>
+          <div className="block" style={{ marginBottom: 40 }}>
+            <span className="block__label">{t.admin.accessPending}</span>
+            {pendingRows.length === 0 ? (
+              <p className="empty">{t.admin.noPending}</p>
+            ) : (
+              <div className="admin__list">
+                {pendingRows.map((a) => (
+                  <article key={a.user_id} className="card card--soft admin__row">
+                    <div className="admin__main">
+                      <p className="req__code">{a.email}</p>
+                      <p className="req__meta">{fmt(a.requested_at)}</p>
+                    </div>
+                    <div className="btn-row">
+                      <button
+                        className="btn btn--primary"
+                        disabled={savingId === a.user_id}
+                        onClick={() => approveAccess(a.user_id)}
+                      >
+                        {t.admin.approve}
+                      </button>
+                      <button
+                        className="btn btn--secondary"
+                        disabled={savingId === a.user_id}
+                        onClick={() => revokeAccess(a.user_id)}
+                      >
+                        {t.admin.reject}
+                      </button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="block">
+            <span className="block__label">{t.admin.accessAdmins}</span>
+            <div className="admin__list">
+              {approvedRows.map((a) => (
+                <article key={a.user_id} className="card card--soft admin__row">
+                  <div className="admin__main">
+                    <p className="req__code">
+                      {a.email}{' '}
+                      <span className={a.role === 'owner' ? 'tag' : 'tag tag--quiet'}>
+                        {a.role === 'owner' ? t.admin.roleOwner : t.admin.roleAdmin}
+                      </span>
+                      {a.user_id === me.user_id && (
+                        <span className="tag tag--quiet">{t.admin.you}</span>
+                      )}
+                    </p>
+                  </div>
+                  {a.role !== 'owner' && (
+                    <div className="btn-row">
+                      <button
+                        className="btn btn--secondary"
+                        disabled={savingId === a.user_id}
+                        onClick={() => transferOwnership(a.user_id)}
+                      >
+                        {t.admin.transferBtn}
+                      </button>
+                      <button
+                        className="btn btn--secondary"
+                        disabled={savingId === a.user_id}
+                        onClick={() => revokeAccess(a.user_id)}
+                      >
+                        {t.admin.revoke}
+                      </button>
+                    </div>
+                  )}
+                </article>
+              ))}
+            </div>
+            <p className="form__hint" style={{ marginTop: 16 }}>
+              <b>{t.admin.transferTitle}.</b> {t.admin.transferText}
+            </p>
+          </div>
+
+          {dbError && (
+            <p className="message message--error" style={{ marginTop: 20 }}>
+              {dbError}
+            </p>
+          )}
+        </>
+      ) : tab !== 'reports' ? (
         <>
           <div className="filters">
             <label className="field field--grow">
