@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { LANGS, useLang } from '../lib/i18n';
 import { SHOP } from '../lib/shop';
+import { Icon } from './Art';
 
 // Шапка: логотип, меню, переключатель языка на три положения, кнопка звонка.
 export function Header() {
@@ -22,6 +23,8 @@ export function Header() {
           RESET<span>.</span>
         </Link>
 
+        {/* Переключатель языка живёт внутри меню: в строке шапки на телефоне
+            он не помещался вместе с номером и логотипом. */}
         <nav className={open ? 'nav is-open' : 'nav'}>
           {links.map((l) => (
             <Link
@@ -33,9 +36,7 @@ export function Header() {
               {l.label}
             </Link>
           ))}
-        </nav>
 
-        <div className="header__actions">
           <div className="langs" role="group" aria-label="Language" data-lang={lang}>
             <span className="langs__pill" aria-hidden="true" />
             {LANGS.map((l) => (
@@ -50,9 +51,17 @@ export function Header() {
               </button>
             ))}
           </div>
+        </nav>
 
-          <a className="btn btn--primary" href={`tel:${SHOP.phoneRaw}`}>
-            {SHOP.phone}
+        <div className="header__actions">
+          {/* На узком экране остаётся только трубка, номер прячется */}
+          <a
+            className="btn btn--primary header__call"
+            href={`tel:${SHOP.phoneRaw}`}
+            aria-label={SHOP.phone}
+          >
+            <Icon name="call" />
+            <span>{SHOP.phone}</span>
           </a>
         </div>
 

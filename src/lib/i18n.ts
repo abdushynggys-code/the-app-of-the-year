@@ -83,6 +83,9 @@ export type Dict = {
   formText: string;
   fName: string;
   fPhone: string;
+  fEmail: string;
+  fEmailPh: string;
+  fEmailHint: string;
   fDevice: string;
   fDevicePh: string;
   fProblem: string;
@@ -158,6 +161,7 @@ export type Dict = {
     tabReports: string;
     empty: string;
     phone: string;
+    email: string;
     problem: string;
     statusLabel: string;
     saving: string;
@@ -245,29 +249,29 @@ export const DICT: Record<Lang, Dict> = {
     nav: { home: 'Главная', request: 'Заявка', track: 'Статус ремонта' },
     menu: 'Меню',
 
-    heroTitle: 'Ремонт, пока вы ждёте',
+    heroTitle: 'Сломалось? Посмотрим бесплатно',
     heroText:
-      'Телефоны, планшеты, часы и ноутбуки в Астане. Диагностика бесплатно и без записи — смотрим при вас.',
+      'Смартфоны, планшеты, часы и ноутбуки в Астане. Без записи, каждый день с 10:00 до 20:00.',
 
     proofEyebrow: 'Оценка на 2ГИС',
     proofReviews: 'отзывов',
-    proofTitle: 'Сначала вы узнаёте цену — потом решаете',
+    proofTitle: 'Цену вы узнаёте до ремонта, а не после',
     proof: [
       {
-        t: 'Диагностика бесплатная',
-        d: 'Без записи, при вас. Назовём точную сумму до начала работы. Не устроит — заберёте устройство и не заплатите ничего.',
+        t: 'Осмотр ничего не стоит',
+        d: 'Приходите без записи. Найдём причину и назовём точную сумму. Передумаете — заберёте устройство и не заплатите ничего.',
       },
       {
         t: 'Год гарантии',
-        d: 'Гарантия закрывает и саму деталь, и работу мастера. Если та же проблема вернётся в течение года — приносите, доделаем без доплат.',
+        d: 'И на саму деталь, и на работу мастера. Вернётся та же поломка в течение года — принесите, доделаем без доплат.',
       },
       {
-        t: 'Простое — за 30–60 минут',
-        d: 'Экран или батарею меняем, пока вы ждёте. По сложному ремонту назовём срок сразу после диагностики.',
+        t: '30–60 минут при вас',
+        d: 'Экран и батарею меняем, пока вы ждёте. По сложному ремонту назовём срок сразу после диагностики.',
       },
       {
-        t: 'Видно, что происходит',
-        d: 'Оставили заявку на сайте — получите код. По нему в любой момент видно, на каком этапе ваше устройство.',
+        t: 'Видно каждый этап',
+        d: 'Оставите заявку на сайте — придёт код. По нему в любой момент видно, где сейчас ваше устройство.',
       },
     ],
 
@@ -374,13 +378,17 @@ export const DICT: Record<Lang, Dict> = {
     phoneLabel: 'Телефон',
     writeUs: 'Написать в WhatsApp',
     openMap: 'Открыть на 2ГИС',
-    ctaBandTitle: 'Готовы починить?',
-    ctaBandText: 'Оставьте заявку — перезвоним и назовём срок. Или просто приходите, мы на месте.',
+    ctaBandTitle: 'Принесите — разберёмся',
+    ctaBandText:
+      'Оставьте заявку, и мы перезвоним. Или просто заходите: Конаева 35/1, каждый день с 10:00 до 20:00.',
 
     formTitle: 'Заявка на ремонт',
     formText: 'Заполните форму — перезвоним и назовём срок. Диагностика бесплатная.',
     fName: 'Как вас зовут',
     fPhone: 'Номер телефона',
+    fEmail: 'Почта (необязательно)',
+    fEmailPh: 'name@mail.kz',
+    fEmailHint: 'Если в ремонт едет сам телефон — напишем на почту.',
     fDevice: 'Устройство',
     fDevicePh: 'например: iPhone 13, Samsung A54, MacBook Air',
     fProblem: 'Что случилось',
@@ -476,6 +484,7 @@ export const DICT: Record<Lang, Dict> = {
       tabReports: 'Ошибки сайта',
       empty: 'Пока пусто.',
       phone: 'Телефон',
+      email: 'Почта',
       problem: 'Проблема',
       statusLabel: 'Статус',
       saving: 'Сохраняем…',
@@ -562,29 +571,29 @@ export const DICT: Record<Lang, Dict> = {
     nav: { home: 'Басты бет', request: 'Өтінім', track: 'Жөндеу күйі' },
     menu: 'Мәзір',
 
-    heroTitle: 'Күте тұрғанда жөндейміз',
+    heroTitle: 'Сынды ма? Тегін қараймыз',
     heroText:
-      'Астанада телефон, планшет, сағат және ноутбук жөндеу. Диагностика тегін әрі жазылусыз — көзіңізше қараймыз.',
+      'Астанада смартфон, планшет, сағат және ноутбук. Жазылусыз, күн сайын 10:00-ден 20:00-ге дейін.',
 
     proofEyebrow: '2ГИС-тегі баға',
     proofReviews: 'пікір',
-    proofTitle: 'Алдымен бағасын білесіз — сосын шешесіз',
+    proofTitle: 'Бағаны жөндеуден кейін емес, бұрын білесіз',
     proof: [
       {
-        t: 'Диагностика тегін',
-        d: 'Жазылусыз, көзіңізше. Жұмысқа кіріспей тұрып нақты сомасын айтамыз. Келіспесеңіз — құрылғыңызды алып кетесіз, ештеңе төлемейсіз.',
+        t: 'Қарау тегін',
+        d: 'Жазылусыз келе беріңіз. Себебін тауып, нақты сомасын айтамыз. Ойыңыз өзгерсе — құрылғыңызды алып кетесіз, ештеңе төлемейсіз.',
       },
       {
         t: 'Бір жыл кепілдік',
-        d: 'Кепілдік бөлшекті де, шебердің жұмысын да қамтиды. Сол мәселе жыл ішінде қайталанса — әкеліңіз, қосымша ақысыз түзетеміз.',
+        d: 'Бөлшекке де, шебердің жұмысына да. Сол ақау жыл ішінде қайталанса — әкеліңіз, қосымша ақысыз түзетеміз.',
       },
       {
-        t: 'Қарапайымы — 30–60 минутта',
+        t: 'Көзіңізше 30–60 минут',
         d: 'Экран мен батареяны сіз күте тұрғанда ауыстырамыз. Күрделі жөндеудің мерзімін диагностикадан кейін бірден айтамыз.',
       },
       {
-        t: 'Не болып жатқаны көрініп тұрады',
-        d: 'Сайтқа өтінім қалдырсаңыз — код беріледі. Сол код арқылы құрылғыңыз қай кезеңде екенін кез келген уақытта көресіз.',
+        t: 'Әр кезең көрініп тұрады',
+        d: 'Сайтқа өтінім қалдырсаңыз — код келеді. Сол код арқылы құрылғыңыз қазір қай кезеңде екенін көресіз.',
       },
     ],
 
@@ -691,13 +700,17 @@ export const DICT: Record<Lang, Dict> = {
     phoneLabel: 'Телефон',
     writeUs: 'WhatsApp-қа жазу',
     openMap: '2ГИС-те ашу',
-    ctaBandTitle: 'Жөндеуге дайынсыз ба?',
-    ctaBandText: 'Өтінім қалдырыңыз — қоңырау шалып, мерзімін айтамыз. Немесе жай ғана келіңіз, біз орнымыздамыз.',
+    ctaBandTitle: 'Әкеліңіз — қарап шығамыз',
+    ctaBandText:
+      'Өтінім қалдырыңыз, қоңырау шаламыз. Немесе жай ғана кіріңіз: Қонаев 35/1, күн сайын 10:00-ден 20:00-ге дейін.',
 
     formTitle: 'Жөндеуге өтінім',
     formText: 'Форманы толтырыңыз — қоңырау шалып, мерзімін айтамыз. Диагностика тегін.',
     fName: 'Атыңыз кім',
     fPhone: 'Телефон нөмірі',
+    fEmail: 'Пошта (міндетті емес)',
+    fEmailPh: 'name@mail.kz',
+    fEmailHint: 'Жөндеуге телефонның өзі түссе — поштаға жазамыз.',
     fDevice: 'Құрылғы',
     fDevicePh: 'мысалы: iPhone 13, Samsung A54, MacBook Air',
     fProblem: 'Не болды',
@@ -793,6 +806,7 @@ export const DICT: Record<Lang, Dict> = {
       tabReports: 'Сайт қателері',
       empty: 'Әзірге бос.',
       phone: 'Телефон',
+      email: 'Пошта',
       problem: 'Мәселе',
       statusLabel: 'Күйі',
       saving: 'Сақталуда…',
@@ -879,29 +893,29 @@ export const DICT: Record<Lang, Dict> = {
     nav: { home: 'Home', request: 'Book a repair', track: 'Track repair' },
     menu: 'Menu',
 
-    heroTitle: 'Repairs while you wait',
+    heroTitle: 'Broken? We will look for free',
     heroText:
-      'Phones, tablets, watches and laptops in Astana. Diagnostics are free and need no appointment — we look at your device with you.',
+      'Phones, tablets, watches and laptops in Astana. No appointment, every day from 10:00 to 20:00.',
 
     proofEyebrow: 'Rated on 2GIS',
     proofReviews: 'reviews',
-    proofTitle: 'You learn the price first, then you decide',
+    proofTitle: 'You learn the price before the repair, not after',
     proof: [
       {
-        t: 'Diagnostics are free',
-        d: 'No appointment, and we look with you. We quote the exact sum before any work starts. If it does not suit you, take the device and pay nothing.',
+        t: 'Looking costs you nothing',
+        d: 'Walk in without an appointment. We find the cause and quote the exact sum. Change your mind and you take the device home having paid nothing.',
       },
       {
         t: 'One year of warranty',
-        d: 'The warranty covers the part and the labour alike. If the same problem comes back within the year, bring it in and we put it right at no extra cost.',
+        d: 'On the part and on the work alike. If the same fault returns within the year, bring it in and we put it right at no extra cost.',
       },
       {
-        t: 'Simple jobs in 30–60 minutes',
+        t: '30 to 60 minutes, in front of you',
         d: 'We change a screen or a battery while you wait. For a complex repair we give the timeline right after diagnostics.',
       },
       {
-        t: 'You can see what is happening',
-        d: 'Leave a request on the site and you get a code. It shows which stage your device is at, any time you check.',
+        t: 'You see every stage',
+        d: 'Leave a request on the site and a code arrives. It shows where your device is at any moment.',
       },
     ],
 
@@ -1008,13 +1022,17 @@ export const DICT: Record<Lang, Dict> = {
     phoneLabel: 'Phone',
     writeUs: 'Message us on WhatsApp',
     openMap: 'Open in 2GIS',
-    ctaBandTitle: 'Ready to get it fixed?',
-    ctaBandText: 'Send a request and we will call you back with a timeline. Or just walk in — we are here.',
+    ctaBandTitle: 'Bring it in and we will look',
+    ctaBandText:
+      'Leave a request and we will call you back. Or just walk in: Konaev 35/1, every day from 10:00 to 20:00.',
 
     formTitle: 'Book a repair',
     formText: 'Fill in the form and we will call you back with a timeline. Diagnostics are free.',
     fName: 'Your name',
     fPhone: 'Phone number',
+    fEmail: 'Email (optional)',
+    fEmailPh: 'name@mail.kz',
+    fEmailHint: 'If the phone itself is being repaired, we will write to you instead.',
     fDevice: 'Device',
     fDevicePh: 'e.g. iPhone 13, Samsung A54, MacBook Air',
     fProblem: 'What happened',
@@ -1110,6 +1128,7 @@ export const DICT: Record<Lang, Dict> = {
       tabReports: 'Site problems',
       empty: 'Nothing here yet.',
       phone: 'Phone',
+      email: 'Email',
       problem: 'Problem',
       statusLabel: 'Status',
       saving: 'Saving…',

@@ -365,13 +365,13 @@
    Класс --in вешается начиная со второго экрана: первую загрузку
    не анимируем, чтобы обложка появилась сразу. */
 .pageview--in {
-  animation: page-in var(--t-page) var(--ease-out);
+  animation: page-in var(--t-reveal) var(--ease-glide);
 }
 
 @keyframes page-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(14px);
   }
 }
 
@@ -384,7 +384,7 @@
 /* Подмена содержимого внутри одной страницы читается как переход:
    форма → «заявка принята», поиск → найденная заявка. */
 .swap-in {
-  animation: page-in var(--t-page) var(--ease-out);
+  animation: page-in var(--t-reveal) var(--ease-glide);
 }
 
 /* Галочка на экране «заявка принята» появляется чуть позже карточки */
@@ -412,7 +412,7 @@
 @keyframes reveal-rise {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(28px);
   }
 }
 
@@ -423,7 +423,7 @@
 
 .js [data-reveal]:not([data-reveal='stagger']).is-in {
   opacity: 1;
-  animation: reveal-rise var(--t-page) var(--ease-out);
+  animation: reveal-rise var(--t-reveal) var(--ease-glide);
 }
 
 /* Лесенка: прячем не контейнер, а его детей — иначе сетка схлопнется */
@@ -435,8 +435,8 @@
   opacity: 1;
   /* backwards, а не forwards: слой держится только во время задержки
      и не остаётся на видеокарте навсегда */
-  animation: reveal-rise var(--t-page) var(--ease-out) backwards;
-  animation-delay: calc(var(--i, 0) * var(--reveal-step, 60ms));
+  animation: reveal-rise var(--t-reveal) var(--ease-glide) backwards;
+  animation-delay: calc(var(--i, 0) * var(--reveal-step, 70ms));
 }
 
 /* Ступеньку задаём порядком в сетке — руками задержки писать не нужно */
@@ -491,6 +491,127 @@
 }
 
 /* ============================================================
+   5 · ГЛАВНАЯ АНИМАЦИЯ И ДЫХАНИЕ
+
+   Одно большое появление: слова заголовка встают по очереди, следом
+   текст, кнопки и карточка заявки. Играет один раз при загрузке —
+   это первое, что видит человек, и единственное место, где сайт
+   позволяет себе быть эффектным.
+
+   Дальше страница живёт спокойно: медленно дышит световое пятно на
+   обложке и чуть качаются рисунки. Больше сам по себе не движется
+   ничего — иначе читать текст становится тяжело.
+   ============================================================ */
+
+.hero__title span {
+  animation: hero-word var(--t-glide) var(--ease-glide) backwards;
+  animation-delay: calc(var(--w, 0) * 80ms);
+}
+
+@keyframes hero-word {
+  from {
+    opacity: 0;
+    transform: translateY(0.45em);
+  }
+}
+
+/* Лесенка по словам. Слов в заголовке от трёх до шести — зависит от языка */
+.hero__title span:nth-child(1) {
+  --w: 0;
+}
+.hero__title span:nth-child(2) {
+  --w: 1;
+}
+.hero__title span:nth-child(3) {
+  --w: 2;
+}
+.hero__title span:nth-child(4) {
+  --w: 3;
+}
+.hero__title span:nth-child(5) {
+  --w: 4;
+}
+.hero__title span:nth-child(n + 6) {
+  --w: 5;
+}
+
+.hero__text {
+  animation: hero-rise var(--t-glide) var(--ease-glide) 260ms backwards;
+}
+
+.hero__cta {
+  animation: hero-rise var(--t-glide) var(--ease-glide) 380ms backwards;
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+/* Карточка приезжает снизу и чуть подрастает — она главный предмет экрана */
+.herocard {
+  animation: hero-card 1000ms var(--ease-glide) 180ms backwards;
+}
+
+@keyframes hero-card {
+  from {
+    opacity: 0;
+    transform: translateY(44px) scale(0.97);
+  }
+}
+
+/* ─── Дыхание ───
+   Световое пятно за карточкой очень медленно набирает и отдаёт яркость.
+   Девять секунд на цикл: заметить можно, отвлечься — нет. */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -15%;
+  width: min(820px, 80vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0) 70%);
+  pointer-events: none;
+  animation: breathe 9s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.09);
+  }
+}
+
+/* Рисунки качаются через translate, а не transform: там уже сидит параллакс,
+   а в scale — увеличение при наведении. Три свойства складываются, не споря. */
+.promo__art .art {
+  animation: float 8s ease-in-out infinite;
+}
+
+/* Второй рисунок в противофазе — иначе оба качались бы синхронно */
+.promo--flip .promo__art .art {
+  animation-delay: -4s;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -8px;
+  }
+}
+
+/* ============================================================
    ВЫКЛЮЧАТЕЛЬ
    Системная настройка «меньше движения» — от неё зависят люди,
    которым от анимаций становится плохо. Уважаем без исключений.
@@ -535,5 +656,21 @@
   .js .herocard,
   .js .promo__art .art {
     transform: none !important;
+  }
+
+  /* Бесконечные анимации гасим целиком: ускорять их до нуля мало,
+     они бы всё равно крутились в фоне. */
+  .hero::before,
+  .promo__art .art,
+  .hero__title span,
+  .hero__text,
+  .hero__cta,
+  .herocard,
+  .herocard__rows.is-swapped {
+    animation: none !important;
+  }
+
+  .promo__art .art {
+    translate: none !important;
   }
 }

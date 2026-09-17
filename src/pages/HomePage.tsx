@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useLang } from '../lib/i18n';
 import { SHOP } from '../lib/shop';
@@ -45,7 +45,14 @@ export function HomePage() {
       <section className="hero band--dark">
         <div className="wrap hero__grid">
           <div data-parallax="-10">
-            <h1>{t.heroTitle}</h1>
+            {/* Каждое слово — свой элемент, чтобы они вставали по очереди */}
+            <h1 className="hero__title">
+              {t.heroTitle.split(' ').map((word, i) => (
+                <Fragment key={`${word}-${i}`}>
+                  <span>{word}</span>{' '}
+                </Fragment>
+              ))}
+            </h1>
             <p className="hero__text">{t.heroText}</p>
             <div className="hero__cta btn-row">
               <Link href="/request" className="btn btn--primary btn--lg">

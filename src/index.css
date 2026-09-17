@@ -45,16 +45,21 @@
   --header-h: 79px;
 
   /* ── Движение. Все анимации сайта берут время и кривую отсюда ──
-     Правило: сайт двигается в ответ на действие человека, а не сам по себе.
-     Больше 400ms не ставим — начинает казаться, что сайт тормозит. */
+     Ответ на нажатие держим быстрым: дольше 300ms — и кажется, что сайт
+     тормозит. Медленно двигается только то, что человек не ждёт: появление
+     обложки и блоков при прокрутке. */
   --t-fast: 120ms; /* нажатие */
   --t: 180ms; /* фокус, смена подписи, наведение */
   --t-slow: 260ms; /* то, что реально едет: таблетка вкладок, крестик FAQ */
-  --t-page: 320ms; /* появление новой страницы и блоков при прокрутке */
+  --t-glide: 900ms; /* большое появление обложки */
+  --t-reveal: 700ms; /* блоки при прокрутке и смене страницы */
 
   /* Быстро стартует, мягко тормозит. Никаких пружин — палитра спокойная,
      движение тоже. Одна кривая на весь сайт. */
   --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+  /* Та же мысль, но для крупных движений: длинный мягкий выкат,
+     от него страница кажется не дёрганой, а скользящей. */
+  --ease-glide: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 * {
@@ -328,8 +333,14 @@ p {
 
 .nav {
   display: flex;
+  align-items: center;
   gap: var(--s-2xl);
   margin-right: auto;
+}
+
+/* Переключатель языка стоит последним в меню, чуть отступив от ссылок */
+.nav .langs {
+  margin-left: var(--s-sm);
 }
 
 .nav__link {
@@ -384,13 +395,18 @@ p {
   color: var(--on-ink);
 }
 
+/* Значок трубки показывается только на узком экране, где номер не помещается */
+.header__call svg {
+  display: none;
+}
+
 .burger {
   display: none;
   background: var(--canvas-soft);
   border: none;
   border-radius: var(--r-pill);
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   cursor: pointer;
   align-items: center;
   justify-content: center;
@@ -399,9 +415,23 @@ p {
 /* ─────────────── Обложка ─────────────── */
 
 /* Обложка — чёрная панель во всю ширину. Дальше страница снова светлая:
-   один резкий переход наверху задаёт тон всему остальному. */
+   один резкий переход наверху задаёт тон всему остальному.
+   position и overflow нужны световому пятну из motion.css: оно лежит
+   под содержимым и не должно вылезать за края панели. */
 .hero {
+  position: relative;
+  overflow: hidden;
   padding-block: 88px 96px;
+}
+
+.hero > * {
+  position: relative;
+}
+
+/* Слова заголовка — отдельные элементы: только так они могут появляться
+   по очереди. Пробелы между ними настоящие, чтение вслух не ломается. */
+.hero__title span {
+  display: inline-block;
 }
 
 /* Заголовок только на обложке крупнее обычного h2/h1 на других страницах */
@@ -998,6 +1028,13 @@ p {
   color: var(--body);
 }
 
+/* Короткое пояснение под полем — зачем оно вообще нужно */
+.field__hint {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--mute);
+}
+
 .message {
   border-radius: var(--r-md);
   padding: var(--s-md) var(--s-lg);
@@ -1186,6 +1223,24 @@ p {
   }
 }
 
+/* ─────────────── Узкий экран: кнопка звонка сжимается в трубку ─────────────── */
+
+@media (max-width: 900px) {
+  .header__call {
+    width: 46px;
+    height: 46px;
+    padding: 0;
+  }
+
+  .header__call svg {
+    display: block;
+  }
+
+  .header__call span {
+    display: none;
+  }
+}
+
 /* ─────────────── Телефон ─────────────── */
 
 @media (max-width: 760px) {
@@ -1225,8 +1280,9 @@ p {
     border-bottom: 1px solid var(--hairline);
   }
 
-  .nav.is-open .nav__link:last-child {
-    border-bottom: none;
+  /* Переключатель языка внутри открытого меню занимает всю ширину */
+  .nav.is-open .langs {
+    margin: var(--s-lg) 0 0;
   }
 
   .burger {
@@ -1239,11 +1295,38 @@ p {
   }
 
   .band {
-    padding-block: 56px;
+    padding-block: 72px;
+  }
+
+  .band--tight {
+    padding-block: 48px;
   }
 
   .hero {
-    padding-block: 40px 56px;
+    padding-block: 56px 64px;
+  }
+
+  /* На телефоне обложка и хук идут одной колонкой — даём заголовку дышать */
+  .hero h1 {
+    max-width: 100%;
+  }
+
+  .proof__rating {
+    padding-bottom: var(--s-2xl);
+    margin-bottom: var(--s-2xl);
+  }
+
+  .proof__list {
+    gap: var(--s-xl);
+  }
+
+  /* Пальцем в мелкое не попасть: поля и кнопки в форме крупнее */
+  .field input,
+  .field textarea,
+  .field select,
+  .trackform input {
+    padding: 16px var(--s-lg);
+    font-size: 16px;
   }
 
   .btn--lg {
