@@ -170,8 +170,13 @@ export function AdminPage() {
     const { error } = await supabase
       .from('admins')
       .insert({ user_id: userId, email, role: 'admin', status: 'pending' });
-    if (!error) setMe({ user_id: userId, email, role: 'admin', status: 'pending' });
-    else setDbError(error.message);
+    if (!error) {
+      setMe({ user_id: userId, email, role: 'admin', status: 'pending' });
+      // Владелец и так увидит счётчик в разделе «Доступ», но заходить туда
+      // каждый день никто не будет — поэтому ещё и письмо. Если почта не
+      // настроена, запрос всё равно сохранён: молча пропускаем ошибку.
+      void supabase.functions.invoke('notify-access').catch(() => {});
+    } else setDbError(error.message);
     setRequesting(false);
   }
 
