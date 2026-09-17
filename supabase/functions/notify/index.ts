@@ -89,13 +89,40 @@ Deno.serve(async (req) => {
     });
     if (!who.ok) return json({ error: 'Нужен вход' }, 401);
 
-    const user = (await who.json()) as { email?: string };
+    const user = (await who.json()) as { id?: string; email?: string };
     const from = typeof user.email === 'string' ? user.email : '';
-    if (!from) return json({ error: 'Нужен вход' }, 401);
+    const userId = typeof user.id === 'string' ? user.id : '';
+    if (!from || !userId) return json({ error: 'Нужен вход' }, 401);
 
     const body = (await req.json().catch(() => ({}))) as { kind?: unknown; code?: unknown };
     const kind = body.kind === 'request' ? 'request' : 'access';
-    const mail = letter(kind, from, safeCode(body.code));
+    const code = safeCode(body.code);
+
+    // Проверяем, что повод для письма действительно есть, и что он принадлежит
+    // тому, кто зовёт. Иначе вошедший человек мог бы гонять функцию по кругу
+    // и завалить почту мастерской письмами о несуществующих заявках —
+    // а у Gmail есть суточный предел, и настоящие письма перестали бы доходить.
+    //
+    // Спрашиваем базу его же токеном, поэтому правила доступа работают сами:
+    // чужую заявку и чужую строку доступа он попросту не увидит.
+    if (kind === 'request' && !code) return json({ error: 'Нечего отправлять' }, 400);
+
+    const check =
+      kind === 'request'
+        ? `repair_requests?select=track_code&track_code=eq.${code}&limit=1`
+        : `admins?select=user_id&user_id=eq.${userId}&status=eq.pending&limit=1`;
+
+    const rows = await fetch(`${SUPABASE_URL}/rest/v1/${check}`, {
+      headers: { Authorization: auth, apikey: SUPABASE_ANON_KEY ?? '' },
+    });
+    if (!rows.ok) return json({ error: 'Нечего отправлять' }, 400);
+
+    const found = (await rows.json()) as unknown[];
+    if (!Array.isArray(found) || found.length === 0) {
+      return json({ error: 'Нечего отправлять' }, 400);
+    }
+
+    const mail = letter(kind, from, code);
 
     const client = new SMTPClient({
       connection: {
