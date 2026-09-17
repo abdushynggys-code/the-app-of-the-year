@@ -116,7 +116,14 @@ export function RequestPage() {
       }
 
       if (failed) setError(t.fErr);
-      else setCode(trackCode);
+      else {
+        setCode(trackCode);
+        // Мастерская узнаёт о заявке письмом, а не когда откроет админку.
+        // Если почта не настроена — заявка всё равно сохранена, молчим.
+        void supabase.functions
+          .invoke('notify', { body: { kind: 'request', code: trackCode } })
+          .catch(() => {});
+      }
     } catch {
       setError(t.fErr);
     } finally {

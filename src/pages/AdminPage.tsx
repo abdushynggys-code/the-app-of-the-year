@@ -176,7 +176,9 @@ export function AdminPage() {
       // Владелец и так увидит счётчик в разделе «Доступ», но заходить туда
       // каждый день никто не будет — поэтому ещё и письмо. Если почта не
       // настроена, запрос всё равно сохранён: молча пропускаем ошибку.
-      void supabase.functions.invoke('notify-access').catch(() => {});
+      void supabase.functions
+        .invoke('notify', { body: { kind: 'access' } })
+        .catch(() => {});
     } else setDbError(error.message);
     setRequesting(false);
   }

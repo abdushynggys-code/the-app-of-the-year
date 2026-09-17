@@ -16,7 +16,9 @@
     "db:push": "supabase db push",
     "keep-awake:setup": "node scripts/setup-keep-awake.mjs",
     "ai:secret": "node scripts/setup-ai-secret.mjs",
-    "ai:deploy": "supabase functions deploy ai"
+    "ai:deploy": "supabase functions deploy ai",
+    "mail:secret": "supabase secrets set --env-file .env",
+    "mail:deploy": "supabase functions deploy notify"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.8",
