@@ -19,6 +19,7 @@ export function RequestPage() {
   const { t } = useLang();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [device, setDevice] = useState(() => fromUrl('device'));
   const [problem, setProblem] = useState(() => fromUrl('problem'));
   const [busy, setBusy] = useState(false);
@@ -48,6 +49,9 @@ export function RequestPage() {
         track_code: trackCode,
         name: name.trim(),
         phone: phone.trim(),
+        // Пусто отправляем как null: в базе стоит проверка формата,
+        // и пустая строка её не прошла бы.
+        email: email.trim() || null,
         device: device.trim(),
         problem: problem.trim(),
       });
@@ -75,6 +79,7 @@ export function RequestPage() {
     setCode('');
     setName('');
     setPhone('');
+    setEmail('');
     setDevice('');
     setProblem('');
   }
@@ -131,6 +136,21 @@ export function RequestPage() {
             required
             maxLength={30}
           />
+        </label>
+
+        {/* Телефон чаще всего и есть то, что чинят — позвонить на него нельзя.
+            Поэтому просим ещё и почту, но не делаем её обязательной. */}
+        <label className="field">
+          <span>{t.fEmail}</span>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder={t.fEmailPh}
+            maxLength={120}
+            autoComplete="email"
+          />
+          <small className="field__hint">{t.fEmailHint}</small>
         </label>
 
         <label className="field">

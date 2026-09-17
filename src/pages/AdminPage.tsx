@@ -9,6 +9,7 @@ type Req = {
   track_code: string;
   name: string;
   phone: string;
+  email: string | null;
   device: string;
   problem: string;
   status: Status;
@@ -265,7 +266,7 @@ export function AdminPage() {
     let q = supabase
       .from('repair_requests')
       .select(
-        'id, track_code, name, phone, device, problem, status, steps, notes, picked_up_at, created_at',
+        'id, track_code, name, phone, email, device, problem, status, steps, notes, picked_up_at, created_at',
       )
       .order('created_at', { ascending: false })
       .range(from, from + PAGE - 1);
@@ -871,6 +872,17 @@ export function AdminPage() {
                     {open.has(r.id) && (
                       <div className="reqrow__detail">
                         <p className="admin__problem">{r.problem}</p>
+
+                        {/* Телефон клиента может лежать тут же в ремонте —
+                            тогда письмо единственный способ с ним связаться. */}
+                        {r.email && (
+                          <p className="req__meta">
+                            {t.admin.email}:{' '}
+                            <a className="textlink" href={`mailto:${r.email}`}>
+                              {r.email}
+                            </a>
+                          </p>
+                        )}
 
                         <div className="block">
                           <span className="block__label">{t.admin.stepsLabel}</span>
