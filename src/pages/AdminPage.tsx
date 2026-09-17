@@ -11,6 +11,7 @@ type Req = {
   phone: string;
   email: string | null;
   device: string;
+  model: string | null;
   problem: string;
   status: Status;
   steps: StepKey[];
@@ -266,7 +267,7 @@ export function AdminPage() {
     let q = supabase
       .from('repair_requests')
       .select(
-        'id, track_code, name, phone, email, device, problem, status, steps, notes, picked_up_at, created_at',
+        'id, track_code, name, phone, email, device, model, problem, status, steps, notes, picked_up_at, created_at',
       )
       .order('created_at', { ascending: false })
       .range(from, from + PAGE - 1);
@@ -851,7 +852,7 @@ export function AdminPage() {
                           {r.notes && <span className="tag tag--quiet">{t.admin.notes}</span>}
                         </span>
                         <span className="reqrow__who">
-                          {r.device} · {r.name}
+                          {r.model ? `${r.device} ${r.model}` : r.device} · {r.name}
                         </span>
                         <span className="reqrow__meta">{fmt(r.created_at)}</span>
                         <span className="reqrow__bar" aria-hidden="true">

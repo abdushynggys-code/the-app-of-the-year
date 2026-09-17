@@ -21,6 +21,7 @@ export function RequestPage() {
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [device, setDevice] = useState(() => fromUrl('device'));
+  const [model, setModel] = useState(() => fromUrl('model'));
   const [problem, setProblem] = useState(() => fromUrl('problem'));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -53,6 +54,7 @@ export function RequestPage() {
         // и пустая строка её не прошла бы.
         email: email.trim() || null,
         device: device.trim(),
+        model: model.trim(),
         problem: problem.trim(),
       });
 
@@ -81,6 +83,7 @@ export function RequestPage() {
     setPhone('');
     setEmail('');
     setDevice('');
+    setModel('');
     setProblem('');
   }
 
@@ -162,6 +165,20 @@ export function RequestPage() {
             required
             maxLength={80}
           />
+        </label>
+
+        {/* Марка мало что говорит: экран у 13 и у 13 Pro разный.
+            Без модели мастер не закажет деталь заранее. */}
+        <label className="field">
+          <span>{t.fModel}</span>
+          <input
+            value={model}
+            onChange={(e) => setModel(e.target.value)}
+            placeholder={t.fModelPh}
+            required
+            maxLength={80}
+          />
+          <small className="field__hint">{t.fModelHint}</small>
         </label>
 
         <label className="field">

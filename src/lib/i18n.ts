@@ -88,6 +88,9 @@ export type Dict = {
   fEmailHint: string;
   fDevice: string;
   fDevicePh: string;
+  fModel: string;
+  fModelPh: string;
+  fModelHint: string;
   fProblem: string;
   fProblemPh: string;
   fSubmit: string;
@@ -162,6 +165,7 @@ export type Dict = {
     empty: string;
     phone: string;
     email: string;
+    model: string;
     problem: string;
     statusLabel: string;
     saving: string;
@@ -390,7 +394,10 @@ export const DICT: Record<Lang, Dict> = {
     fEmailPh: 'name@mail.kz',
     fEmailHint: 'Если в ремонт едет сам телефон — напишем на почту.',
     fDevice: 'Устройство',
-    fDevicePh: 'например: iPhone 13, Samsung A54, MacBook Air',
+    fDevicePh: 'iPhone, Samsung, MacBook, Xiaomi…',
+    fModel: 'Модель',
+    fModelPh: '13 Pro, A54, Air M2, Redmi Note 12…',
+    fModelHint: 'Модель важна: от неё зависят запчасть и цена. Она есть в настройках, в разделе «Об устройстве».',
     fProblem: 'Что случилось',
     fProblemPh: 'Разбит экран, не заряжается, упал в воду…',
     fSubmit: 'Отправить заявку',
@@ -485,6 +492,7 @@ export const DICT: Record<Lang, Dict> = {
       empty: 'Пока пусто.',
       phone: 'Телефон',
       email: 'Почта',
+      model: 'Модель',
       problem: 'Проблема',
       statusLabel: 'Статус',
       saving: 'Сохраняем…',
@@ -712,7 +720,10 @@ export const DICT: Record<Lang, Dict> = {
     fEmailPh: 'name@mail.kz',
     fEmailHint: 'Жөндеуге телефонның өзі түссе — поштаға жазамыз.',
     fDevice: 'Құрылғы',
-    fDevicePh: 'мысалы: iPhone 13, Samsung A54, MacBook Air',
+    fDevicePh: 'iPhone, Samsung, MacBook, Xiaomi…',
+    fModel: 'Моделі',
+    fModelPh: '13 Pro, A54, Air M2, Redmi Note 12…',
+    fModelHint: 'Моделі маңызды: бөлшек пен баға соған байланысты. Ол параметрлердегі «Құрылғы туралы» бөлімінде жазылған.',
     fProblem: 'Не болды',
     fProblemPh: 'Экраны сынған, қуат алмайды, суға түсті…',
     fSubmit: 'Өтінім жіберу',
@@ -807,6 +818,7 @@ export const DICT: Record<Lang, Dict> = {
       empty: 'Әзірге бос.',
       phone: 'Телефон',
       email: 'Пошта',
+      model: 'Моделі',
       problem: 'Мәселе',
       statusLabel: 'Күйі',
       saving: 'Сақталуда…',
@@ -1034,7 +1046,10 @@ export const DICT: Record<Lang, Dict> = {
     fEmailPh: 'name@mail.kz',
     fEmailHint: 'If the phone itself is being repaired, we will write to you instead.',
     fDevice: 'Device',
-    fDevicePh: 'e.g. iPhone 13, Samsung A54, MacBook Air',
+    fDevicePh: 'iPhone, Samsung, MacBook, Xiaomi…',
+    fModel: 'Model',
+    fModelPh: '13 Pro, A54, Air M2, Redmi Note 12…',
+    fModelHint: 'The model decides the part and the price. You will find it in Settings, under About.',
     fProblem: 'What happened',
     fProblemPh: 'Cracked screen, won’t charge, fell in water…',
     fSubmit: 'Send request',
@@ -1129,6 +1144,7 @@ export const DICT: Record<Lang, Dict> = {
       empty: 'Nothing here yet.',
       phone: 'Phone',
       email: 'Email',
+      model: 'Model',
       problem: 'Problem',
       statusLabel: 'Status',
       saving: 'Saving…',
