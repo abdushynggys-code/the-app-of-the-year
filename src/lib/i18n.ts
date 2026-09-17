@@ -34,14 +34,13 @@ export type Dict = {
   nav: { home: string; request: string; track: string };
   menu: string;
 
-  heroBadge: string;
   heroTitle: string;
   heroText: string;
 
   proofEyebrow: string;
+  proofReviews: string;
   proofTitle: string;
   proof: Pair[];
-  proofSrc: string;
 
   cardTabRepair: string;
   cardTabTrack: string;
@@ -246,12 +245,12 @@ export const DICT: Record<Lang, Dict> = {
     nav: { home: 'Главная', request: 'Заявка', track: 'Статус ремонта' },
     menu: 'Меню',
 
-    heroBadge: 'на 2ГИС · более 1200 отзывов',
     heroTitle: 'Ремонт, пока вы ждёте',
     heroText:
       'Телефоны, планшеты, часы и ноутбуки в Астане. Диагностика бесплатно и без записи — смотрим при вас.',
 
-    proofEyebrow: 'Прежде чем решать',
+    proofEyebrow: 'Оценка на 2ГИС',
+    proofReviews: 'отзывов',
     proofTitle: 'Сначала вы узнаёте цену — потом решаете',
     proof: [
       {
@@ -271,7 +270,6 @@ export const DICT: Record<Lang, Dict> = {
         d: 'Оставили заявку на сайте — получите код. По нему в любой момент видно, на каком этапе ваше устройство.',
       },
     ],
-    proofSrc: 'Отзывы и оценка — на 2ГИС:',
 
     cardTabRepair: 'Ремонт',
     cardTabTrack: 'Проверить статус',
@@ -564,12 +562,12 @@ export const DICT: Record<Lang, Dict> = {
     nav: { home: 'Басты бет', request: 'Өтінім', track: 'Жөндеу күйі' },
     menu: 'Мәзір',
 
-    heroBadge: '2ГИС-те · 1200-ден астам пікір',
     heroTitle: 'Күте тұрғанда жөндейміз',
     heroText:
       'Астанада телефон, планшет, сағат және ноутбук жөндеу. Диагностика тегін әрі жазылусыз — көзіңізше қараймыз.',
 
-    proofEyebrow: 'Шешім қабылдар алдында',
+    proofEyebrow: '2ГИС-тегі баға',
+    proofReviews: 'пікір',
     proofTitle: 'Алдымен бағасын білесіз — сосын шешесіз',
     proof: [
       {
@@ -589,7 +587,6 @@ export const DICT: Record<Lang, Dict> = {
         d: 'Сайтқа өтінім қалдырсаңыз — код беріледі. Сол код арқылы құрылғыңыз қай кезеңде екенін кез келген уақытта көресіз.',
       },
     ],
-    proofSrc: 'Пікірлер мен баға — 2ГИС-те:',
 
     cardTabRepair: 'Жөндеу',
     cardTabTrack: 'Күйін тексеру',
@@ -882,12 +879,12 @@ export const DICT: Record<Lang, Dict> = {
     nav: { home: 'Home', request: 'Book a repair', track: 'Track repair' },
     menu: 'Menu',
 
-    heroBadge: 'on 2GIS · more than 1,200 reviews',
     heroTitle: 'Repairs while you wait',
     heroText:
       'Phones, tablets, watches and laptops in Astana. Diagnostics are free and need no appointment — we look at your device with you.',
 
-    proofEyebrow: 'Before you decide',
+    proofEyebrow: 'Rated on 2GIS',
+    proofReviews: 'reviews',
     proofTitle: 'You learn the price first, then you decide',
     proof: [
       {
@@ -907,7 +904,6 @@ export const DICT: Record<Lang, Dict> = {
         d: 'Leave a request on the site and you get a code. It shows which stage your device is at, any time you check.',
       },
     ],
-    proofSrc: 'Reviews and rating live on 2GIS:',
 
     cardTabRepair: 'Repair',
     cardTabTrack: 'Track repair',

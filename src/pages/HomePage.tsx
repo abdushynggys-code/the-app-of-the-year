@@ -41,13 +41,10 @@ export function HomePage() {
 
   return (
     <main>
-      {/* ───── Обложка ───── */}
-      <section className="hero">
+      {/* ───── Обложка: чёрная панель ───── */}
+      <section className="hero band--dark">
         <div className="wrap hero__grid">
           <div data-parallax="-10">
-            <p className="hero__badge">
-              <b>★ {SHOP.rating}</b> {t.heroBadge}
-            </p>
             <h1>{t.heroTitle}</h1>
             <p className="hero__text">{t.heroText}</p>
             <div className="hero__cta btn-row">

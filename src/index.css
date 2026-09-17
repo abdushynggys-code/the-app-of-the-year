@@ -129,7 +129,7 @@ p {
 }
 
 .band {
-  padding-block: 80px;
+  padding-block: 96px;
 }
 
 .band--soft {
@@ -143,7 +143,7 @@ p {
 }
 
 .band--tight {
-  padding-block: 48px;
+  padding-block: 56px;
 }
 
 .band__head {
@@ -233,6 +233,18 @@ p {
 
 .btn--secondary:hover {
   background: var(--canvas-soft);
+}
+
+/* На чёрной полосе главная кнопка белая, поэтому вторая становится
+   контурной — иначе рядом стояли бы две одинаковые белые таблетки. */
+.band--dark .btn--secondary {
+  background: transparent;
+  color: var(--on-ink);
+  border-color: var(--on-ink);
+}
+
+.band--dark .btn--secondary:hover {
+  background: var(--ink-elevated);
 }
 
 .btn--subtle {
@@ -386,33 +398,24 @@ p {
 
 /* ─────────────── Обложка ─────────────── */
 
+/* Обложка — чёрная панель во всю ширину. Дальше страница снова светлая:
+   один резкий переход наверху задаёт тон всему остальному. */
 .hero {
-  padding-block: 64px 80px;
+  padding-block: 88px 96px;
+}
+
+/* Заголовок только на обложке крупнее обычного h2/h1 на других страницах */
+.hero h1 {
+  font-size: clamp(40px, 6.4vw, 72px);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
 }
 
 .hero__grid {
   display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: 56px;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 64px;
   align-items: start;
-}
-
-.hero__badge {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--s-sm);
-  background: var(--canvas-soft);
-  border-radius: var(--r-pill);
-  padding: 6px 16px;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 20px;
-  color: var(--body);
-  margin-bottom: var(--s-2xl);
-}
-
-.hero__badge b {
-  color: var(--ink);
 }
 
 .hero h1 {
@@ -427,16 +430,24 @@ p {
   color: var(--body);
 }
 
+/* На чёрном серый --body почти не читается — берём светлый --mute */
+.band--dark .hero__text {
+  color: var(--mute);
+}
+
 .hero__cta {
   margin-top: var(--s-3xl);
 }
 
 /* Карточка-форма на обложке — единственная карточка с тенью */
+/* Белая карточка на чёрном. Тень тут не работает — контраста и так хватает,
+   но она остаётся для случая, если обложку когда-нибудь вернут на светлую. */
 .herocard {
   background: var(--canvas);
   border-radius: var(--r-xl);
   box-shadow: var(--shadow-card);
-  padding: var(--s-lg);
+  padding: var(--s-xl);
+  color: var(--ink);
 }
 
 /* Одна серая дорожка, внутри неё ездит чёрная таблетка — так же,
@@ -635,13 +646,13 @@ p {
 
 .service h3,
 .step h3,
-.proof h3 {
+.proof__list h3 {
   margin-bottom: var(--s-sm);
 }
 
 .service p,
 .step p,
-.proof p {
+.proof__list p {
   font-size: 14px;
   line-height: 20px;
   color: var(--body);
@@ -658,10 +669,13 @@ p {
   gap: var(--s-3xl);
 }
 
-.step__num {
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 16px;
+/* Селектор с .step обязателен: иначе правило .step p выше перебивает
+   и цвет, и высоту строки — номер становился обычным серым текстом. */
+.step .step__num {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
   color: var(--mute);
   padding-bottom: var(--s-md);
   border-bottom: 1px solid var(--hairline);
@@ -744,8 +758,7 @@ p {
 
 /* ─────────────── Контакты ─────────────── */
 
-.contacts,
-.proof {
+.contacts {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: var(--s-lg);
@@ -753,25 +766,54 @@ p {
 
 /* ─────────────── Хук под обложкой ─────────────── */
 
+/* Оценка идёт первой и набрана крупно: это единственная цифра на сайте,
+   которую ставим не мы, и её можно проверить по ссылке. */
+.proof__rating {
+  padding-bottom: var(--s-3xl);
+  border-bottom: 1px solid var(--hairline);
+  margin-bottom: var(--s-3xl);
+}
+
+.proof__score {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--s-sm) var(--s-lg);
+}
+
+.proof__score b {
+  font-size: clamp(56px, 9vw, 92px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.proof__score span {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 26px;
+  color: var(--body);
+}
+
+.proof__rating .btn {
+  margin-top: var(--s-xl);
+}
+
 /* Четыре обещания. Без заливки и скруглений: ниже уже идут три сетки
    серых карточек подряд, четвёртая слилась бы с ними. Здесь работает
-   волосок сверху и воздух — так полоса читается как продолжение обложки. */
-.proof {
+   волосок сверху и воздух. */
+.proof__list {
   list-style: none;
   margin: 0;
   padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: var(--s-2xl);
 }
 
-.proof li {
-  border-top: 1px solid var(--hairline);
+.proof__list li {
+  border-top: 1px solid var(--ink);
   padding-top: var(--s-lg);
-}
-
-.proof__src {
-  margin-top: var(--s-2xl);
-  font-size: 14px;
-  line-height: 20px;
-  color: var(--body);
 }
 
 .contacts__card {
