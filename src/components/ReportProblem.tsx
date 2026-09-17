@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { useLang } from '../lib/i18n';
 
@@ -64,63 +65,69 @@ export function ReportProblem() {
         {t.report.link}
       </button>
 
-      <dialog className="modal" ref={dialog} onClose={close}>
-        {sent ? (
-          <div className="modal__body done">
-            <span className="done__mark" aria-hidden="true">
-              ✓
-            </span>
-            <h3>{t.report.okTitle}</h3>
-            <p>{t.report.okText}</p>
-            <button className="btn btn--primary" onClick={close} style={{ marginTop: 20 }}>
-              {t.report.close}
-            </button>
-          </div>
-        ) : (
-          <form className="modal__body form" onSubmit={send}>
-            <div>
-              <h3>{t.report.title}</h3>
-              <p className="form__hint" style={{ marginTop: 8 }}>
-                {t.report.text}
-              </p>
-            </div>
-
-            <label className="field">
-              <span>{t.report.message}</span>
-              <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder={t.report.messagePh}
-                required
-                rows={4}
-                maxLength={2000}
-                autoFocus
-              />
-            </label>
-
-            <label className="field">
-              <span>{t.report.contact}</span>
-              <input
-                value={contact}
-                onChange={(e) => setContact(e.target.value)}
-                placeholder={t.report.contactPh}
-                maxLength={120}
-              />
-            </label>
-
-            {error && <p className="message message--error">{error}</p>}
-
-            <div className="btn-row">
-              <button className="btn btn--primary" type="submit" disabled={busy}>
-                {busy ? t.report.sending : t.report.send}
-              </button>
-              <button className="btn btn--secondary" type="button" onClick={close}>
+      {/* Окно переносим в конец страницы. В разметке ссылка стоит внутри
+          абзаца в подвале, а <dialog> внутри <p> — недопустимая вложенность:
+          браузер ругается и может закрыть абзац раньше времени. */}
+      {createPortal(
+        <dialog className="modal" ref={dialog} onClose={close}>
+          {sent ? (
+            <div className="modal__body done">
+              <span className="done__mark" aria-hidden="true">
+                ✓
+              </span>
+              <h3>{t.report.okTitle}</h3>
+              <p>{t.report.okText}</p>
+              <button className="btn btn--primary" onClick={close} style={{ marginTop: 20 }}>
                 {t.report.close}
               </button>
             </div>
-          </form>
-        )}
-      </dialog>
+          ) : (
+            <form className="modal__body form" onSubmit={send}>
+              <div>
+                <h3>{t.report.title}</h3>
+                <p className="form__hint" style={{ marginTop: 8 }}>
+                  {t.report.text}
+                </p>
+              </div>
+
+              <label className="field">
+                <span>{t.report.message}</span>
+                <textarea
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder={t.report.messagePh}
+                  required
+                  rows={4}
+                  maxLength={2000}
+                  autoFocus
+                />
+              </label>
+
+              <label className="field">
+                <span>{t.report.contact}</span>
+                <input
+                  value={contact}
+                  onChange={(e) => setContact(e.target.value)}
+                  placeholder={t.report.contactPh}
+                  maxLength={120}
+                />
+              </label>
+
+              {error && <p className="message message--error">{error}</p>}
+
+              <div className="btn-row">
+                <button className="btn btn--primary" type="submit" disabled={busy}>
+                  {busy ? t.report.sending : t.report.send}
+                </button>
+                <button className="btn btn--secondary" type="button" onClick={close}>
+                  {t.report.close}
+                </button>
+              </div>
+            </form>
+          )}
+        </dialog>,
+        document.body,
+      )}
     </>
   );
 }

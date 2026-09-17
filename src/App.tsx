@@ -3,6 +3,7 @@ import { Route, Switch } from 'wouter';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { PageFade } from './components/PageFade';
+import { SiteSchema } from './components/SiteSchema';
 import { HomePage } from './pages/HomePage';
 import { RequestPage } from './pages/RequestPage';
 import { TrackPage } from './pages/TrackPage';
@@ -29,6 +30,7 @@ export default function App() {
 
   return (
     <LangContext.Provider value={{ lang, setLang }}>
+      <SiteSchema />
       <Header />
       <PageFade>
         <Switch>

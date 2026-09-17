@@ -688,6 +688,26 @@ p {
   color: var(--body);
 }
 
+/* ─────────────── Марки ─────────────── */
+
+/* Названия набраны крупно: это и оформление, и то, что ищут поиском */
+.brands {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-md) var(--s-3xl);
+  --reveal-step: 45ms;
+}
+
+.brands li {
+  font-size: clamp(26px, 4.4vw, 44px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
 /* ─────────────── Шаги ─────────────── */
 
 .steps {

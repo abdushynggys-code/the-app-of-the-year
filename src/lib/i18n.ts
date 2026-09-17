@@ -58,6 +58,10 @@ export type Dict = {
 
   promos: Promo[];
 
+  brandsEyebrow: string;
+  brandsTitle: string;
+  brandsText: string;
+
   servicesTitle: string;
   servicesText: string;
   services: Service[];
@@ -286,7 +290,7 @@ export const DICT: Record<Lang, Dict> = {
     cardProblem: 'Что случилось',
     cardProblemPh: 'Разбит экран, не заряжается…',
     cardGo: 'Узнать цену',
-    cardTrackPh: 'Код заявки: RS-4821',
+    cardTrackPh: 'Код заявки: RS-482170',
     cardTrackGo: 'Проверить',
     cardNote: 'Ответим в рабочее время — ежедневно с 10:00 до 20:00.',
 
@@ -316,6 +320,10 @@ export const DICT: Record<Lang, Dict> = {
         cta: 'Позвонить нам',
       },
     ],
+
+    brandsEyebrow: 'Марки',
+    brandsTitle: 'С какой техникой работаем',
+    brandsText: 'Не нашли свою марку — позвоните или напишите, посмотрим.',
 
     servicesTitle: 'Что мы чиним',
     servicesText: 'От разбитого экрана до пайки микросхем — всё в одной мастерской.',
@@ -413,7 +421,7 @@ export const DICT: Record<Lang, Dict> = {
 
     trackTitle: 'Статус ремонта',
     trackText: 'Введите код из заявки — покажем, на каком этапе ваше устройство.',
-    trackPh: 'Например: RS-4821',
+    trackPh: 'Например: RS-482170',
     trackBtn: 'Проверить',
     trackNotFound: 'Заявка с таким кодом не найдена. Проверьте код или позвоните нам.',
     trackDevice: 'Устройство',
@@ -612,7 +620,7 @@ export const DICT: Record<Lang, Dict> = {
     cardProblem: 'Не болды',
     cardProblemPh: 'Экраны сынған, қуат алмайды…',
     cardGo: 'Бағасын білу',
-    cardTrackPh: 'Өтінім коды: RS-4821',
+    cardTrackPh: 'Өтінім коды: RS-482170',
     cardTrackGo: 'Тексеру',
     cardNote: 'Жұмыс уақытында жауап береміз — күн сайын 10:00-ден 20:00-ге дейін.',
 
@@ -642,6 +650,10 @@ export const DICT: Record<Lang, Dict> = {
         cta: 'Қоңырау шалу',
       },
     ],
+
+    brandsEyebrow: 'Маркалар',
+    brandsTitle: 'Қандай техникамен жұмыс істейміз',
+    brandsText: 'Өз маркаңызды таппасаңыз — қоңырау шалыңыз немесе жазыңыз, қарап береміз.',
 
     servicesTitle: 'Не жөндейміз',
     servicesText: 'Сынған экраннан микросхема дәнекерлеуге дейін — бәрі бір шеберханада.',
@@ -739,7 +751,7 @@ export const DICT: Record<Lang, Dict> = {
 
     trackTitle: 'Жөндеу күйі',
     trackText: 'Өтінімдегі кодты енгізіңіз — құрылғыңыз қай кезеңде екенін көрсетеміз.',
-    trackPh: 'Мысалы: RS-4821',
+    trackPh: 'Мысалы: RS-482170',
     trackBtn: 'Тексеру',
     trackNotFound: 'Мұндай кодпен өтінім табылмады. Кодты тексеріңіз немесе қоңырау шалыңыз.',
     trackDevice: 'Құрылғы',
@@ -938,7 +950,7 @@ export const DICT: Record<Lang, Dict> = {
     cardProblem: 'What happened',
     cardProblemPh: 'Cracked screen, won’t charge…',
     cardGo: 'Get a price',
-    cardTrackPh: 'Repair code: RS-4821',
+    cardTrackPh: 'Repair code: RS-482170',
     cardTrackGo: 'Check',
     cardNote: 'We reply during opening hours — every day, 10:00 to 20:00.',
 
@@ -968,6 +980,10 @@ export const DICT: Record<Lang, Dict> = {
         cta: 'Call us',
       },
     ],
+
+    brandsEyebrow: 'Makes',
+    brandsTitle: 'What we work with',
+    brandsText: 'Do not see yours? Call or message us and we will take a look.',
 
     servicesTitle: 'What we repair',
     servicesText: 'From a cracked screen to microsoldering — all in one workshop.',
@@ -1065,7 +1081,7 @@ export const DICT: Record<Lang, Dict> = {
 
     trackTitle: 'Track your repair',
     trackText: 'Enter the code from your request and we will show you where your device is.',
-    trackPh: 'e.g. RS-4821',
+    trackPh: 'e.g. RS-482170',
     trackBtn: 'Check',
     trackNotFound: 'No repair found with that code. Check the code, or give us a call.',
     trackDevice: 'Device',

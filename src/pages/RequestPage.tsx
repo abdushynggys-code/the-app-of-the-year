@@ -5,9 +5,12 @@ import { SupabaseSetupMessage } from '../components/SupabaseSetupMessage';
 import { useLang } from '../lib/i18n';
 import { SHOP } from '../lib/shop';
 
-// Код заявки вида RS-4821 — по нему клиент смотрит статус без регистрации.
+// Код заявки вида RS-482170 — по нему клиент смотрит статус без регистрации.
+// Шесть цифр, а не четыре: четыре давали всего 9000 вариантов, и по закону
+// парных дней совпадение появлялось уже на второй сотне заявок. В базе код
+// объявлен уникальным, поэтому совпадение — это потерянная заявка.
 function makeTrackCode() {
-  return `RS-${Math.floor(1000 + Math.random() * 9000)}`;
+  return `RS-${Math.floor(100000 + Math.random() * 900000)}`;
 }
 
 // Карточка на главной может передать сюда уже заполненные поля.
@@ -43,22 +46,34 @@ export function RequestPage() {
     try {
       // Если клиент вошёл — заявка привязана к аккаунту и попадёт в «Мои заявки».
       const { data: userData } = await supabase.auth.getUser();
-      const trackCode = makeTrackCode();
 
-      const { error: insertError } = await supabase.from('repair_requests').insert({
-        user_id: userData.user?.id ?? null,
-        track_code: trackCode,
-        name: name.trim(),
-        phone: phone.trim(),
-        // Пусто отправляем как null: в базе стоит проверка формата,
-        // и пустая строка её не прошла бы.
-        email: email.trim() || null,
-        device: device.trim(),
-        model: model.trim(),
-        problem: problem.trim(),
-      });
+      // Код придумываем случайно, поэтому он может совпасть с уже занятым.
+      // Тогда база вернёт ошибку 23505 (нарушено «уникальное»), и мы просто
+      // берём следующий код. Без этой петли заявка терялась, а человек видел
+      // непонятное «что-то пошло не так».
+      let trackCode = '';
+      let failed: { code?: string } | null = null;
 
-      if (insertError) setError(t.fErr);
+      for (let attempt = 0; attempt < 5; attempt++) {
+        trackCode = makeTrackCode();
+        const { error: insertError } = await supabase.from('repair_requests').insert({
+          user_id: userData.user?.id ?? null,
+          track_code: trackCode,
+          name: name.trim(),
+          phone: phone.trim(),
+          // Пусто отправляем как null: в базе стоит проверка формата,
+          // и пустая строка её не прошла бы.
+          email: email.trim() || null,
+          device: device.trim(),
+          model: model.trim(),
+          problem: problem.trim(),
+        });
+
+        failed = insertError;
+        if (!insertError || insertError.code !== '23505') break;
+      }
+
+      if (failed) setError(t.fErr);
       else setCode(trackCode);
     } catch {
       setError(t.fErr);

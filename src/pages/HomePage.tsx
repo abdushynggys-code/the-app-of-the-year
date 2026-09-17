@@ -4,6 +4,7 @@ import { useLang } from '../lib/i18n';
 import { SHOP } from '../lib/shop';
 import { Icon, PromoArt } from '../components/Art';
 import { ProofStrip } from '../components/ProofStrip';
+import { BrandStrip } from '../components/BrandStrip';
 
 // Главная: обложка с карточкой-формой, чипы, промо-полосы,
 // услуги, шаги, вопросы-ответы и контакты.
@@ -203,6 +204,9 @@ export function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ───── Марки ───── */}
+      <BrandStrip />
 
       {/* ───── Как это работает ───── */}
       <section className="band">
