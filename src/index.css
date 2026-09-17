@@ -341,9 +341,13 @@ p {
   gap: var(--s-md);
 }
 
-/* Переключатель языка на три положения */
+/* Переключатель языка на три положения.
+   Колонки равные (grid + 1fr) — только так чёрная таблетка может ездить
+   между ними ровно на треть ширины. Сама таблетка описана в motion.css. */
 .langs {
-  display: inline-flex;
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
   background: var(--canvas-soft);
   border-radius: var(--r-pill);
   padding: 3px;
@@ -360,15 +364,11 @@ p {
   line-height: 16px;
   color: var(--body);
   cursor: pointer;
-  transition: background-color 0.15s, color 0.15s;
+  transition: color 0.15s;
 }
 
-.langs button:hover {
-  color: var(--ink);
-}
-
+/* Заливки у активного нет: под ним едет таблетка */
 .langs button.is-active {
-  background: var(--ink);
   color: var(--on-ink);
 }
 

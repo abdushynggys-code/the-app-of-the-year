@@ -36,7 +36,8 @@ export function Header() {
         </nav>
 
         <div className="header__actions">
-          <div className="langs" role="group" aria-label="Language">
+          <div className="langs" role="group" aria-label="Language" data-lang={lang}>
+            <span className="langs__pill" aria-hidden="true" />
             {LANGS.map((l) => (
               <button
                 key={l.id}
