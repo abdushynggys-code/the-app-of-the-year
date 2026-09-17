@@ -83,7 +83,7 @@ export function RequestPage() {
   if (code) {
     return (
       <main className="wrap wrap--narrow page">
-        <div className="card card--soft done">
+        <div className="card card--soft done swap-in">
           <span className="done__mark" aria-hidden="true">
             ✓
           </span>
@@ -158,7 +158,11 @@ export function RequestPage() {
 
         {error && <p className="message message--error">{error}</p>}
 
-        <button className="btn btn--primary btn--lg" type="submit" disabled={busy}>
+        <button
+          className={busy ? 'btn btn--primary btn--lg is-busy' : 'btn btn--primary btn--lg'}
+          type="submit"
+          disabled={busy}
+        >
           {busy ? t.fSending : t.fSubmit}
         </button>
 

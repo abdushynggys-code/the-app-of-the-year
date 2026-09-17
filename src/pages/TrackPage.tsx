@@ -121,19 +121,23 @@ export function TrackPage() {
           required
           aria-label={t.trackTitle}
         />
-        <button className="btn btn--primary" type="submit" disabled={busy}>
+        <button
+          className={busy ? 'btn btn--primary is-busy' : 'btn btn--primary'}
+          type="submit"
+          disabled={busy}
+        >
           {busy ? '…' : t.trackBtn}
         </button>
       </form>
 
       {notFound && (
-        <p className="message message--error" style={{ marginTop: 16 }}>
+        <p className="message message--error swap-in" style={{ marginTop: 16 }}>
           {t.trackNotFound}
         </p>
       )}
 
       {found && (
-        <article className="card card--soft" style={{ marginTop: 24 }}>
+        <article className="card card--soft swap-in" style={{ marginTop: 24 }}>
           <p className="req__code">{found.track_code}</p>
           <p className="req__device">
             {t.trackDevice}: {found.device}

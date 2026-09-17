@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Route, Switch } from 'wouter';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
+import { PageFade } from './components/PageFade';
 import { HomePage } from './pages/HomePage';
 import { RequestPage } from './pages/RequestPage';
 import { TrackPage } from './pages/TrackPage';
@@ -29,13 +30,15 @@ export default function App() {
   return (
     <LangContext.Provider value={{ lang, setLang }}>
       <Header />
-      <Switch>
-        <Route path="/" component={HomePage} />
-        <Route path="/request" component={RequestPage} />
-        <Route path="/track" component={TrackPage} />
-        <Route path="/admin" component={AdminPage} />
-        <Route component={NotFoundPage} />
-      </Switch>
+      <PageFade>
+        <Switch>
+          <Route path="/" component={HomePage} />
+          <Route path="/request" component={RequestPage} />
+          <Route path="/track" component={TrackPage} />
+          <Route path="/admin" component={AdminPage} />
+          <Route component={NotFoundPage} />
+        </Switch>
+      </PageFade>
       <Footer />
     </LangContext.Provider>
   );

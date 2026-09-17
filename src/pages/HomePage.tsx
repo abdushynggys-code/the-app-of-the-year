@@ -3,6 +3,7 @@ import { Link, useLocation } from 'wouter';
 import { useLang } from '../lib/i18n';
 import { SHOP } from '../lib/shop';
 import { Icon, PromoArt } from '../components/Art';
+import { ProofStrip } from '../components/ProofStrip';
 
 // Главная: обложка с карточкой-формой, чипы, промо-полосы,
 // услуги, шаги, вопросы-ответы и контакты.
@@ -14,6 +15,15 @@ export function HomePage() {
   const [device, setDevice] = useState('');
   const [problem, setProblem] = useState('');
   const [code, setCode] = useState('');
+  // Пока вкладку не трогали, тело карточки не анимируем: на первой
+  // загрузке сайт ничего не должен показывать «сам по себе».
+  const [swapped, setSwapped] = useState(false);
+  const rowsClass = swapped ? 'herocard__rows is-swapped' : 'herocard__rows';
+
+  function pickTab(next: 'repair' | 'track') {
+    setTab(next);
+    setSwapped(true);
+  }
 
   // Карточка на обложке ничего не сохраняет — она просто уводит
   // на нужную страницу и переносит туда уже введённый текст.
@@ -34,7 +44,7 @@ export function HomePage() {
       {/* ───── Обложка ───── */}
       <section className="hero">
         <div className="wrap hero__grid">
-          <div>
+          <div data-parallax="-10">
             <p className="hero__badge">
               <b>★ {SHOP.rating}</b> {t.heroBadge}
             </p>
@@ -50,26 +60,27 @@ export function HomePage() {
             </div>
           </div>
 
-          <form className="herocard" onSubmit={go}>
-            <div className="tabs">
+          <form className="herocard" onSubmit={go} data-parallax="18">
+            <div className="tabs" data-tab={tab}>
+              <span className="tabs__pill" aria-hidden="true" />
               <button
                 type="button"
                 className={tab === 'repair' ? 'is-active' : ''}
-                onClick={() => setTab('repair')}
+                onClick={() => pickTab('repair')}
               >
                 {t.cardTabRepair}
               </button>
               <button
                 type="button"
                 className={tab === 'track' ? 'is-active' : ''}
-                onClick={() => setTab('track')}
+                onClick={() => pickTab('track')}
               >
                 {t.cardTabTrack}
               </button>
             </div>
 
             {tab === 'repair' ? (
-              <div className="herocard__rows">
+              <div className={rowsClass} key="repair">
                 <div className="inputrow">
                   <span className="inputrow__dot" />
                   <input
@@ -92,7 +103,7 @@ export function HomePage() {
                 </div>
               </div>
             ) : (
-              <div className="herocard__rows">
+              <div className={rowsClass} key="track">
                 <div className="inputrow">
                   <span className="inputrow__dot inputrow__dot--round" />
                   <input
@@ -115,11 +126,16 @@ export function HomePage() {
         </div>
       </section>
 
+      {/* ───── Хук: чем вы рискуете ───── */}
+      <ProofStrip />
+
       {/* ───── Частые поломки ───── */}
       <section className="band band--tight band--soft">
         <div className="wrap">
-          <p className="eyebrow">{t.chipsTitle}</p>
-          <div className="chips">
+          <p className="eyebrow" data-reveal>
+            {t.chipsTitle}
+          </p>
+          <div className="chips" data-reveal="stagger">
             {t.chips.map((c) => (
               <Link key={c} href={`/request?problem=${encodeURIComponent(c)}`} className="chip">
                 {c}
@@ -132,10 +148,10 @@ export function HomePage() {
       {/* ───── Промо 1: бесплатная диагностика ───── */}
       <section className="band">
         <div className="wrap promo">
-          <div className="promo__art">
+          <div className="promo__art" data-parallax="16">
             <PromoArt variant={0} />
           </div>
-          <div className="promo__body">
+          <div className="promo__body" data-reveal>
             <p className="eyebrow">{t.promos[0].eyebrow}</p>
             <h2>{t.promos[0].t}</h2>
             <p>{t.promos[0].d}</p>
@@ -149,10 +165,10 @@ export function HomePage() {
       {/* ───── Промо 2: гарантия (чёрная полоса) ───── */}
       <section className="band band--dark">
         <div className="wrap promo promo--flip">
-          <div className="promo__art">
+          <div className="promo__art" data-parallax="16">
             <PromoArt variant={1} />
           </div>
-          <div className="promo__body">
+          <div className="promo__body" data-reveal>
             <p className="eyebrow">{t.promos[1].eyebrow}</p>
             <h2>{t.promos[1].t}</h2>
             <p>{t.promos[1].d}</p>
@@ -166,11 +182,11 @@ export function HomePage() {
       {/* ───── Услуги ───── */}
       <section className="band band--soft">
         <div className="wrap">
-          <div className="band__head">
+          <div className="band__head" data-reveal>
             <h2>{t.servicesTitle}</h2>
             <p>{t.servicesText}</p>
           </div>
-          <div className="services">
+          <div className="services" data-reveal="stagger">
             {t.services.map((s) => (
               <article key={s.t} className="service">
                 <span className="service__icon">
@@ -187,10 +203,10 @@ export function HomePage() {
       {/* ───── Как это работает ───── */}
       <section className="band">
         <div className="wrap">
-          <div className="band__head">
+          <div className="band__head" data-reveal>
             <h2>{t.stepsTitle}</h2>
           </div>
-          <ol className="steps">
+          <ol className="steps" data-reveal="stagger">
             {t.steps.map((s, i) => (
               <li key={s.t} className="step">
                 <p className="step__num">{String(i + 1).padStart(2, '0')}</p>
@@ -205,13 +221,16 @@ export function HomePage() {
       {/* ───── Вопросы и ответы ───── */}
       <section className="band band--soft">
         <div className="wrap">
-          <div className="band__head">
+          <div className="band__head" data-reveal>
             <h2>{t.faqTitle}</h2>
           </div>
-          <div className="faq">
+          <div className="faq" data-reveal="stagger">
             {t.faq.map((f) => (
               <details key={f.q}>
-                <summary>{f.q}</summary>
+                <summary>
+                  {f.q}
+                  <span className="faq__mark" aria-hidden="true" />
+                </summary>
                 <p>{f.a}</p>
               </details>
             ))}
@@ -222,10 +241,10 @@ export function HomePage() {
       {/* ───── Контакты ───── */}
       <section className="band" id="contacts">
         <div className="wrap">
-          <div className="band__head">
+          <div className="band__head" data-reveal>
             <h2>{t.contactsTitle}</h2>
           </div>
-          <div className="contacts">
+          <div className="contacts" data-reveal="stagger">
             <div className="contacts__card">
               <p className="contacts__label">{t.addressLabel}</p>
               <p className="contacts__value">{t.address}</p>
@@ -252,7 +271,7 @@ export function HomePage() {
 
       {/* ───── Призыв ───── */}
       <section className="band band--dark band--tight">
-        <div className="wrap ctaband">
+        <div className="wrap ctaband" data-reveal>
           <div>
             <h2>{t.ctaBandTitle}</h2>
             <p>{t.ctaBandText}</p>

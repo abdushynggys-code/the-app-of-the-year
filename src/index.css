@@ -39,6 +39,22 @@
   --shadow-soft: rgba(0, 0, 0, 0.12) 0 4px 16px 0;
 
   --wrap: 1200px;
+
+  /* Высота шапки. Она липкая, и под неё подстраивается панель в админке.
+     Считается так: 16 + 46 (кнопка) + 16 + 1 (линия снизу). */
+  --header-h: 79px;
+
+  /* ── Движение. Все анимации сайта берут время и кривую отсюда ──
+     Правило: сайт двигается в ответ на действие человека, а не сам по себе.
+     Больше 400ms не ставим — начинает казаться, что сайт тормозит. */
+  --t-fast: 120ms; /* нажатие */
+  --t: 180ms; /* фокус, смена подписи, наведение */
+  --t-slow: 260ms; /* то, что реально едет: таблетка вкладок, крестик FAQ */
+  --t-page: 320ms; /* появление новой страницы и блоков при прокрутке */
+
+  /* Быстро стартует, мягко тормозит. Никаких пружин — палитра спокойная,
+     движение тоже. Одна кривая на весь сайт. */
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 * {
@@ -180,7 +196,8 @@ p {
   font-weight: 500;
   line-height: 20px;
   cursor: pointer;
-  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+  transition: background-color var(--t) var(--ease-out), color var(--t) var(--ease-out),
+    border-color var(--t) var(--ease-out), transform var(--t-fast) var(--ease-out);
   white-space: nowrap;
 }
 
@@ -243,14 +260,12 @@ p {
   gap: var(--s-md);
 }
 
+/* Наведение для .textlink живёт в motion.css — линия там становится толще,
+   а не бледнее: на чёрно-белом сайте выцветание читается как «выключено». */
 .textlink {
   font-weight: 500;
   border-bottom: 1px solid currentColor;
   padding-bottom: 1px;
-}
-
-.textlink:hover {
-  color: var(--body);
 }
 
 .ghost {
@@ -314,9 +329,7 @@ p {
   border-bottom: 2px solid transparent;
 }
 
-.nav__link:hover {
-  color: var(--body);
-}
+/* Наведение для .nav__link — в motion.css: под пунктом выезжает чёрта. */
 
 .nav__link.is-active {
   border-bottom-color: var(--ink);
@@ -426,16 +439,21 @@ p {
   padding: var(--s-lg);
 }
 
+/* Одна серая дорожка, внутри неё ездит чёрная таблетка — так же,
+   как переключатель языка в шапке. Сама таблетка описана в motion.css. */
 .tabs {
   display: flex;
-  gap: var(--s-sm);
+  gap: 0;
+  padding: 4px;
+  background: var(--canvas-soft);
+  border-radius: 36px;
   margin-bottom: var(--s-lg);
 }
 
 .tabs button {
   flex: 1;
   border: none;
-  background: var(--canvas-soft);
+  background: transparent;
   border-radius: 36px;
   padding: 12px;
   font-family: inherit;
@@ -444,15 +462,10 @@ p {
   line-height: 20px;
   color: var(--body);
   cursor: pointer;
-  transition: background-color 0.15s, color 0.15s;
-}
-
-.tabs button:hover {
-  background: var(--pressed);
+  transition: color 0.15s;
 }
 
 .tabs button.is-active {
-  background: var(--ink);
   color: var(--on-ink);
 }
 
@@ -518,6 +531,7 @@ p {
   display: flex;
   flex-wrap: wrap;
   gap: var(--s-md);
+  --reveal-step: 35ms; /* чипов восемь и они мелкие — лесенка чаще */
 }
 
 .chip {
@@ -531,7 +545,7 @@ p {
   line-height: 20px;
   color: var(--ink);
   cursor: pointer;
-  transition: background-color 0.15s;
+  transition: background-color var(--t) var(--ease-out), transform var(--t-fast) var(--ease-out);
 }
 
 .chip:hover {
@@ -555,6 +569,7 @@ p {
 .promo__art {
   background: var(--canvas-soft);
   border-radius: var(--r-xl);
+  overflow: hidden; /* рисунок плывёт внутри рамки — страхуем скругление */
   aspect-ratio: 4 / 3;
   display: grid;
   place-items: center;
@@ -618,11 +633,15 @@ p {
   margin-bottom: var(--s-lg);
 }
 
-.service h3 {
+.service h3,
+.step h3,
+.proof h3 {
   margin-bottom: var(--s-sm);
 }
 
-.service p {
+.service p,
+.step p,
+.proof p {
   font-size: 14px;
   line-height: 20px;
   color: var(--body);
@@ -651,16 +670,6 @@ p {
 
 .band--dark .step__num {
   border-color: var(--ink-elevated);
-}
-
-.step h3 {
-  margin-bottom: var(--s-sm);
-}
-
-.step p {
-  font-size: 14px;
-  line-height: 20px;
-  color: var(--body);
 }
 
 .band--dark .step p {
@@ -694,17 +703,37 @@ p {
   display: none;
 }
 
-.faq summary::after {
-  content: '+';
+/* Плюс собран из двух полосок, а не из глифа «+»: глиф повернуть нельзя,
+   а полоску можно — поэтому плюс честно превращается в минус. */
+.faq__mark {
+  position: relative;
   flex: none;
-  font-size: 22px;
-  font-weight: 400;
-  line-height: 1;
-  color: var(--body);
+  width: 14px;
+  height: 14px;
 }
 
-.faq details[open] summary::after {
-  content: '–';
+.faq__mark::before,
+.faq__mark::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  margin-top: -1px;
+  border-radius: 2px;
+  background: var(--body);
+  transition: transform var(--t-slow) var(--ease-out);
+}
+
+/* Вторая полоска стоит вертикально — вместе они дают плюс */
+.faq__mark::after {
+  transform: rotate(90deg);
+}
+
+/* Открыли вопрос — вертикальная ложится на горизонтальную, остаётся минус */
+.faq details[open] .faq__mark::after {
+  transform: rotate(0deg);
 }
 
 .faq p {
@@ -715,10 +744,34 @@ p {
 
 /* ─────────────── Контакты ─────────────── */
 
-.contacts {
+.contacts,
+.proof {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: var(--s-lg);
+}
+
+/* ─────────────── Хук под обложкой ─────────────── */
+
+/* Четыре обещания. Без заливки и скруглений: ниже уже идут три сетки
+   серых карточек подряд, четвёртая слилась бы с ними. Здесь работает
+   волосок сверху и воздух — так полоса читается как продолжение обложки. */
+.proof {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.proof li {
+  border-top: 1px solid var(--hairline);
+  padding-top: var(--s-lg);
+}
+
+.proof__src {
+  margin-top: var(--s-2xl);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--body);
 }
 
 .contacts__card {
@@ -1094,6 +1147,11 @@ p {
 /* ─────────────── Телефон ─────────────── */
 
 @media (max-width: 760px) {
+  /* Шапка становится ниже: 12 + 46 + 12 + 1 */
+  :root {
+    --header-h: 71px;
+  }
+
   .wrap {
     padding-inline: var(--s-lg);
   }
@@ -1366,7 +1424,7 @@ p {
 /* Панель групповых действий липнет к верху, чтобы не терялась при прокрутке */
 .bulkbar {
   position: sticky;
-  top: 72px;
+  top: var(--header-h);
   z-index: 10;
   display: flex;
   gap: var(--s-md);
@@ -1690,9 +1748,5 @@ p {
   .reqrow__summary {
     grid-template-columns: 1fr;
     gap: 6px;
-  }
-
-  .bulkbar {
-    top: 64px;
   }
 }

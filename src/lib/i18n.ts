@@ -38,6 +38,11 @@ export type Dict = {
   heroTitle: string;
   heroText: string;
 
+  proofEyebrow: string;
+  proofTitle: string;
+  proof: Pair[];
+  proofSrc: string;
+
   cardTabRepair: string;
   cardTabTrack: string;
   cardDevice: string;
@@ -245,6 +250,28 @@ export const DICT: Record<Lang, Dict> = {
     heroTitle: 'Ремонт, пока вы ждёте',
     heroText:
       'Телефоны, планшеты, часы и ноутбуки в Астане. Диагностика бесплатно и без записи — смотрим при вас.',
+
+    proofEyebrow: 'Прежде чем решать',
+    proofTitle: 'Сначала вы узнаёте цену — потом решаете',
+    proof: [
+      {
+        t: 'Диагностика бесплатная',
+        d: 'Без записи, при вас. Назовём точную сумму до начала работы. Не устроит — заберёте устройство и не заплатите ничего.',
+      },
+      {
+        t: 'Год гарантии',
+        d: 'Гарантия закрывает и саму деталь, и работу мастера. Если та же проблема вернётся в течение года — приносите, доделаем без доплат.',
+      },
+      {
+        t: 'Простое — за 30–60 минут',
+        d: 'Экран или батарею меняем, пока вы ждёте. По сложному ремонту назовём срок сразу после диагностики.',
+      },
+      {
+        t: 'Видно, что происходит',
+        d: 'Оставили заявку на сайте — получите код. По нему в любой момент видно, на каком этапе ваше устройство.',
+      },
+    ],
+    proofSrc: 'Отзывы и оценка — на 2ГИС:',
 
     cardTabRepair: 'Ремонт',
     cardTabTrack: 'Проверить статус',
@@ -542,6 +569,28 @@ export const DICT: Record<Lang, Dict> = {
     heroText:
       'Астанада телефон, планшет, сағат және ноутбук жөндеу. Диагностика тегін әрі жазылусыз — көзіңізше қараймыз.',
 
+    proofEyebrow: 'Шешім қабылдар алдында',
+    proofTitle: 'Алдымен бағасын білесіз — сосын шешесіз',
+    proof: [
+      {
+        t: 'Диагностика тегін',
+        d: 'Жазылусыз, көзіңізше. Жұмысқа кіріспей тұрып нақты сомасын айтамыз. Келіспесеңіз — құрылғыңызды алып кетесіз, ештеңе төлемейсіз.',
+      },
+      {
+        t: 'Бір жыл кепілдік',
+        d: 'Кепілдік бөлшекті де, шебердің жұмысын да қамтиды. Сол мәселе жыл ішінде қайталанса — әкеліңіз, қосымша ақысыз түзетеміз.',
+      },
+      {
+        t: 'Қарапайымы — 30–60 минутта',
+        d: 'Экран мен батареяны сіз күте тұрғанда ауыстырамыз. Күрделі жөндеудің мерзімін диагностикадан кейін бірден айтамыз.',
+      },
+      {
+        t: 'Не болып жатқаны көрініп тұрады',
+        d: 'Сайтқа өтінім қалдырсаңыз — код беріледі. Сол код арқылы құрылғыңыз қай кезеңде екенін кез келген уақытта көресіз.',
+      },
+    ],
+    proofSrc: 'Пікірлер мен баға — 2ГИС-те:',
+
     cardTabRepair: 'Жөндеу',
     cardTabTrack: 'Күйін тексеру',
     cardDevice: 'Құрылғы',
@@ -837,6 +886,28 @@ export const DICT: Record<Lang, Dict> = {
     heroTitle: 'Repairs while you wait',
     heroText:
       'Phones, tablets, watches and laptops in Astana. Diagnostics are free and need no appointment — we look at your device with you.',
+
+    proofEyebrow: 'Before you decide',
+    proofTitle: 'You learn the price first, then you decide',
+    proof: [
+      {
+        t: 'Diagnostics are free',
+        d: 'No appointment, and we look with you. We quote the exact sum before any work starts. If it does not suit you, take the device and pay nothing.',
+      },
+      {
+        t: 'One year of warranty',
+        d: 'The warranty covers the part and the labour alike. If the same problem comes back within the year, bring it in and we put it right at no extra cost.',
+      },
+      {
+        t: 'Simple jobs in 30–60 minutes',
+        d: 'We change a screen or a battery while you wait. For a complex repair we give the timeline right after diagnostics.',
+      },
+      {
+        t: 'You can see what is happening',
+        d: 'Leave a request on the site and you get a code. It shows which stage your device is at, any time you check.',
+      },
+    ],
+    proofSrc: 'Reviews and rating live on 2GIS:',
 
     cardTabRepair: 'Repair',
     cardTabTrack: 'Track repair',
