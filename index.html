@@ -29,10 +29,20 @@
     <meta name="twitter:card" content="summary" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Шрифт не должен задерживать первую отрисовку. Обычный rel="stylesheet"
+         блокирует её до ответа Google: на мобильном интернете это дороже,
+         чем все анимации сайта вместе взятые. Хитрость с media="print":
+         браузер скачивает файл, но не ждёт его, а после загрузки правило
+         включается для экрана. -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
+    </noscript>
   </head>
   <body>
     <div id="root"></div>

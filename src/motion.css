@@ -505,7 +505,10 @@
 
 .hero__title span {
   animation: hero-word var(--t-glide) var(--ease-glide) backwards;
-  animation-delay: calc(var(--w, 0) * 80ms);
+  /* Потолок обязателен: в английском заголовке шесть слов, и последнее
+     ждало бы 400ms. Заголовок — самый крупный элемент экрана, и пока он
+     не показан, браузер считает страницу незагруженной. */
+  animation-delay: min(calc(var(--w, 0) * 80ms), 240ms);
 }
 
 @keyframes hero-word {
@@ -575,7 +578,17 @@
   border-radius: 50%;
   background: radial-gradient(circle, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0) 70%);
   pointer-events: none;
-  animation: breathe 9s ease-in-out infinite;
+  /* Один список, а не второе правило animation: отдельное правило затёрло бы
+     дыхание. glow-in стоит последним — первые 1.4s главный он. */
+  animation: breathe 9s ease-in-out infinite, glow-in 1400ms var(--ease-glide) backwards;
+}
+
+/* Свет один раз приезжает из-за правого края. translate, а не transform:
+   в transform сидит масштаб дыхания, а opacity — его же яркость. */
+@keyframes glow-in {
+  from {
+    translate: 26% -10%;
+  }
 }
 
 @keyframes breathe {
@@ -608,6 +621,167 @@
   }
   50% {
     translate: 0 -8px;
+  }
+}
+
+/* ============================================================
+   6 · ВКЛЮЧЕНИЕ ЭКРАНА
+
+   Сайт называется RESET, и первое, что он делает, — включается.
+   Тонкая линия света растягивается поперёк чёрной обложки, замирает
+   на мгновение и раскрывается: две чёрные створки разъезжаются вверх
+   и вниз и открывают заголовок, который к этому моменту уже проявляется.
+
+   Три правила, на которых всё держится:
+   1. Слой живёт только внутри .hero. Шапка (z-index 30) выше него и
+      остаётся нажимаемой, а overflow: hidden у .hero обрезает створки.
+   2. Покой — это «уже открыто»: створки стоят за краями, линии нет.
+      Анимация лишь отматывает их назад. Если она не сработает, человек
+      увидит обычную обложку, а не чёрный экран.
+   3. Рисуется один раз за вкладку (useBootOnce), кликов не ловит.
+   ============================================================ */
+
+.hero > .hero__boot {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  /* Ни клик, ни выделение текста слой не перехватывает */
+  pointer-events: none;
+  /* Где проходит разрез. Одно число двигает и линию, и обе створки.
+     30% — выше заголовка: створка уезжает вверх и открывает его целиком,
+     а не разрезает пополам. */
+  --split: 30%;
+}
+
+/* Створки того же цвета, что и обложка: чёрное по чёрному не видно,
+   видно только текст, который они открывают. +1px — чтобы на дробных
+   высотах по стыку не осталось светлого волоска. */
+.hero > .hero__boot::before,
+.hero > .hero__boot::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: var(--ink);
+}
+
+.hero > .hero__boot::before {
+  top: 0;
+  height: calc(var(--split) + 1px);
+  /* Покой: створка уже за верхним краем */
+  transform: translateY(-100%);
+}
+
+.hero > .hero__boot::after {
+  bottom: 0;
+  height: calc(100% - var(--split) + 1px);
+  transform: translateY(100%);
+}
+
+/* Линия света. z-index обязателен: ::after рисуется после обычных детей,
+   и без него нижняя створка накрывала бы половину линии. */
+.hero__boot-line {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  top: var(--split);
+  height: 2px;
+  margin-top: -1px;
+  /* Края растушёваны фоном, а не тенью: box-shadow на слое, который тянут
+     через scaleX, сплющивается вместе с ним — размытия не видно, а его
+     перерисовка и есть то, на чём спотыкается слабый телефон. */
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    var(--on-ink) 12%,
+    var(--on-ink) 88%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  /* Покой: линии нет */
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.hero__boot-line {
+  animation: boot-line 400ms var(--ease-out);
+}
+
+@keyframes boot-line {
+  /* Точка света в середине панели */
+  0% {
+    opacity: 0;
+    transform: scaleX(0.04);
+  }
+  10% {
+    opacity: 1;
+    transform: scaleX(0.05);
+  }
+  /* Дотянулась до краёв */
+  37.5% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  /* Пауза 120ms. Ради неё всё и затевалось: без неё это просто вытирание
+     из центра, а с ней экран будто ловит картинку. Четыре кадра заметить
+     невозможно, поэтому пауза именно такой длины. */
+  67.5% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(1);
+  }
+}
+
+/* Створки трогаются ровно в конце паузы. Только from: куда ехать, браузер
+   берёт из обычного состояния выше. backwards, а не forwards — створка
+   держится лишь во время задержки и после анимации ничего не удерживает. */
+.hero > .hero__boot::before {
+  animation: boot-up 380ms var(--ease-glide) 270ms backwards;
+}
+
+.hero > .hero__boot::after {
+  animation: boot-down 380ms var(--ease-glide) 270ms backwards;
+}
+
+@keyframes boot-up {
+  from {
+    transform: translateY(0);
+  }
+}
+
+@keyframes boot-down {
+  from {
+    transform: translateY(0);
+  }
+}
+
+/* Содержимое обложки ждёт створок: слова начинают проявляться ещё под
+   закрытой створкой и выходят из-под уезжающего края уже наполовину
+   видимыми — включение и обычное появление читаются одним движением. */
+.hero.is-booting .hero__title span {
+  animation-delay: calc(170ms + min(calc(var(--w, 0) * 80ms), 240ms));
+}
+
+.hero.is-booting .hero__text {
+  animation-delay: 430ms;
+}
+
+.hero.is-booting .hero__cta {
+  animation-delay: 550ms;
+}
+
+.hero.is-booting .herocard {
+  animation-delay: 350ms;
+}
+
+/* Ниже 1001px обложка встаёт в один столбец (index.css) — разрез поднимаем,
+   иначе линия прошла бы прямо по карточке заявки. */
+@media (max-width: 1000px) {
+  .hero > .hero__boot {
+    --split: 22%;
   }
 }
 
@@ -661,6 +835,9 @@
   /* Бесконечные анимации гасим целиком: ускорять их до нуля мало,
      они бы всё равно крутились в фоне. */
   .hero::before,
+  .hero__boot-line,
+  .hero > .hero__boot::before,
+  .hero > .hero__boot::after,
   .promo__art .art,
   .hero__title span,
   .hero__text,

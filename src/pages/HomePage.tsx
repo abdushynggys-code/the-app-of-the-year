@@ -5,12 +5,16 @@ import { SHOP } from '../lib/shop';
 import { Icon, PromoArt } from '../components/Art';
 import { ProofStrip } from '../components/ProofStrip';
 import { BrandStrip } from '../components/BrandStrip';
+import { useBootOnce } from '../lib/motion';
 
 // Главная: обложка с карточкой-формой, чипы, промо-полосы,
 // услуги, шаги, вопросы-ответы и контакты.
 export function HomePage() {
   const { t } = useLang();
   const [, navigate] = useLocation();
+  // Включение экрана: один раз за вкладку и только тем, кто не просил
+  // систему уменьшить движение.
+  const boot = useBootOnce();
 
   const [tab, setTab] = useState<'repair' | 'track'>('repair');
   const [device, setDevice] = useState('');
@@ -43,7 +47,14 @@ export function HomePage() {
   return (
     <main>
       {/* ───── Обложка: чёрная панель ───── */}
-      <section className="hero band--dark">
+      <section className={boot ? 'hero band--dark is-booting' : 'hero band--dark'}>
+        {/* Створки и линия света. Слой чисто декоративный: кликов не ловит,
+            для скринридера его нет, в покое створки уже разъехались. */}
+        {boot && (
+          <div className="hero__boot" aria-hidden="true">
+            <span className="hero__boot-line" />
+          </div>
+        )}
         <div className="wrap hero__grid">
           <div data-parallax="-10">
             {/* Каждое слово — свой элемент, чтобы они вставали по очереди */}
