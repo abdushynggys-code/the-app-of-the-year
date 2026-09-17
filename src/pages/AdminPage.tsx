@@ -4,6 +4,7 @@ import { SupabaseSetupMessage } from '../components/SupabaseSetupMessage';
 import { Auth } from '../components/Auth';
 import { useLang, STEP_ORDER, type Status, type StepKey } from '../lib/i18n';
 import { AdminNav, type AdminTab } from '../components/AdminNav';
+import { canWhatsApp, fillTemplate, waLink } from '../lib/whatsapp';
 
 type Req = {
   id: string;
@@ -857,6 +858,31 @@ export function AdminPage() {
                             {t.admin.email}:{' '}
                             <a className="textlink" href={`mailto:${r.email}`}>
                               {r.email}
+                            </a>
+                          </p>
+                        )}
+
+                        {/* Готовое сообщение клиенту: мастер только нажимает «отправить».
+                            Текст зависит от статуса — чаще всего это «готов, забирайте». */}
+                        {canWhatsApp(r.phone) && (
+                          <p>
+                            <a
+                              className="btn btn--subtle"
+                              href={waLink(
+                                r.phone,
+                                fillTemplate(
+                                  r.status === 'ready' ? t.admin.waReady : t.admin.waWork,
+                                  {
+                                    name: r.name,
+                                    device: r.model ? `${r.device} ${r.model}` : r.device,
+                                    code: r.track_code,
+                                  },
+                                ),
+                              )}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              {t.admin.waSend}
                             </a>
                           </p>
                         )}

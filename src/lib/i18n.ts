@@ -177,6 +177,9 @@ export type Dict = {
     email: string;
     model: string;
     problem: string;
+    waSend: string;
+    waReady: string;
+    waWork: string;
     statusLabel: string;
     saving: string;
     saved: string;
@@ -515,6 +518,11 @@ export const DICT: Record<Lang, Dict> = {
       email: 'Почта',
       model: 'Модель',
       problem: 'Проблема',
+      waSend: 'Написать в WhatsApp',
+      waReady:
+        'Здравствуйте, {name}! Ваш {device} готов — можно забирать. Мы на Конаева 35/1, ежедневно с 10:00 до 20:00. Код заявки {code}.',
+      waWork:
+        'Здравствуйте, {name}! Пишем по заявке {code} — {device}.',
       statusLabel: 'Статус',
       saving: 'Сохраняем…',
       saved: 'Сохранено',
@@ -852,6 +860,11 @@ export const DICT: Record<Lang, Dict> = {
       email: 'Пошта',
       model: 'Моделі',
       problem: 'Мәселе',
+      waSend: 'WhatsApp-қа жазу',
+      waReady:
+        'Сәлеметсіз бе, {name}! {device} дайын — ала кетуіңізге болады. Біз Қонаев 35/1 мекенжайындамыз, күн сайын 10:00-ден 20:00-ге дейін. Өтінім коды {code}.',
+      waWork:
+        'Сәлеметсіз бе, {name}! {code} өтінімі бойынша жазып отырмыз — {device}.',
       statusLabel: 'Күйі',
       saving: 'Сақталуда…',
       saved: 'Сақталды',
@@ -1189,6 +1202,11 @@ export const DICT: Record<Lang, Dict> = {
       email: 'Email',
       model: 'Model',
       problem: 'Problem',
+      waSend: 'Message on WhatsApp',
+      waReady:
+        'Hello {name}! Your {device} is ready for pickup. We are at Konaev 35/1, every day from 10:00 to 20:00. Request code {code}.',
+      waWork:
+        'Hello {name}! Writing about request {code} — {device}.',
       statusLabel: 'Status',
       saving: 'Saving…',
       saved: 'Saved',
