@@ -126,7 +126,13 @@ export type Dict = {
   repairSteps: Record<StepKey, string>;
   trackProgress: string;
 
+  fLoginTitle: string;
+  fLoginWhy: string;
+
   auth: {
+    google: string;
+    googleHint: string;
+    or: string;
     signin: string;
     signup: string;
     email: string;
@@ -456,7 +462,14 @@ export const DICT: Record<Lang, Dict> = {
     },
     trackProgress: 'Ход ремонта',
 
+    fLoginTitle: 'Сначала войдите',
+    fLoginWhy:
+      'Тогда все ваши ремонты будут в одном месте — с любого телефона и компьютера. Статус по коду можно смотреть и без входа.',
+
     auth: {
+      google: 'Войти через Google',
+      googleHint: 'Вход через Google сейчас недоступен. Попробуйте по почте и паролю.',
+      or: 'или',
       signin: 'Вход',
       signup: 'Регистрация',
       email: 'Email',
@@ -786,7 +799,14 @@ export const DICT: Record<Lang, Dict> = {
     },
     trackProgress: 'Жөндеу барысы',
 
+    fLoginTitle: 'Алдымен кіріңіз',
+    fLoginWhy:
+      'Сонда барлық жөндеулеріңіз бір жерде болады — кез келген телефон мен компьютерден. Код арқылы күйін кірмей-ақ көруге болады.',
+
     auth: {
+      google: 'Google арқылы кіру',
+      googleHint: 'Google арқылы кіру қазір қолжетімсіз. Пошта мен құпиясөзді қолданып көріңіз.',
+      or: 'немесе',
       signin: 'Кіру',
       signup: 'Тіркелу',
       email: 'Email',
@@ -1116,7 +1136,14 @@ export const DICT: Record<Lang, Dict> = {
     },
     trackProgress: 'Repair progress',
 
+    fLoginTitle: 'Sign in first',
+    fLoginWhy:
+      'Then all your repairs stay in one place, on any phone or computer. You can still check a status by code without signing in.',
+
     auth: {
+      google: 'Continue with Google',
+      googleHint: 'Google sign-in is unavailable right now. Try email and password instead.',
+      or: 'or',
       signin: 'Sign in',
       signup: 'Create account',
       email: 'Email',

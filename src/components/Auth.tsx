@@ -14,6 +14,17 @@ export function Auth() {
 
   if (!isSupabaseConfigured) return <SupabaseSetupMessage />;
 
+  // Вход через Google — один тап вместо придумывания пароля.
+  // Возвращаемся на ту же страницу, чтобы не терять заполненную форму.
+  async function signInGoogle() {
+    setMessage('');
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.href },
+    });
+    if (error) setMessage(t.auth.googleHint);
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
@@ -41,6 +52,12 @@ export function Auth() {
       <h3 style={{ marginBottom: 16 }}>
         {mode === 'signin' ? t.auth.signin : t.auth.signup}
       </h3>
+
+      <button className="btn btn--secondary btn--block" type="button" onClick={signInGoogle}>
+        {t.auth.google}
+      </button>
+
+      <p className="auth__or">{t.auth.or}</p>
 
       <form onSubmit={handleSubmit} className="form">
         <label className="field">

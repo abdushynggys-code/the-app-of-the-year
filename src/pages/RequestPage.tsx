@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'wouter';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { SupabaseSetupMessage } from '../components/SupabaseSetupMessage';
+import { Auth } from '../components/Auth';
 import { useLang } from '../lib/i18n';
 import { SHOP } from '../lib/shop';
 
@@ -31,10 +32,51 @@ export function RequestPage() {
   const [code, setCode] = useState('');
   const [copied, setCopied] = useState(false);
 
+  // null — ещё проверяем, '' — гость, строка — вошедший.
+  const [account, setAccount] = useState<string | null>(null);
+  const [checked, setChecked] = useState(false);
+
+  // Заявку принимаем только от вошедшего: тогда она привязана к аккаунту
+  // и человек видит все свои ремонты с любого устройства.
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+
+    supabase.auth.getSession().then(({ data }) => {
+      setAccount(data.session?.user.email ?? null);
+      setChecked(true);
+    });
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setAccount(session?.user.email ?? null);
+      setChecked(true);
+    });
+
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
   if (!isSupabaseConfigured) {
     return (
       <main className="wrap wrap--narrow page">
         <SupabaseSetupMessage />
+      </main>
+    );
+  }
+
+  // Пока проверяем сессию, форму не показываем: иначе она успевает мигнуть
+  // и смениться окном входа.
+  function loginGate() {
+    return (
+      <main className="wrap wrap--narrow page">
+        <div className="page__head">
+          <h1>{t.fLoginTitle}</h1>
+          <p>{t.fLoginWhy}</p>
+        </div>
+        <Auth />
+        <p className="form__hint" style={{ marginTop: 24 }}>
+          <Link href="/track" className="textlink">
+            {t.nav.track}
+          </Link>
+        </p>
       </main>
     );
   }
@@ -101,6 +143,12 @@ export function RequestPage() {
     setModel('');
     setProblem('');
   }
+
+  // Ждём ответа о сессии — иначе форма мигает и сменяется окном входа
+  if (!checked) return <main className="wrap wrap--narrow page" />;
+
+  // Код уже получен — экран успеха показываем в любом случае
+  if (!account && !code) return loginGate();
 
   // Экран «заявка принята»
   if (code) {

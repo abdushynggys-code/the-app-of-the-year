@@ -3,6 +3,7 @@ import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { SupabaseSetupMessage } from '../components/SupabaseSetupMessage';
 import { Auth } from '../components/Auth';
 import { useLang, STEP_ORDER, type Status, type StepKey } from '../lib/i18n';
+import { AdminNav, type AdminTab } from '../components/AdminNav';
 
 type Req = {
   id: string;
@@ -64,7 +65,7 @@ export function AdminPage() {
   const [addingEmail, setAddingEmail] = useState(false);
   const [dbError, setDbError] = useState('');
   const [googleError, setGoogleError] = useState('');
-  const [tab, setTab] = useState<'active' | 'history' | 'reports' | 'access'>('active');
+  const [tab, setTab] = useState<AdminTab>('active');
 
   const [requests, setRequests] = useState<Req[]>([]);
   const [reports, setReports] = useState<Report[]>([]);
@@ -406,7 +407,7 @@ export function AdminPage() {
     });
   }
 
-  function switchTab(next: 'active' | 'history' | 'reports' | 'access') {
+  function switchTab(next: AdminTab) {
     setTab(next);
     setPicked(new Set());
     setStatusFilter('');
@@ -536,29 +537,33 @@ export function AdminPage() {
   const pendingRows = access.filter((a) => a.status === 'pending');
   const approvedRows = access.filter((a) => a.status === 'approved');
 
+  function refreshAll() {
+    void loadRequests(0);
+    void loadStats();
+    void loadReports();
+  }
+
   return (
-    <main className="wrap page">
-      <div className="admin__head">
-        <div>
-          <h1>{t.admin.title}</h1>
-          <p className="form__hint">
-            {email} · {isOwner ? t.admin.roleOwner : t.admin.roleAdmin} ·{' '}
-            <button className="ghost" onClick={() => supabase.auth.signOut()}>
-              {t.signOut}
-            </button>
-          </p>
-        </div>
-        <button
-          className="btn btn--secondary"
-          onClick={() => {
-            void loadRequests(0);
-            void loadStats();
-            void loadReports();
+    <main className="wrap page admin">
+      <div className="admin__shell">
+        <AdminNav
+          tab={tab}
+          onSwitch={switchTab}
+          counts={{
+            active: activeTotal,
+            history: doneTotal,
+            reports: newReports,
+            access: pendingRows.length,
           }}
-        >
-          {t.admin.refresh}
-        </button>
-      </div>
+          isOwner={isOwner}
+          email={email}
+          onSignOut={() => supabase.auth.signOut()}
+          onRefresh={refreshAll}
+        />
+
+        {/* key — чтобы раздел появлялся заново, а не подменялся молча */}
+        <section className="admin__body swap-in" key={tab}>
+          <h1 className="admin__title">{t.admin.title}</h1>
 
       {/* Счётчики заодно работают фильтром: нажал «Готово» — увидел только готовые */}
       {tab === 'active' && (
@@ -584,40 +589,6 @@ export function AdminPage() {
           ))}
         </div>
       )}
-
-      <div className="tabs" style={{ maxWidth: 620, marginBottom: 24 }}>
-        <button
-          type="button"
-          className={tab === 'active' ? 'is-active' : ''}
-          onClick={() => switchTab('active')}
-        >
-          {t.admin.tabRequests} ({activeTotal})
-        </button>
-        <button
-          type="button"
-          className={tab === 'history' ? 'is-active' : ''}
-          onClick={() => switchTab('history')}
-        >
-          {t.admin.tabHistory} ({doneTotal})
-        </button>
-        <button
-          type="button"
-          className={tab === 'reports' ? 'is-active' : ''}
-          onClick={() => switchTab('reports')}
-        >
-          {t.admin.tabReports} ({newReports})
-        </button>
-        {/* Раздавать доступы может только владелец */}
-        {isOwner && (
-          <button
-            type="button"
-            className={tab === 'access' ? 'is-active' : ''}
-            onClick={() => switchTab('access')}
-          >
-            {t.admin.tabAccess} ({pendingRows.length})
-          </button>
-        )}
-      </div>
 
       {tab === 'access' ? (
         <>
@@ -1021,8 +992,10 @@ export function AdminPage() {
               )}
             </article>
           ))}
-        </div>
-      )}
+            </div>
+          )}
+        </section>
+      </div>
     </main>
   );
 }
