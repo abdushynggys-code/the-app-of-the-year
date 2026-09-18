@@ -4,6 +4,8 @@ import { SupabaseSetupMessage } from '../components/SupabaseSetupMessage';
 import { Auth } from '../components/Auth';
 import { useLang, STEP_ORDER, type Status, type StepKey } from '../lib/i18n';
 import { AdminNav, type AdminTab } from '../components/AdminNav';
+import { AdminDeals } from '../components/AdminDeals';
+import { isLive, loadDeals, type Deal } from '../lib/deals';
 import { canWhatsApp, fillTemplate, waLink } from '../lib/whatsapp';
 
 type Req = {
@@ -70,6 +72,8 @@ export function AdminPage() {
 
   const [requests, setRequests] = useState<Req[]>([]);
   const [reports, setReports] = useState<Report[]>([]);
+  const [deals, setDeals] = useState<Deal[]>([]);
+  const [dealsError, setDealsError] = useState('');
   const [stats, setStats] = useState<Record<string, number>>({});
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -152,6 +156,7 @@ export function AdminPage() {
       if (row.role === 'owner') {
         void loadAccess();
         void loadAllowlist();
+        void loadDealList();
       }
     }
   }
@@ -259,6 +264,14 @@ export function AdminPage() {
       next[row.status] = Number(row.n);
     }
     setStats(next);
+  }
+
+  // true — вместе с выключенными и просроченными: владельцу нужно видеть
+  // всё, что он когда-то объявлял, а не только то, что висит на сайте.
+  async function loadDealList() {
+    const res = await loadDeals(true);
+    setDeals(res.deals);
+    setDealsError(res.error);
   }
 
   async function loadReports() {
@@ -542,6 +555,9 @@ export function AdminPage() {
   const activeTotal = ACTIVE.reduce((sum, s) => sum + (stats[s] ?? 0), 0);
   const doneTotal = stats.done ?? 0;
   const isOwner = me.role === 'owner';
+  // В меню показываем число действующих скидок, а не всех в списке:
+  // выключенная скидка на сайте не висит, и считать её нечестно.
+  const liveDeals = deals.filter(isLive).length;
   const pendingRows = access.filter((a) => a.status === 'pending');
   const approvedRows = access.filter((a) => a.status === 'approved');
 
@@ -549,6 +565,7 @@ export function AdminPage() {
     void loadRequests(0);
     void loadStats();
     void loadReports();
+    if (isOwner) void loadDealList();
   }
 
   return (
@@ -561,6 +578,7 @@ export function AdminPage() {
             active: activeTotal,
             history: doneTotal,
             reports: newReports,
+            deals: liveDeals,
             access: pendingRows.length,
           }}
           isOwner={isOwner}
@@ -598,7 +616,9 @@ export function AdminPage() {
         </div>
       )}
 
-      {tab === 'access' ? (
+      {tab === 'deals' ? (
+        <AdminDeals deals={deals} loadError={dealsError} reload={loadDealList} />
+      ) : tab === 'access' ? (
         <>
           <div className="block" style={{ marginBottom: 40 }}>
             <span className="block__label">{t.admin.accessPending}</span>

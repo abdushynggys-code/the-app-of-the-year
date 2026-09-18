@@ -593,6 +593,53 @@ p {
   background: var(--pressed);
 }
 
+/* ─────────────── Скидки ─────────────── */
+
+/* Что здесь написано, решает владелец в админке — сайт ничего не выдумывает.
+   Процент набран крупно и есть сама новость; на что и до какого числа —
+   уточнения к нему, поэтому мельче и серым. */
+.deals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--s-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  --reveal-step: 60ms;
+}
+
+.deal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s-sm) var(--s-md);
+  padding: var(--s-xl);
+  background: var(--canvas-soft);
+  border-radius: var(--r-lg);
+}
+
+.deal__off {
+  font-size: 28px;
+  line-height: 32px;
+  letter-spacing: -0.02em;
+  /* Цифры одной ширины: рядом стоящие карточки не «пляшут» */
+  font-variant-numeric: tabular-nums;
+}
+
+.deal__kinds {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* Приписка и срок уходят на свою строку — они читаются после, а не вместе */
+.deal__note,
+.deal__until {
+  flex-basis: 100%;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--body);
+}
+
 /* ─────────────── Промо-блоки ─────────────── */
 
 .promo {
@@ -1473,8 +1520,12 @@ p {
   transform: translateY(200%);
 }
 
-.adminnav[data-tab='access'] .adminnav__pill {
+.adminnav[data-tab='deals'] .adminnav__pill {
   transform: translateY(300%);
+}
+
+.adminnav[data-tab='access'] .adminnav__pill {
+  transform: translateY(400%);
 }
 
 .adminnav__item {
@@ -1660,6 +1711,27 @@ p {
   .admin__status select {
     width: 100%;
   }
+}
+
+/* ─────────────── Админка: форма новой скидки ─────────────── */
+
+.dealform {
+  display: grid;
+  gap: var(--s-lg);
+  max-width: 520px;
+}
+
+/* Процентов не бывает трёхзначных — поле во всю ширину только путало бы */
+.dealform__percent input {
+  max-width: 120px;
+}
+
+/* Виды техники выбираются чипами: их шесть, и столбик галочек оказался бы
+   длиннее самой формы. Выбранный чип заливается чёрным — как активный
+   пункт в остальной админке. */
+.chips--pick .chip.is-active {
+  background: var(--ink);
+  color: var(--on-ink);
 }
 
 /* ─────────────── Админка: счётчики, фильтры, заявки ─────────────── */

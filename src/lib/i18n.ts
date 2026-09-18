@@ -1,3 +1,4 @@
+import type { DealKind } from './deals';
 import { createContext, useContext } from 'react';
 
 // Три языка: русский, казахский, английский. Переключатель — в шапке сайта.
@@ -55,6 +56,12 @@ export type Dict = {
 
   chipsTitle: string;
   chips: string[];
+
+  // Полоса со скидками. Сами скидки объявляет владелец в админке —
+  // тут только подписи вокруг них.
+  dealsEyebrow: string;
+  dealsUntil: string;
+  kinds: Record<DealKind, string>;
 
   promos: Promo[];
 
@@ -249,6 +256,26 @@ export type Dict = {
     allowlistRemove: string;
     allowlistRemoveAsk: string;
     noPending: string;
+
+    tabDeals: string;
+    dealsHint: string;
+    dealPercent: string;
+    dealKinds: string;
+    dealNote: string;
+    dealNotePh: string;
+    dealEnds: string;
+    dealEndsHint: string;
+    dealAdd: string;
+    dealAdding: string;
+    dealEmpty: string;
+    dealPickKind: string;
+    dealOn: string;
+    dealOff: string;
+    dealHidden: string;
+    dealExpired: string;
+    dealDelete: string;
+    dealDeleteAsk: string;
+    dealNoTable: string;
   };
 
   backHome: string;
@@ -314,6 +341,17 @@ export const DICT: Record<Lang, Dict> = {
       'Апгрейд SSD',
       'Установка Windows',
     ],
+
+    dealsEyebrow: 'Сейчас со скидкой',
+    dealsUntil: 'до',
+    kinds: {
+      phone: 'Смартфоны',
+      tablet: 'Планшеты',
+      watch: 'Часы',
+      laptop: 'Ноутбуки',
+      pc: 'Компьютеры',
+      monitor: 'Мониторы',
+    },
 
     promos: [
       {
@@ -592,6 +630,26 @@ export const DICT: Record<Lang, Dict> = {
       allowlistRemove: 'Убрать',
       allowlistRemoveAsk: 'Убрать email из списка? У того, кто уже вошёл, доступ останется — его забирают отдельно.',
       noPending: 'Новых запросов нет.',
+
+      tabDeals: 'Скидки',
+      dealsHint: 'Скидка появится на главной странице сайта, как только вы её объявите.',
+      dealPercent: 'Скидка, %',
+      dealKinds: 'На что',
+      dealNote: 'Приписка',
+      dealNotePh: 'При замене экрана',
+      dealEnds: 'Последний день',
+      dealEndsHint: 'Можно не указывать — тогда скидка бессрочная.',
+      dealAdd: 'Объявить скидку',
+      dealAdding: 'Объявляем…',
+      dealEmpty: 'Скидок пока нет.',
+      dealPickKind: 'Отметьте хотя бы один вид техники.',
+      dealOn: 'Включить',
+      dealOff: 'Выключить',
+      dealHidden: 'выключена',
+      dealExpired: 'срок вышел',
+      dealDelete: 'Удалить',
+      dealDeleteAsk: 'Удалить эту скидку? Вернуть её можно будет только заново.',
+      dealNoTable: 'Таблица скидок ещё не создана в базе. Выполните в терминале: npm run db:push',
     },
 
     backHome: 'На главную',
@@ -656,6 +714,17 @@ export const DICT: Record<Lang, Dict> = {
       'SSD жаңарту',
       'Windows орнату',
     ],
+
+    dealsEyebrow: 'Қазір жеңілдікпен',
+    dealsUntil: 'дейін',
+    kinds: {
+      phone: 'Смартфондар',
+      tablet: 'Планшеттер',
+      watch: 'Сағаттар',
+      laptop: 'Ноутбуктер',
+      pc: 'Компьютерлер',
+      monitor: 'Мониторлар',
+    },
 
     promos: [
       {
@@ -934,6 +1003,26 @@ export const DICT: Record<Lang, Dict> = {
       allowlistRemove: 'Алып тастау',
       allowlistRemoveAsk: 'Email-ды тізімнен аласыз ба? Кіріп қойған адамның рұқсаты қалады — оны бөлек алады.',
       noPending: 'Жаңа сұраулар жоқ.',
+
+      tabDeals: 'Жеңілдіктер',
+      dealsHint: 'Жеңілдікті жарияласаңыз, ол сайттың басты бетінде көрінеді.',
+      dealPercent: 'Жеңілдік, %',
+      dealKinds: 'Не үшін',
+      dealNote: 'Қосымша жазба',
+      dealNotePh: 'Экран ауыстырғанда',
+      dealEnds: 'Соңғы күні',
+      dealEndsHint: 'Көрсетпесе де болады — онда жеңілдік мерзімсіз.',
+      dealAdd: 'Жеңілдік жариялау',
+      dealAdding: 'Жариялап жатырмыз…',
+      dealEmpty: 'Әзірге жеңілдік жоқ.',
+      dealPickKind: 'Кемінде бір техника түрін белгілеңіз.',
+      dealOn: 'Қосу',
+      dealOff: 'Өшіру',
+      dealHidden: 'өшірулі',
+      dealExpired: 'мерзімі бітті',
+      dealDelete: 'Жою',
+      dealDeleteAsk: 'Бұл жеңілдікті жоясыз ба? Қайтару үшін қайта жариялау керек.',
+      dealNoTable: 'Жеңілдіктер кестесі базада әлі жоқ. Терминалда орындаңыз: npm run db:push',
     },
 
     backHome: 'Басты бетке',
@@ -998,6 +1087,17 @@ export const DICT: Record<Lang, Dict> = {
       'SSD upgrade',
       'Windows install',
     ],
+
+    dealsEyebrow: 'On discount now',
+    dealsUntil: 'until',
+    kinds: {
+      phone: 'Phones',
+      tablet: 'Tablets',
+      watch: 'Watches',
+      laptop: 'Laptops',
+      pc: 'Computers',
+      monitor: 'Monitors',
+    },
 
     promos: [
       {
@@ -1276,6 +1376,26 @@ export const DICT: Record<Lang, Dict> = {
       allowlistRemove: 'Remove',
       allowlistRemoveAsk: 'Remove this email from the list? Anyone already signed in keeps access — revoke that separately.',
       noPending: 'No new requests.',
+
+      tabDeals: 'Deals',
+      dealsHint: 'A deal shows up on the site’s front page as soon as you announce it.',
+      dealPercent: 'Discount, %',
+      dealKinds: 'Applies to',
+      dealNote: 'Small print',
+      dealNotePh: 'On screen replacement',
+      dealEnds: 'Last day',
+      dealEndsHint: 'Leave empty and the deal runs until you switch it off.',
+      dealAdd: 'Announce deal',
+      dealAdding: 'Announcing…',
+      dealEmpty: 'No deals yet.',
+      dealPickKind: 'Tick at least one kind of device.',
+      dealOn: 'Switch on',
+      dealOff: 'Switch off',
+      dealHidden: 'switched off',
+      dealExpired: 'expired',
+      dealDelete: 'Delete',
+      dealDeleteAsk: 'Delete this deal? Bringing it back means announcing it again.',
+      dealNoTable: 'The deals table is not in the database yet. Run in the terminal: npm run db:push',
     },
 
     backHome: 'Back to home',

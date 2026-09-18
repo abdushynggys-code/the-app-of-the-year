@@ -5,6 +5,7 @@ import { SHOP } from '../lib/shop';
 import { Icon, PromoArt } from '../components/Art';
 import { ProofStrip } from '../components/ProofStrip';
 import { BrandStrip } from '../components/BrandStrip';
+import { DealsStrip } from '../components/DealsStrip';
 import { useBootOnce } from '../lib/motion';
 import { Boot } from '../components/Boot';
 
@@ -157,6 +158,9 @@ export function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ───── Скидки, если мастерская их объявила ───── */}
+      <DealsStrip />
 
       {/* ───── Промо 1: бесплатная диагностика ───── */}
       <section className="band">
