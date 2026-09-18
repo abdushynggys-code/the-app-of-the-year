@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useLang } from '../lib/i18n';
 import { SHOP } from '../lib/shop';
@@ -6,6 +6,7 @@ import { Icon, PromoArt } from '../components/Art';
 import { ProofStrip } from '../components/ProofStrip';
 import { BrandStrip } from '../components/BrandStrip';
 import { DealsStrip } from '../components/DealsStrip';
+import { loadSiteImages, type SiteImages } from '../lib/siteImages';
 import { useBootOnce } from '../lib/motion';
 import { Boot } from '../components/Boot';
 
@@ -17,6 +18,19 @@ export function HomePage() {
   // Включение экрана: один раз за вкладку и только тем, кто не просил
   // систему уменьшить движение.
   const boot = useBootOnce();
+
+  // Фотографии, которые владелец поставил в админке. Пока их нет, на сайте
+  // остаются рисунки — поэтому пустой ответ это норма, а не ошибка.
+  const [images, setImages] = useState<SiteImages>({});
+  useEffect(() => {
+    let alive = true;
+    void loadSiteImages().then((next) => {
+      if (alive) setImages(next);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const [tab, setTab] = useState<'repair' | 'track'>('repair');
   const [device, setDevice] = useState('');
@@ -52,6 +66,16 @@ export function HomePage() {
       <section className={boot ? 'hero band--dark is-booting' : 'hero band--dark'}>
         {/* Лампочки, линия света и створки. Слой чисто декоративный: кликов
             не ловит, для скринридера его нет, в покое створки уже разъехались. */}
+        {/* Фото обложки лежит под всем остальным и притушено: поверх него
+            идёт белый заголовок, и на светлом снимке его было бы не прочитать.
+            Пока фотографии нет, обложка остаётся просто чёрной. */}
+        {images.hero && (
+          <div
+            className="hero__photo"
+            style={{ backgroundImage: `url(${images.hero})` }}
+            aria-hidden="true"
+          />
+        )}
         {boot && <Boot />}
         <div className="wrap hero__grid">
           <div data-parallax="-10">
@@ -166,7 +190,7 @@ export function HomePage() {
       <section className="band">
         <div className="wrap promo">
           <div className="promo__art" data-parallax="16">
-            <PromoArt variant={0} />
+            <PromoArt variant={0} src={images.workbench} />
           </div>
           <div className="promo__body" data-reveal>
             <p className="eyebrow">{t.promos[0].eyebrow}</p>
@@ -183,7 +207,7 @@ export function HomePage() {
       <section className="band band--dark">
         <div className="wrap promo promo--flip">
           <div className="promo__art" data-parallax="16">
-            <PromoArt variant={1} />
+            <PromoArt variant={1} src={images.warranty} />
           </div>
           <div className="promo__body" data-reveal>
             <p className="eyebrow">{t.promos[1].eyebrow}</p>

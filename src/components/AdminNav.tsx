@@ -1,6 +1,6 @@
 import { useLang } from '../lib/i18n';
 
-export type AdminTab = 'active' | 'history' | 'reports' | 'deals' | 'access';
+export type AdminTab = 'active' | 'history' | 'reports' | 'deals' | 'images' | 'access';
 
 type Props = {
   tab: AdminTab;
@@ -26,6 +26,7 @@ export function AdminNav({ tab, onSwitch, counts, isOwner, email, onSignOut, onR
   // Скидки и доступы — решения владельца, мастеру этих разделов не видно
   if (isOwner) {
     items.push({ id: 'deals', label: t.admin.tabDeals });
+    items.push({ id: 'images', label: t.admin.tabImages });
     items.push({ id: 'access', label: t.admin.tabAccess });
   }
 

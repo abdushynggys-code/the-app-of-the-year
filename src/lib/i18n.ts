@@ -1,4 +1,5 @@
 import type { DealKind } from './deals';
+import type { Slot } from './siteImages';
 import { createContext, useContext } from 'react';
 
 // Три языка: русский, казахский, английский. Переключатель — в шапке сайта.
@@ -278,6 +279,16 @@ export type Dict = {
     dealDelete: string;
     dealDeleteAsk: string;
     dealNoTable: string;
+
+    tabImages: string;
+    imagesHint: string;
+    imageSet: string;
+    imageClear: string;
+    imageClearAsk: string;
+    imageEmpty: string;
+    imageNoBucket: string;
+    slots: Record<Slot, string>;
+    slotWhere: Record<Slot, string>;
   };
 
   backHome: string;
@@ -656,6 +667,26 @@ export const DICT: Record<Lang, Dict> = {
       dealDelete: 'Удалить',
       dealDeleteAsk: 'Удалить эту скидку? Вернуть её можно будет только заново.',
       dealNoTable: 'Таблица скидок ещё не создана в базе. Выполните в терминале: npm run db:push',
+
+      tabImages: 'Картинки',
+      imagesHint:
+        'Пока фотографии нет, на сайте остаётся рисунок. Лучше всего горизонтальные снимки, снятые при дневном свете.',
+      imageSet: 'Поставить фото',
+      imageClear: 'Убрать',
+      imageClearAsk: 'Убрать эту фотографию? На сайте снова появится рисунок.',
+      imageEmpty: 'Пока рисунок',
+      imageNoBucket:
+        'Хранилище картинок ещё не создано. Выполните в терминале: npm run db:push',
+      slots: {
+        hero: 'Фон обложки',
+        workbench: 'Рабочий стол',
+        warranty: 'Гарантия',
+      },
+      slotWhere: {
+        hero: 'Самый верх главной страницы, за заголовком.',
+        workbench: 'Блок про бесплатную диагностику.',
+        warranty: 'Чёрный блок про гарантию на год.',
+      },
     },
 
     backHome: 'На главную',
@@ -1033,6 +1064,25 @@ export const DICT: Record<Lang, Dict> = {
       dealDelete: 'Жою',
       dealDeleteAsk: 'Бұл жеңілдікті жоясыз ба? Қайтару үшін қайта жариялау керек.',
       dealNoTable: 'Жеңілдіктер кестесі базада әлі жоқ. Терминалда орындаңыз: npm run db:push',
+
+      tabImages: 'Суреттер',
+      imagesHint:
+        'Фото жоқ кезде сайтта сурет тұрады. Күндізгі жарықта түсірілген көлденең фотолар жақсы шығады.',
+      imageSet: 'Фото қою',
+      imageClear: 'Алып тастау',
+      imageClearAsk: 'Бұл фотоны алып тастайсыз ба? Сайтта қайтадан сурет пайда болады.',
+      imageEmpty: 'Әзірге сурет',
+      imageNoBucket: 'Суреттер қоймасы әлі жасалмаған. Терминалда орындаңыз: npm run db:push',
+      slots: {
+        hero: 'Мұқаба фоны',
+        workbench: 'Жұмыс үстелі',
+        warranty: 'Кепілдік',
+      },
+      slotWhere: {
+        hero: 'Басты беттің ең жоғарысы, тақырыптың артында.',
+        workbench: 'Тегін диагностика туралы блок.',
+        warranty: 'Бір жылдық кепілдік туралы қара блок.',
+      },
     },
 
     backHome: 'Басты бетке',
@@ -1410,6 +1460,25 @@ export const DICT: Record<Lang, Dict> = {
       dealDelete: 'Delete',
       dealDeleteAsk: 'Delete this deal? Bringing it back means announcing it again.',
       dealNoTable: 'The deals table is not in the database yet. Run in the terminal: npm run db:push',
+
+      tabImages: 'Images',
+      imagesHint:
+        'While a slot is empty the site keeps the drawing. Landscape photos taken in daylight work best.',
+      imageSet: 'Set photo',
+      imageClear: 'Remove',
+      imageClearAsk: 'Remove this photo? The drawing comes back on the site.',
+      imageEmpty: 'Drawing for now',
+      imageNoBucket: 'The image store is not set up yet. Run in the terminal: npm run db:push',
+      slots: {
+        hero: 'Cover background',
+        workbench: 'Workbench',
+        warranty: 'Warranty',
+      },
+      slotWhere: {
+        hero: 'The very top of the front page, behind the heading.',
+        workbench: 'The free-diagnostics block.',
+        warranty: 'The black one-year-warranty block.',
+      },
     },
 
     backHome: 'Back to home',

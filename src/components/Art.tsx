@@ -88,7 +88,13 @@ export function Icon({ name }: { name: string }) {
 
 // Большие иллюстрации для промо-блоков — формат 4:3, только линии.
 // Первая: телефон на верстаке под лупой. Вторая: печать гарантии поверх платы.
-export function PromoArt({ variant }: { variant: 0 | 1 }) {
+//
+// src — фотография, которую владелец поставил в админке. Пока её нет,
+// остаётся рисунок: пустая рамка на месте картинки выглядела бы поломкой,
+// а рисунок — осознанным решением.
+export function PromoArt({ variant, src }: { variant: 0 | 1; src?: string }) {
+  if (src) return <img className="art art--photo" src={src} alt="" loading="lazy" />;
+
   if (variant === 0) {
     return (
       <svg viewBox="0 0 400 300" className="art" aria-hidden="true">

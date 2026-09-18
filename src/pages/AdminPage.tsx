@@ -5,6 +5,8 @@ import { Auth } from '../components/Auth';
 import { useLang, STEP_ORDER, type Status, type StepKey } from '../lib/i18n';
 import { AdminNav, type AdminTab } from '../components/AdminNav';
 import { AdminDeals } from '../components/AdminDeals';
+import { AdminImages } from '../components/AdminImages';
+import { loadSiteImages, SLOTS, type SiteImages } from '../lib/siteImages';
 import { isLive, loadDeals, type Deal } from '../lib/deals';
 import { canWhatsApp, fillTemplate, waLink } from '../lib/whatsapp';
 
@@ -74,6 +76,7 @@ export function AdminPage() {
   const [reports, setReports] = useState<Report[]>([]);
   const [deals, setDeals] = useState<Deal[]>([]);
   const [dealsError, setDealsError] = useState('');
+  const [images, setImages] = useState<SiteImages>({});
   const [stats, setStats] = useState<Record<string, number>>({});
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -160,6 +163,7 @@ export function AdminPage() {
         void loadAccess();
         void loadAllowlist();
         void loadDealList();
+        void loadImageList();
       }
     }
   }
@@ -275,6 +279,10 @@ export function AdminPage() {
     const res = await loadDeals(true);
     setDeals(res.deals);
     setDealsError(res.error);
+  }
+
+  async function loadImageList() {
+    setImages(await loadSiteImages());
   }
 
   async function loadReports() {
@@ -563,6 +571,8 @@ export function AdminPage() {
   // В меню показываем число действующих скидок, а не всех в списке:
   // выключенная скидка на сайте не висит, и считать её нечестно.
   const liveDeals = deals.filter(isLive).length;
+  // Сколько мест на сайте уже с фотографией, а не с рисунком.
+  const filledSlots = SLOTS.filter((s) => images[s]).length;
   const pendingRows = access.filter((a) => a.status === 'pending');
   const approvedRows = access.filter((a) => a.status === 'approved');
 
@@ -570,7 +580,10 @@ export function AdminPage() {
     void loadRequests(0);
     void loadStats();
     void loadReports();
-    if (isOwner) void loadDealList();
+    if (isOwner) {
+      void loadDealList();
+      void loadImageList();
+    }
   }
 
   return (
@@ -584,6 +597,7 @@ export function AdminPage() {
             history: doneTotal,
             reports: newReports,
             deals: liveDeals,
+            images: filledSlots,
             access: pendingRows.length,
           }}
           isOwner={isOwner}
@@ -623,6 +637,8 @@ export function AdminPage() {
 
       {tab === 'deals' ? (
         <AdminDeals deals={deals} loadError={dealsError} reload={loadDealList} />
+      ) : tab === 'images' ? (
+        <AdminImages images={images} reload={loadImageList} />
       ) : tab === 'access' ? (
         <>
           <div className="block" style={{ marginBottom: 40 }}>

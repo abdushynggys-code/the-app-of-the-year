@@ -1579,8 +1579,12 @@ p {
   transform: translateY(300%);
 }
 
-.adminnav[data-tab='access'] .adminnav__pill {
+.adminnav[data-tab='images'] .adminnav__pill {
   transform: translateY(400%);
+}
+
+.adminnav[data-tab='access'] .adminnav__pill {
+  transform: translateY(500%);
 }
 
 .adminnav__item {
@@ -2233,4 +2237,81 @@ p {
     flex: none;
     min-width: 96px;
   }
+}
+
+/* ─────────────── Картинки сайта ─────────────── */
+
+/* Фотография на месте рисунка. Рамка .promo__art рассчитана на вписанный
+   рисунок с отступами — фото должно занять её целиком, иначе оно висит
+   в середине серого поля. */
+.promo__art:has(.art--photo) {
+  padding: 0;
+}
+
+.art--photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Фон обложки. Лежит под текстом и притушен: поверх идёт белый заголовок,
+   и на светлом снимке его было бы не прочитать. Градиент снизу добирает
+   темноту там, где стоит карточка заявки. */
+.hero__photo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.38;
+}
+
+.hero__photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.75) 100%);
+}
+
+/* ─────────────── Админка: места под картинки ─────────────── */
+
+.slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--s-2xl);
+}
+
+/* Рамка ровно того же формата, что и место на сайте: владелец сразу видит,
+   что от снимка останется, а что обрежется. */
+.slot__frame {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  margin-bottom: var(--s-md);
+  background: var(--canvas-soft);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+
+.slot__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.slot__empty {
+  font-size: 14px;
+  color: var(--mute);
+}
+
+.slot__name {
+  font-size: 17px;
+}
+
+.slot__where {
+  margin: var(--s-xs) 0 var(--s-md);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--body);
 }
