@@ -111,6 +111,7 @@ export type Dict = {
   fOkCopy: string;
   fOkCopied: string;
   fOkTrack: string;
+  fOkAccount: string;
   fOkMore: string;
   fErr: string;
   fLoginHint: string;
@@ -214,6 +215,7 @@ export type Dict = {
     notesSave: string;
 
     stepsLabel: string;
+    stepUndoAsk: string;
     pickedUp: string;
 
     photos: string;
@@ -462,6 +464,8 @@ export const DICT: Record<Lang, Dict> = {
     fOkCopy: 'Скопировать код',
     fOkCopied: 'Скопировано',
     fOkTrack: 'Проверить статус',
+    fOkAccount:
+      'Код можно потерять, аккаунт — нет. Войдите под этой почтой на любом устройстве, и ремонт найдётся сам:',
     fOkMore: 'Оставить ещё одну заявку',
     fErr: 'Не получилось отправить. Попробуйте ещё раз или напишите в WhatsApp.',
     fLoginHint: 'Войдите в аккаунт — и все заявки будут храниться в личном кабинете.',
@@ -588,6 +592,8 @@ export const DICT: Record<Lang, Dict> = {
       notesSave: 'Сохранить заметку',
 
       stepsLabel: 'Этапы ремонта',
+      stepUndoAsk:
+        'Снять этот этап и все следующие за ним? У клиента полоска ремонта откатится назад.',
       pickedUp: 'Выдано',
 
       photos: 'Фото устройства',
@@ -835,6 +841,8 @@ export const DICT: Record<Lang, Dict> = {
     fOkCopy: 'Кодты көшіру',
     fOkCopied: 'Көшірілді',
     fOkTrack: 'Күйін тексеру',
+    fOkAccount:
+      'Кодты жоғалтып алуға болады, аккаунтты — жоқ. Кез келген құрылғыда осы поштамен кіріңіз, жөндеу өзі табылады:',
     fOkMore: 'Тағы бір өтінім қалдыру',
     fErr: 'Жіберілмеді. Қайталап көріңіз немесе WhatsApp-қа жазыңыз.',
     fLoginHint: 'Аккаунтқа кіріңіз — барлық өтінім жеке кабинетте сақталады.',
@@ -961,6 +969,8 @@ export const DICT: Record<Lang, Dict> = {
       notesSave: 'Жазбаны сақтау',
 
       stepsLabel: 'Жөндеу кезеңдері',
+      stepUndoAsk:
+        'Осы кезеңді және одан кейінгілерін алып тастайсыз ба? Клиенттегі жолақ артқа қайтады.',
       pickedUp: 'Берілді',
 
       photos: 'Құрылғы фотосы',
@@ -1208,6 +1218,8 @@ export const DICT: Record<Lang, Dict> = {
     fOkCopy: 'Copy code',
     fOkCopied: 'Copied',
     fOkTrack: 'Track repair',
+    fOkAccount:
+      'Codes get lost, accounts do not. Sign in with this email on any device and the repair will be waiting:',
     fOkMore: 'Send another request',
     fErr: 'That did not send. Please try again, or message us on WhatsApp.',
     fLoginHint: 'Sign in and every request you send is kept in your account.',
@@ -1334,6 +1346,8 @@ export const DICT: Record<Lang, Dict> = {
       notesSave: 'Save note',
 
       stepsLabel: 'Repair steps',
+      stepUndoAsk:
+        'Untick this step and every step after it? The progress bar rolls back for the customer.',
       pickedUp: 'Collected',
 
       photos: 'Device photos',

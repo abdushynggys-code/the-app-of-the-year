@@ -176,6 +176,17 @@ export function RequestPage() {
               {t.fOkTrack}
             </Link>
           </div>
+          {/* Код на этом экране человек чаще всего теряет: закрыл вкладку —
+              и всё. Поэтому сразу говорим про второй путь к ремонту: войти
+              под той же почтой. Заявка уже привязана к аккаунту (user_id
+              проставляется при отправке), так что это не обещание на
+              будущее — это уже работает. */}
+          {account && (
+            <p className="done__account">
+              {t.fOkAccount} <b>{account}</b>
+            </p>
+          )}
+
           <p style={{ marginTop: 20 }}>
             <button className="ghost" onClick={reset} type="button">
               {t.fOkMore}

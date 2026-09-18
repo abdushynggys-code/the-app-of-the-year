@@ -87,7 +87,10 @@ export function AdminPage() {
   const [statusFilter, setStatusFilter] = useState<Status | ''>('');
   const [days, setDays] = useState(30);
 
-  const [open, setOpen] = useState<Set<string>>(new Set());
+  // Открытая карточка ровно одна. Раньше это было множество, и за утро
+  // список превращался в несколько экранов раскрытых панелей: следующую
+  // заявку приходилось искать прокруткой.
+  const [open, setOpen] = useState('');
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const [bulkStep, setBulkStep] = useState<StepKey | ''>('');
   const [drafts, setDrafts] = useState<Record<string, string>>({});
@@ -333,7 +336,16 @@ export function AdminPage() {
 
   function toggleStep(r: Req, key: StepKey) {
     const i = STEP_ORDER.indexOf(key);
-    void saveSteps(r.id, r.steps.includes(key) ? STEP_ORDER.slice(0, i) : stepsUpTo(key));
+    if (!r.steps.includes(key)) {
+      void saveSteps(r.id, stepsUpTo(key));
+      return;
+    }
+    // Снять галочку значит снять и все следующие за ней: полоска у клиента
+    // тут же откатится назад. Если теряется больше одного этапа, это почти
+    // наверняка промах по соседней галочке — спрашиваем. Все остальные
+    // необратимые действия в админке тоже спрашивают.
+    if (r.steps.length - i > 1 && !confirm(t.admin.stepUndoAsk)) return;
+    void saveSteps(r.id, STEP_ORDER.slice(0, i));
   }
 
   async function applyBulk() {
@@ -408,15 +420,8 @@ export function AdminPage() {
   }
 
   function toggleOpen(id: string) {
-    setOpen((s) => {
-      const next = new Set(s);
-      if (next.has(id)) next.delete(id);
-      else {
-        next.add(id);
-        if (!photos[id]) void loadPhotos(id);
-      }
-      return next;
-    });
+    setOpen((cur) => (cur === id ? '' : id));
+    if (!photos[id]) void loadPhotos(id);
   }
 
   function togglePick(id: string) {
@@ -765,23 +770,10 @@ export function AdminPage() {
                 placeholder={t.admin.searchPh}
               />
             </label>
-            {/* В истории все заявки выданы — выбирать статус там не из чего */}
-            {tab === 'active' && (
-              <label className="field">
-                <span>{t.admin.filterStatus}</span>
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value as Status | '')}
-                >
-                  <option value="">{t.admin.filterAll}</option>
-                  {ACTIVE.map((s) => (
-                    <option key={s} value={s}>
-                      {t.statuses[s]}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            )}
+            {/* Выбор статуса жил тут вторым экземпляром: счётчики наверху
+                делают ровно то же самое и делают это одним нажатием. Два
+                органа управления на одно состояние — это не выбор,
+                а вопрос «а какой из них сейчас главный». */}
             <label className="field">
               <span>{t.admin.period}</span>
               <select value={days} onChange={(e) => setDays(Number(e.target.value))}>
@@ -830,6 +822,9 @@ export function AdminPage() {
               {requests.map((r) => {
                 const pct = Math.round((r.steps.length / STEP_ORDER.length) * 100);
                 const draft = drafts[r.id];
+                // Первый неотмеченный этап и есть «что дальше». Выдано —
+                // значит дальше ничего, кнопки не будет.
+                const nextStep = STEP_ORDER.find((k) => !r.steps.includes(k));
                 return (
                   <article key={r.id} className="card card--soft reqrow">
                     <div className="reqrow__top">
@@ -857,7 +852,13 @@ export function AdminPage() {
                         <span className="reqrow__bar" aria-hidden="true">
                           <i style={{ width: `${pct}%` }} />
                         </span>
-                        <span className="reqrow__status">{t.statuses[r.status]}</span>
+                        {/* Счётчик этапов рядом со статусом: база сводит и
+                            «цену согласовали», и «починили» в один статус
+                            «в ремонте», и без счётчика две галочки из шести
+                            выглядели так, будто нажатие не сработало. */}
+                        <span className="reqrow__status">
+                          {t.statuses[r.status]} · {r.steps.length}/{STEP_ORDER.length}
+                        </span>
                       </button>
                       <a
                         className="reqrow__tel"
@@ -867,9 +868,24 @@ export function AdminPage() {
                       >
                         {copiedId === r.id ? t.fOkCopied : r.phone}
                       </a>
+                      {/* Самое частое действие за день — сдвинуть ремонт на шаг
+                          вперёд. Раньше ради него надо было раскрыть карточку и
+                          найти нужную галочку среди шести одинаковых. Теперь
+                          следующий шаг подписан прямо в строке и нажимается
+                          сразу: ничего открывать не нужно. */}
+                      {nextStep && (
+                        <button
+                          type="button"
+                          className="btn btn--primary reqrow__next"
+                          disabled={savingId === r.id}
+                          onClick={() => saveSteps(r.id, stepsUpTo(nextStep))}
+                        >
+                          {t.repairSteps[nextStep]}
+                        </button>
+                      )}
                     </div>
 
-                    {open.has(r.id) && (
+                    {open === r.id && (
                       <div className="reqrow__detail">
                         <p className="admin__problem">{r.problem}</p>
 

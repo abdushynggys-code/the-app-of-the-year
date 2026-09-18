@@ -26,7 +26,7 @@
    спорить с фоном полосы, а не с фоном самой кнопки.
    Цвет акцентный: так сразу видно, что это сайт ведёт человека по
    полям, а не браузер нарисовал что-то своё. На белом его контраст
-   5.1:1 — рамке хватает с запасом. */
+   4.87:1, а рамке нужно 3:1 — хватает с запасом. */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -58,7 +58,7 @@
 .trackform input:focus-visible,
 .block textarea:focus-visible,
 .admin__status select:focus-visible {
-  outline: 2px solid var(--ink);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
@@ -92,10 +92,11 @@
 }
 
 /* ─── Кнопка в работе ───
-   Пока идёт отправка, кнопка остаётся чёрной: она работает, а не сломалась.
-   Серый цвет из .btn--primary:disabled читался бы как «недоступно». */
+   Пока идёт отправка, кнопка темнеет, но остаётся акцентной: она работает,
+   а не сломалась. Серый цвет из .btn--primary:disabled читался бы
+   как «недоступно». */
 .btn--primary.is-busy:disabled {
-  background: var(--ink-elevated);
+  background: var(--accent-strong);
   color: var(--on-ink);
   cursor: progress;
 }
