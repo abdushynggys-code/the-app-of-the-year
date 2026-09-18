@@ -19,6 +19,9 @@ export function Boot({ full = false }: Props) {
 
   return (
     <div className={full ? 'boot boot--full' : 'boot'} style={full ? style : undefined} aria-hidden="true">
+      {/* Помехи: строчки и два разрыва. Два разрыва рисуют ::before и ::after
+          этого же слоя — отдельные элементы ради двух полосок не нужны. */}
+      <span className="boot__crackle" />
       <span className="boot__leds">
         <i />
         <i />
