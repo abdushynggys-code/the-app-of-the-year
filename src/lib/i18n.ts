@@ -260,6 +260,22 @@ export type Dict = {
     allowlistRemoveAsk: string;
     noPending: string;
 
+    leaveBtn: string;
+    leaveStep1Title: string;
+    leaveStep1Text: string;
+    leaveNext: string;
+    leaveStep2Title: string;
+    leaveStep2Text: string;
+    leaveConfirm: string;
+    leaveBack: string;
+    leaveByeTitle: string;
+    leaveByeText: string;
+    leaveByeAccount: string;
+    leaveOwnerHint: string;
+    lastOwnerHint: string;
+    demoteSelfAsk: string;
+    revokeFailed: string;
+
     tabDeals: string;
     dealsHint: string;
     dealPercent: string;
@@ -647,6 +663,26 @@ export const DICT: Record<Lang, Dict> = {
       allowlistRemove: 'Убрать',
       allowlistRemoveAsk: 'Убрать email из списка? У того, кто уже вошёл, доступ останется — его забирают отдельно.',
       noPending: 'Новых запросов нет.',
+
+      leaveBtn: 'Уйти из админки',
+      leaveStep1Title: 'Уйти из админки?',
+      leaveStep1Text:
+        'Заявки, фотографии и заметки останутся на месте — пропадёт только ваш доступ к ним.',
+      leaveNext: 'Дальше',
+      leaveStep2Title: 'Обратно вас пустит только владелец',
+      leaveStep2Text:
+        'Доступ привязан к почте {email}. Передумаете — придётся просить доступ заново, и открыть его сможет только владелец.',
+      leaveConfirm: 'Убрать мой доступ',
+      leaveBack: 'Назад',
+      leaveByeTitle: 'Доступ убран',
+      leaveByeText:
+        'Спасибо за работу. Аккаунт остаётся при вас — по нему можно сдать технику в ремонт как обычный клиент.',
+      leaveByeAccount: 'Аккаунт',
+      leaveOwnerHint: 'Владелец не может уйти сам. Сначала снимите с себя роль владельца.',
+      lastOwnerHint: 'Вы единственный владелец. Роль нельзя снять — её можно только передать.',
+      demoteSelfAsk:
+        'Снять с себя роль владельца? Доступы и белый список будет вести другой владелец.',
+      revokeFailed: 'Доступ убрать не удалось. У владельца доступ забирают, сняв с него роль.',
 
       tabDeals: 'Скидки',
       dealsHint: 'Скидка появится на главной странице сайта, как только вы её объявите.',
@@ -1045,6 +1081,26 @@ export const DICT: Record<Lang, Dict> = {
       allowlistRemoveAsk: 'Email-ды тізімнен аласыз ба? Кіріп қойған адамның рұқсаты қалады — оны бөлек алады.',
       noPending: 'Жаңа сұраулар жоқ.',
 
+      leaveBtn: 'Админнен шығу',
+      leaveStep1Title: 'Админнен шығасыз ба?',
+      leaveStep1Text:
+        'Өтінімдер, суреттер мен жазбалар орнында қалады — тек сіздің рұқсатыңыз жоғалады.',
+      leaveNext: 'Әрі қарай',
+      leaveStep2Title: 'Кері кіргізе алатын тек иесі',
+      leaveStep2Text:
+        'Рұқсат {email} поштасына байланған. Ойыңыз өзгерсе — рұқсатты қайта сұрайсыз, оны тек иесі аша алады.',
+      leaveConfirm: 'Рұқсатымды алып тастау',
+      leaveBack: 'Артқа',
+      leaveByeTitle: 'Рұқсат алынды',
+      leaveByeText:
+        'Жұмысыңыз үшін рақмет. Аккаунт сізде қалады — онымен кәдімгі клиент ретінде техника тапсыруға болады.',
+      leaveByeAccount: 'Аккаунт',
+      leaveOwnerHint: 'Иесі өзі шыға алмайды. Алдымен өзіңізден иелік рөлін алыңыз.',
+      lastOwnerHint: 'Сіз жалғыз иесіз. Рөлді алып тастауға болмайды — оны тек басқаға беруге болады.',
+      demoteSelfAsk:
+        'Өзіңізден иелік рөлін аласыз ба? Рұқсаттар мен ақ тізімді басқа иесі жүргізеді.',
+      revokeFailed: 'Рұқсатты алып тастау мүмкін болмады. Иесінің рұқсатын алу үшін алдымен рөлін алады.',
+
       tabDeals: 'Жеңілдіктер',
       dealsHint: 'Жеңілдікті жарияласаңыз, ол сайттың басты бетінде көрінеді.',
       dealPercent: 'Жеңілдік, %',
@@ -1440,6 +1496,26 @@ export const DICT: Record<Lang, Dict> = {
       allowlistRemove: 'Remove',
       allowlistRemoveAsk: 'Remove this email from the list? Anyone already signed in keeps access — revoke that separately.',
       noPending: 'No new requests.',
+
+      leaveBtn: 'Leave the admin panel',
+      leaveStep1Title: 'Leave the admin panel?',
+      leaveStep1Text:
+        'Requests, photos and notes stay where they are — only your access to them goes.',
+      leaveNext: 'Next',
+      leaveStep2Title: 'Only an owner can let you back in',
+      leaveStep2Text:
+        'Access is tied to {email}. If you change your mind you ask for access again, and only an owner can open it.',
+      leaveConfirm: 'Remove my access',
+      leaveBack: 'Back',
+      leaveByeTitle: 'Access removed',
+      leaveByeText:
+        'Thanks for your work. The account stays yours — you can book a repair with it as a normal customer.',
+      leaveByeAccount: 'Account',
+      leaveOwnerHint: 'An owner cannot leave on their own. Step down from the owner role first.',
+      lastOwnerHint: 'You are the only owner. The role cannot be dropped — only handed over.',
+      demoteSelfAsk:
+        'Step down from the owner role? Another owner will keep the access list and the allowlist.',
+      revokeFailed: 'Could not remove that access. An owner loses access by stepping down from the role first.',
 
       tabDeals: 'Deals',
       dealsHint: 'A deal shows up on the site’s front page as soon as you announce it.',

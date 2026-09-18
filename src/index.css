@@ -2315,3 +2315,21 @@ p {
   line-height: 20px;
   color: var(--body);
 }
+
+/* ─────────────── Админка: уход ─────────────── */
+
+/* Ссылка «уйти из админки» отделена от выхода из аккаунта: это разные вещи,
+   и спутать их дорого. Выход — на сегодня, уход — навсегда. */
+.adminnav__leave {
+  margin-top: var(--s-md);
+  padding-top: var(--s-md);
+  border-top: 1px solid var(--hairline);
+}
+
+/* Владельцу вместо кнопки объясняем, почему её нет */
+.adminnav__hint {
+  margin: 0;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--mute);
+}

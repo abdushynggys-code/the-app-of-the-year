@@ -1,4 +1,5 @@
 import { useLang } from '../lib/i18n';
+import { AdminLeave } from './AdminLeave';
 
 export type AdminTab = 'active' | 'history' | 'reports' | 'deals' | 'images' | 'access';
 
@@ -10,12 +11,14 @@ type Props = {
   email: string;
   onSignOut: () => void;
   onRefresh: () => void;
+  // Доступ уже убран в базе — страница показывает прощание.
+  onLeft: () => void;
 };
 
 // Боковое меню админки. Раньше все разделы, счётчики и фильтры лежали
 // на одном экране подряд, и найти нужное было тяжело. Теперь разделы слева
 // и не уезжают при прокрутке, а справа остаётся только текущий раздел.
-export function AdminNav({ tab, onSwitch, counts, isOwner, email, onSignOut, onRefresh }: Props) {
+export function AdminNav({ tab, onSwitch, counts, isOwner, email, onSignOut, onRefresh, onLeft }: Props) {
   const { t } = useLang();
 
   const items: { id: AdminTab; label: string }[] = [
@@ -60,6 +63,11 @@ export function AdminNav({ tab, onSwitch, counts, isOwner, email, onSignOut, onR
             {t.signOut}
           </button>
         </p>
+        {/* «Уйти из админки» стоит здесь, а не в разделе «Доступ»: раздел
+            виден только владельцу, а уходят как раз не владельцы. */}
+        <div className="adminnav__leave">
+          <AdminLeave email={email} isOwner={isOwner} onLeft={onLeft} />
+        </div>
       </div>
     </aside>
   );

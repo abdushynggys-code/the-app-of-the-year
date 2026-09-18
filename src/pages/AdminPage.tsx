@@ -6,6 +6,7 @@ import { useLang, STEP_ORDER, type Status, type StepKey } from '../lib/i18n';
 import { AdminNav, type AdminTab } from '../components/AdminNav';
 import { AdminDeals } from '../components/AdminDeals';
 import { AdminImages } from '../components/AdminImages';
+import { AdminFarewell } from '../components/AdminLeave';
 import { loadSiteImages, SLOTS, type SiteImages } from '../lib/siteImages';
 import { isLive, loadDeals, type Deal } from '../lib/deals';
 import { canWhatsApp, fillTemplate, waLink } from '../lib/whatsapp';
@@ -77,6 +78,9 @@ export function AdminPage() {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [dealsError, setDealsError] = useState('');
   const [images, setImages] = useState<SiteImages>({});
+  // Почту запоминаем прямо во флаге: прощальный экран должен назвать
+  // аккаунт, а email к тому моменту уже может обнулиться.
+  const [leftAs, setLeftAs] = useState('');
   const [stats, setStats] = useState<Record<string, number>>({});
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -156,6 +160,14 @@ export function AdminPage() {
     setMe(row);
     setChecked(true);
 
+    // Сняли с себя роль владельца — разделы «Скидки», «Картинки» и «Доступ»
+    // исчезают из меню. Если стоять в одном из них, страница осталась бы
+    // на разделе, которого больше нет в списке, а подложка меню уехала бы
+    // к несуществующему пункту.
+    if (row?.role !== 'owner' && ['deals', 'images', 'access'].includes(tab)) {
+      setTab('active');
+    }
+
     if (row?.status === 'approved') {
       void loadStats();
       void loadReports();
@@ -208,14 +220,32 @@ export function AdminPage() {
   async function revokeAccess(id: string) {
     if (!confirm(t.admin.revokeAsk)) return;
     setSavingId(id);
-    await supabase.from('admins').delete().eq('user_id', id);
+    setDbError('');
+    // .select() здесь обязателен. Правила доступа не дают удалить владельца,
+    // но запрет RLS не ошибка: без select запрос ответил бы «всё хорошо»,
+    // удалив ноль строк, и доступ остался бы у человека, которого уже
+    // «убрали» на экране.
+    const { data, error } = await supabase
+      .from('admins')
+      .delete()
+      .eq('user_id', id)
+      .select('user_id');
+    if (error || !data?.length) setDbError(error?.message ?? t.admin.revokeFailed);
     await loadAccess();
     setSavingId('');
   }
 
   // Роль меняет база — она же не даёт снять последнего владельца.
   async function setRole(id: string, role: Role) {
-    if (!confirm(role === 'owner' ? t.admin.transferAsk : t.admin.demoteAsk)) return;
+    // Снимаем роль с себя или с другого — вопросы разные: «с этого человека»
+    // в свой адрес звучит так, будто нажал не туда.
+    const ask =
+      role === 'owner'
+        ? t.admin.transferAsk
+        : id === me?.user_id
+          ? t.admin.demoteSelfAsk
+          : t.admin.demoteAsk;
+    if (!confirm(ask)) return;
     setSavingId(id);
     setDbError('');
     const { error } = await supabase.rpc('set_admin_role', { target: id, new_role: role });
@@ -479,6 +509,10 @@ export function AdminPage() {
     if (error) setGoogleError(t.admin.googleHint);
   }
 
+  // Выше всех остальных проверок: доступа в базе уже нет, и обычная
+  // отрисовка показала бы экран «попросите доступ» вместо прощания.
+  if (leftAs) return <AdminFarewell email={leftAs} />;
+
   if (!isSupabaseConfigured) {
     return (
       <main className="wrap wrap--narrow page">
@@ -575,6 +609,9 @@ export function AdminPage() {
   const filledSlots = SLOTS.filter((s) => images[s]).length;
   const pendingRows = access.filter((a) => a.status === 'pending');
   const approvedRows = access.filter((a) => a.status === 'approved');
+  // Сколько всего владельцев. Нужно, чтобы сказать «роль нельзя снять»
+  // до нажатия, а не показывать отказ базы после него.
+  const owners = approvedRows.filter((a) => a.role === 'owner').length;
 
   function refreshAll() {
     void loadRequests(0);
@@ -604,6 +641,7 @@ export function AdminPage() {
           email={email}
           onSignOut={() => supabase.auth.signOut()}
           onRefresh={refreshAll}
+          onLeft={() => setLeftAs(email ?? '')}
         />
 
         {/* key — чтобы раздел появлялся заново, а не подменялся молча */}
@@ -693,13 +731,20 @@ export function AdminPage() {
                   </div>
                   <div className="btn-row">
                     {a.role === 'owner' ? (
-                      <button
-                        className="btn btn--secondary"
-                        disabled={savingId === a.user_id}
-                        onClick={() => setRole(a.user_id, 'admin')}
-                      >
-                        {t.admin.demoteBtn}
-                      </button>
+                      <>
+                        {/* Последнего владельца снять нельзя — так решает сама
+                            база. Но узнавать об этом из отказа после нажатия
+                            неприятно, поэтому кнопка гаснет заранее и рядом
+                            написано, что делать: передать роль другому. */}
+                        <button
+                          className="btn btn--secondary"
+                          disabled={savingId === a.user_id || owners < 2}
+                          onClick={() => setRole(a.user_id, 'admin')}
+                        >
+                          {t.admin.demoteBtn}
+                        </button>
+                        {owners < 2 && <p className="form__hint">{t.admin.lastOwnerHint}</p>}
+                      </>
                     ) : (
                       <>
                         <button
