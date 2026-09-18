@@ -3,6 +3,7 @@ import { Link, useLocation } from 'wouter';
 import { LANGS, useLang } from '../lib/i18n';
 import { SHOP } from '../lib/shop';
 import { Icon } from './Art';
+import { Logo } from './Logo';
 
 // Шапка: логотип, меню, переключатель языка на три положения, кнопка звонка.
 export function Header() {
@@ -20,7 +21,10 @@ export function Header() {
     <header className="header">
       <div className="header__inner">
         <Link href="/" className="logo" onClick={() => setOpen(false)}>
-          RESET<span>.</span>
+          <Logo />
+          <span className="logo__text">
+            RESET<span>.</span>
+          </span>
         </Link>
 
         {/* Переключатель языка живёт внутри меню: в строке шапки на телефоне

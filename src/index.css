@@ -1,7 +1,8 @@
 /* ============================================================
    RESET · сервисный центр в Астане
-   Чёрно-белая система: чёрный — только для главных действий,
-   всё остальное держат белый, серый и типографика.
+   Чёрно-белое с одним акцентом: цвет достаётся только главному действию
+   и тому, что показывает жизнь (оценка, полоска ремонта, скидка).
+   Всё остальное держат белый, серый и типографика.
    Токены собраны здесь — меняй тут, меняется везде.
    ============================================================ */
 
@@ -18,6 +19,20 @@
   --ink-elevated: #282828;
   --hairline: #e2e2e2;
   --err: #c2261b;
+
+  /* ── Акцент ──
+     Один цвет на весь сайт, и у него есть смысл: это цвет того света,
+     которым экран включается в начале (см. раздел 6 в motion.css).
+     Поэтому он и появляется только там, где что-то живое: главная кнопка,
+     оценка, полоска ремонта, скидка, рамка под клавиатуру.
+
+     Тёмный тон, а не неон: на белом его хватает для текста (5.1:1),
+     на заливке под ним читается белый. Светлый вариант — только на
+     чёрном, иначе он слепит. */
+  --accent: #0e7c86;
+  --accent-strong: #0a5f67;
+  --accent-soft: #e4f2f3;
+  --accent-light: #35dfef;
 
   /* Скругления */
   --r-md: 8px;
@@ -206,13 +221,16 @@ p {
   white-space: nowrap;
 }
 
+/* Главное действие — единственная крупная заливка цветом на сайте.
+   Раньше кнопка была чёрной и сливалась с текстом и рамками; акцент
+   отвечает на вопрос «куда тут нажимать» без единого лишнего слова. */
 .btn--primary {
-  background: var(--ink);
+  background: var(--accent);
   color: var(--on-ink);
 }
 
 .btn--primary:hover {
-  background: var(--ink-elevated);
+  background: var(--accent-strong);
 }
 
 .btn--primary:disabled {
@@ -220,14 +238,10 @@ p {
   cursor: not-allowed;
 }
 
-/* На чёрной полосе главная кнопка переворачивается в белую */
-.band--dark .btn--primary {
-  background: var(--canvas);
-  color: var(--ink);
-}
-
+/* На чёрной полосе цвет тот же: кнопка одна и та же везде, и искать её
+   заново на каждой полосе не приходится. */
 .band--dark .btn--primary:hover {
-  background: var(--pressed);
+  background: var(--accent-strong);
 }
 
 .btn--secondary {
@@ -240,8 +254,8 @@ p {
   background: var(--canvas-soft);
 }
 
-/* На чёрной полосе главная кнопка белая, поэтому вторая становится
-   контурной — иначе рядом стояли бы две одинаковые белые таблетки. */
+/* Рядом с акцентной кнопкой вторая становится контурной: две заливки
+   подряд спорили бы за внимание, и главное действие терялось. */
 .band--dark .btn--secondary {
   background: transparent;
   color: var(--on-ink);
@@ -320,15 +334,36 @@ p {
 }
 
 .logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-sm);
   font-size: 22px;
   font-weight: 700;
   letter-spacing: 0.02em;
   flex: none;
 }
 
-.logo span {
+.logo__text span {
   color: var(--mute);
   font-weight: 500;
+}
+
+/* Знак чуть приподнят: у Inter буквы стоят на базовой линии, и по центру
+   рамки квадрат кажется съехавшим вниз. */
+.logo__mark {
+  display: flex;
+  margin-top: -1px;
+}
+
+/* Полоса света внутри знака. На белом нужен тёмный тон — светлый на белом
+   почти не виден. На чёрном наоборот. */
+.logo__mark path {
+  stroke: var(--accent);
+}
+
+.band--dark .logo__mark path,
+.footer .logo__mark path {
+  stroke: var(--accent-light);
 }
 
 .nav {
@@ -620,6 +655,7 @@ p {
 
 .deal__off {
   font-size: 28px;
+  color: var(--accent);
   line-height: 32px;
   letter-spacing: -0.02em;
   /* Цифры одной ширины: рядом стоящие карточки не «пляшут» */
@@ -878,8 +914,11 @@ p {
   gap: var(--s-sm) var(--s-lg);
 }
 
+/* Единственная цифра на сайте, которую поставили не мы, а клиенты, —
+   поэтому она же единственная набрана цветом. */
 .proof__score b {
   font-size: clamp(56px, 9vw, 92px);
+  color: var(--accent);
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.03em;
@@ -2103,7 +2142,7 @@ p {
 .progress__track i {
   display: block;
   height: 100%;
-  background: var(--ink);
+  background: var(--accent);
   border-radius: 99px;
   transition: width 0.3s;
 }
@@ -2126,13 +2165,13 @@ p {
 }
 
 .progress__steps li.is-done {
-  background: var(--ink);
+  background: var(--accent);
   color: var(--on-ink);
 }
 
 .progress__steps li.is-next {
-  color: var(--ink);
-  box-shadow: inset 0 0 0 1px var(--ink);
+  color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
 }
 
 @media (max-width: 880px) {
