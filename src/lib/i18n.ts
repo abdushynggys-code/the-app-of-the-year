@@ -380,6 +380,7 @@ export const DICT: Record<Lang, Dict> = {
       laptop: 'Ноутбуки',
       pc: 'Компьютеры',
       monitor: 'Мониторы',
+      other: 'Остальное',
     },
 
     promos: [
@@ -797,6 +798,7 @@ export const DICT: Record<Lang, Dict> = {
       laptop: 'Ноутбуктер',
       pc: 'Компьютерлер',
       monitor: 'Мониторлар',
+      other: 'Басқасы',
     },
 
     promos: [
@@ -1213,6 +1215,7 @@ export const DICT: Record<Lang, Dict> = {
       laptop: 'Laptops',
       pc: 'Computers',
       monitor: 'Monitors',
+      other: 'Anything else',
     },
 
     promos: [

@@ -10,7 +10,17 @@ import { isSupabaseConfigured, supabase } from './supabase';
 // Виды техники, на которые бывает скидка. Список закрытый: у каждого вида
 // есть подпись на трёх языках в i18n.ts (t.kinds), и вид без подписи
 // показать было бы нечем. Такой же список стоит в миграции.
-export const DEAL_KINDS = ['phone', 'tablet', 'watch', 'laptop', 'pc', 'monitor'] as const;
+export const DEAL_KINDS = [
+  'phone',
+  'tablet',
+  'watch',
+  'laptop',
+  'pc',
+  'monitor',
+  // «Остальное» — для техники, которой в списке нет: колонок, наушников,
+  // приставок. Без него на них нельзя объявить скидку вообще.
+  'other',
+] as const;
 
 export type DealKind = (typeof DEAL_KINDS)[number];
 
