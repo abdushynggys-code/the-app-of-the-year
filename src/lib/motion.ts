@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // Анимации при прокрутке. Вся идея: JavaScript только измеряет и ставит
 // пометки, а решает, что именно нарисовать, — CSS в motion.css.
@@ -188,4 +188,97 @@ export function useBootOnce(): boolean {
   }, [on]);
 
   return on;
+}
+
+// ─── Перезагрузка экрана ───
+// То же включение, но сначала экран гаснет. Нужно это вот зачем: когда
+// человек меняет язык, разом меняется каждая надпись на странице. Если
+// делать подмену на глазах, текст просто прыгает — непонятно, что
+// произошло и что теперь читать. Поэтому экран гаснет, меняется в темноте
+// и включается обратно: получается одно понятное событие вместо рывка.
+//
+// Хук намеренно ничего не знает про язык. reboot(fn) читается как
+// «сделай fn в темноте», и так же можно завернуть любую будущую крупную
+// смену — тему, город, валюту. Сам слой рисует компонент Boot.
+
+// Сколько экран гаснет. Столько же ждёт CSS (--t0 у .boot--full): значение
+// уезжает туда через инлайн-стиль, чтобы число жило в одном месте.
+export const REBOOT_OFF = 760;
+// Включение: лампочки (0–420) → линия (380–780) → створки (650–1030).
+const REBOOT_ON = 1030;
+
+// Прокрутку на время анимации выключаем. Отменяем именно события, а не
+// ставим overflow: hidden: от него пропадает полоса прокрутки и страница
+// дёргается вбок ровно в тот момент, когда должна быть неподвижной.
+const SCROLL_KEYS = [
+  ' ',
+  'PageUp',
+  'PageDown',
+  'Home',
+  'End',
+  'ArrowUp',
+  'ArrowDown',
+  'ArrowLeft',
+  'ArrowRight',
+];
+
+function holdScroll(): () => void {
+  const stop = (e: Event) => e.preventDefault();
+  const stopKey = (e: KeyboardEvent) => {
+    if (SCROLL_KEYS.includes(e.key)) e.preventDefault();
+  };
+
+  // passive: false обязательно — без него браузер игнорирует preventDefault
+  // у прокрутки и просто предупреждает об этом в консоли.
+  window.addEventListener('wheel', stop, { passive: false });
+  window.addEventListener('touchmove', stop, { passive: false });
+  window.addEventListener('keydown', stopKey);
+
+  return () => {
+    window.removeEventListener('wheel', stop);
+    window.removeEventListener('touchmove', stop);
+    window.removeEventListener('keydown', stopKey);
+  };
+}
+
+export function useReboot() {
+  const [rebooting, setRebooting] = useState(false);
+  // Таймеры и снятие блокировки держим в ref: если человек уйдёт со
+  // страницы посреди анимации, прокрутка должна вернуться, а таймеры —
+  // не дёрнуть setState у размонтированного компонента.
+  const cleanup = useRef<(() => void)[]>([]);
+
+  useEffect(() => {
+    return () => {
+      cleanup.current.forEach((fn) => fn());
+      cleanup.current = [];
+    };
+  }, []);
+
+  function reboot(change: () => void) {
+    // Человек попросил систему поменьше двигать картинку — меняем сразу.
+    if (calm()) {
+      change();
+      return;
+    }
+    // Уже гаснем: второе нажатие не начинает анимацию заново, иначе на
+    // быстрых кликах экран мигал бы бесконечно.
+    if (rebooting) return;
+
+    setRebooting(true);
+    const release = holdScroll();
+    const dark = window.setTimeout(change, REBOOT_OFF);
+    const done = window.setTimeout(() => {
+      setRebooting(false);
+      release();
+    }, REBOOT_OFF + REBOOT_ON);
+
+    cleanup.current = [
+      release,
+      () => window.clearTimeout(dark),
+      () => window.clearTimeout(done),
+    ];
+  }
+
+  return { rebooting, reboot };
 }

@@ -6,6 +6,7 @@ import { Icon, PromoArt } from '../components/Art';
 import { ProofStrip } from '../components/ProofStrip';
 import { BrandStrip } from '../components/BrandStrip';
 import { useBootOnce } from '../lib/motion';
+import { Boot } from '../components/Boot';
 
 // Главная: обложка с карточкой-формой, чипы, промо-полосы,
 // услуги, шаги, вопросы-ответы и контакты.
@@ -48,13 +49,9 @@ export function HomePage() {
     <main>
       {/* ───── Обложка: чёрная панель ───── */}
       <section className={boot ? 'hero band--dark is-booting' : 'hero band--dark'}>
-        {/* Створки и линия света. Слой чисто декоративный: кликов не ловит,
-            для скринридера его нет, в покое створки уже разъехались. */}
-        {boot && (
-          <div className="hero__boot" aria-hidden="true">
-            <span className="hero__boot-line" />
-          </div>
-        )}
+        {/* Лампочки, линия света и створки. Слой чисто декоративный: кликов
+            не ловит, для скринридера его нет, в покое створки уже разъехались. */}
+        {boot && <Boot />}
         <div className="wrap hero__grid">
           <div data-parallax="-10">
             {/* Каждое слово — свой элемент, чтобы они вставали по очереди */}
