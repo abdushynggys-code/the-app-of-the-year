@@ -174,7 +174,7 @@ export function AdminPage() {
     // исчезают из меню. Если стоять в одном из них, страница осталась бы
     // на разделе, которого больше нет в списке, а подложка меню уехала бы
     // к несуществующему пункту.
-    if (row?.role !== 'owner' && ['deals', 'images', 'access'].includes(tab)) {
+    if (row?.role !== 'owner' && ['deals', 'images', 'access', 'log'].includes(tab)) {
       setTab('active');
     }
 
@@ -747,7 +747,7 @@ export function AdminPage() {
         </div>
       )}
 
-      {tab === 'log' ? (
+      {tab === 'log' && isOwner ? (
         <AdminLog rows={log} loadError={logError} lang={lang} />
       ) : tab === 'deals' ? (
         <AdminDeals deals={deals} loadError={dealsError} reload={loadDealList} />

@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { useLang } from '../lib/i18n';
 import type { AdminTab } from './AdminNav';
 
@@ -41,9 +42,18 @@ export function AdminMore({
   onOpenRequest,
 }: Props) {
   const { t } = useLang();
+  const box = useRef<HTMLDetailsElement>(null);
+
+  // Выбрали пункт — меню закрывается. Само по себе <details> остаётся
+  // открытым, и панель висела бы поверх той самой заявки, которую только
+  // что попросили показать.
+  function pick(run: () => void) {
+    box.current?.removeAttribute('open');
+    run();
+  }
 
   return (
-    <details className="more">
+    <details className="more" ref={box}>
       <summary className="more__dots" aria-label={t.admin.moreMenu}>
         ⋯
       </summary>
@@ -55,13 +65,13 @@ export function AdminMore({
         ) : (
           <div className="more__rows">
             {newReports > 0 && (
-              <button type="button" className="more__row" onClick={() => onGo('reports')}>
+              <button type="button" className="more__row" onClick={() => pick(() => onGo('reports'))}>
                 {t.admin.tabReports}
                 <b>{newReports}</b>
               </button>
             )}
             {pendingAccess > 0 && isOwner && (
-              <button type="button" className="more__row" onClick={() => onGo('access')}>
+              <button type="button" className="more__row" onClick={() => pick(() => onGo('access'))}>
                 {t.admin.accessPending}
                 <b>{pendingAccess}</b>
               </button>
@@ -79,7 +89,7 @@ export function AdminMore({
                 key={r.id}
                 type="button"
                 className="more__row"
-                onClick={() => onOpenRequest(r.id)}
+                onClick={() => pick(() => onOpenRequest(r.id))}
               >
                 <span>
                   {r.shop_no ? `№ ${r.shop_no}` : r.track_code}
@@ -100,7 +110,7 @@ export function AdminMore({
                 key={n.id}
                 type="button"
                 className="more__row"
-                onClick={() => onOpenRequest(n.id)}
+                onClick={() => pick(() => onOpenRequest(n.id))}
               >
                 <span>
                   {n.track_code}
@@ -119,7 +129,7 @@ export function AdminMore({
           <>
             <p className="more__label">{t.admin.moreOwner}</p>
             <div className="more__rows">
-              <button type="button" className="more__row" onClick={() => onGo('log')}>
+              <button type="button" className="more__row" onClick={() => pick(() => onGo('log'))}>
                 {t.admin.tabLog}
               </button>
             </div>
