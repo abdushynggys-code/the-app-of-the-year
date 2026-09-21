@@ -2574,3 +2574,25 @@ p {
   margin-top: var(--s-xs);
   max-width: 46ch;
 }
+
+/* Метка внутри строки текста. inline-block обязателен: у строчного элемента
+   вертикальные поля не раздвигают строки, и на перенесённой почте метка
+   налезала бы на соседнюю строку. */
+.tag {
+  display: inline-block;
+  vertical-align: middle;
+  margin-block: 2px;
+}
+
+/* Узкий экран: кнопки уходят под человека, а не жмут его в колонку
+   шириной в пару букв. */
+@media (max-width: 900px) {
+  .admin__row {
+    flex-wrap: wrap;
+    gap: var(--s-md);
+  }
+
+  .admin__row .btn-row {
+    width: 100%;
+  }
+}
