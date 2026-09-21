@@ -2545,3 +2545,32 @@ p {
 .adminnav[data-tab='log'] .adminnav__pill {
   opacity: 0;
 }
+
+/* Почта в списке доступов — не код заявки. Крупный кегль с разрядкой
+   сделан для RS-482170: у почты он только мешает, а длинный адрес в нём
+   вылезает за карточку. Переносим по любому месту — адрес может быть
+   каким угодно длинным, и обрезать его нельзя. */
+.req__code--email {
+  font-size: 16px;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Выключенная кнопка должна выглядеть выключенной. У главной свой серый
+   цвет был, у остальных — нет, и они оставались как новые. */
+.btn:disabled {
+  cursor: not-allowed;
+}
+
+.btn--secondary:disabled,
+.btn--subtle:disabled {
+  color: var(--mute);
+  border-color: var(--hairline);
+  background: var(--canvas);
+}
+
+/* Пояснение под строкой человека в списке доступов */
+.admin__main .form__hint {
+  margin-top: var(--s-xs);
+  max-width: 46ch;
+}

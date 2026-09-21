@@ -764,7 +764,7 @@ export function AdminPage() {
                 {pendingRows.map((a) => (
                   <article key={a.user_id} className="card card--soft admin__row">
                     <div className="admin__main">
-                      <p className="req__code">{a.email}</p>
+                      <p className="req__code req__code--email">{a.email}</p>
                       <p className="req__meta">{fmt(a.requested_at)}</p>
                     </div>
                     <div className="btn-row">
@@ -795,7 +795,7 @@ export function AdminPage() {
               {approvedRows.map((a) => (
                 <article key={a.user_id} className="card card--soft admin__row">
                   <div className="admin__main">
-                    <p className="req__code">
+                    <p className="req__code req__code--email">
                       {a.email}{' '}
                       <span className={a.role === 'owner' ? 'tag' : 'tag tag--quiet'}>
                         {a.role === 'owner' ? t.admin.roleOwner : t.admin.roleAdmin}
@@ -804,23 +804,27 @@ export function AdminPage() {
                         <span className="tag tag--quiet">{t.admin.you}</span>
                       )}
                     </p>
+                    {/* Пояснение живёт рядом с человеком, а не в ряду кнопок:
+                        .btn-row — это flex, и абзац внутри него становился
+                        такой же «кнопкой» по ширине. Ряд разъезжался, отбирал
+                        место у почты, и она уезжала под кнопку. */}
+                    {a.role === 'owner' && owners < 2 && (
+                      <p className="form__hint">{t.admin.lastOwnerHint}</p>
+                    )}
                   </div>
                   <div className="btn-row">
                     {a.role === 'owner' ? (
-                      <>
-                        {/* Последнего владельца снять нельзя — так решает сама
-                            база. Но узнавать об этом из отказа после нажатия
-                            неприятно, поэтому кнопка гаснет заранее и рядом
-                            написано, что делать: передать роль другому. */}
-                        <button
-                          className="btn btn--secondary"
-                          disabled={savingId === a.user_id || owners < 2}
-                          onClick={() => setRole(a.user_id, 'admin')}
-                        >
-                          {t.admin.demoteBtn}
-                        </button>
-                        {owners < 2 && <p className="form__hint">{t.admin.lastOwnerHint}</p>}
-                      </>
+                      // Последнего владельца снять нельзя — так решает сама
+                      // база. Но узнавать об этом из отказа после нажатия
+                      // неприятно, поэтому кнопка гаснет заранее, а рядом
+                      // написано, что делать: передать роль другому.
+                      <button
+                        className="btn btn--secondary"
+                        disabled={savingId === a.user_id || owners < 2}
+                        onClick={() => setRole(a.user_id, 'admin')}
+                      >
+                        {t.admin.demoteBtn}
+                      </button>
                     ) : (
                       <>
                         <button
