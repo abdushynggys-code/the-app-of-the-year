@@ -1,7 +1,10 @@
+import type { ReactNode } from 'react';
 import { useLang } from '../lib/i18n';
 import { AdminLeave } from './AdminLeave';
 
-export type AdminTab = 'active' | 'history' | 'reports' | 'deals' | 'images' | 'access';
+// 'log' в список пунктов ниже намеренно не попадает: в журнал заходят
+// через три точки, а не каждый день мимо него.
+export type AdminTab = 'active' | 'history' | 'reports' | 'deals' | 'images' | 'access' | 'log';
 
 type Props = {
   tab: AdminTab;
@@ -13,12 +16,24 @@ type Props = {
   onRefresh: () => void;
   // Доступ уже убран в базе — страница показывает прощание.
   onLeft: () => void;
+  // Три точки: то, что нужно изредка. Собирает их AdminPage.
+  more: ReactNode;
 };
 
 // Боковое меню админки. Раньше все разделы, счётчики и фильтры лежали
 // на одном экране подряд, и найти нужное было тяжело. Теперь разделы слева
 // и не уезжают при прокрутке, а справа остаётся только текущий раздел.
-export function AdminNav({ tab, onSwitch, counts, isOwner, email, onSignOut, onRefresh, onLeft }: Props) {
+export function AdminNav({
+  tab,
+  onSwitch,
+  counts,
+  isOwner,
+  email,
+  onSignOut,
+  onRefresh,
+  onLeft,
+  more,
+}: Props) {
   const { t } = useLang();
 
   const items: { id: AdminTab; label: string }[] = [
@@ -53,9 +68,12 @@ export function AdminNav({ tab, onSwitch, counts, isOwner, email, onSignOut, onR
       </nav>
 
       <div className="adminnav__foot">
-        <button className="btn btn--subtle btn--block" type="button" onClick={onRefresh}>
-          {t.admin.refresh}
-        </button>
+        <div className="adminnav__tools">
+          <button className="btn btn--subtle btn--block" type="button" onClick={onRefresh}>
+            {t.admin.refresh}
+          </button>
+          {more}
+        </div>
         <p className="adminnav__me">{email}</p>
         <p className="adminnav__role">
           {isOwner ? t.admin.roleOwner : t.admin.roleAdmin} ·{' '}

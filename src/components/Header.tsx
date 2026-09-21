@@ -4,17 +4,22 @@ import { LANGS, useLang } from '../lib/i18n';
 import { SHOP } from '../lib/shop';
 import { Icon } from './Art';
 import { Logo } from './Logo';
+import { useAdmin } from '../lib/useAdmin';
 
 // Шапка: логотип, меню, переключатель языка на три положения, кнопка звонка.
 export function Header() {
   const { t, lang, setLang } = useLang();
   const [path] = useLocation();
   const [open, setOpen] = useState(false);
+  // Ссылка на админку появляется только у того, кому уже открыли доступ.
+  // До ответа базы её нет: мигнуть ссылкой и убрать хуже, чем не показать.
+  const { isAdmin } = useAdmin();
 
   const links = [
     { href: '/', label: t.nav.home },
     { href: '/request', label: t.nav.request },
     { href: '/track', label: t.nav.track },
+    ...(isAdmin ? [{ href: '/admin', label: t.nav.admin }] : []),
   ];
 
   return (

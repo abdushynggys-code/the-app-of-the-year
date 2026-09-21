@@ -2333,3 +2333,209 @@ p {
   line-height: 18px;
   color: var(--mute);
 }
+
+/* ─────────────── Админка: три точки ─────────────── */
+
+/* Обычный <details>: открывает и закрывает его сам браузер, он же делает
+   меню доступным с клавиатуры. Своей выпадашки на useState тут не нужно. */
+.more {
+  position: relative;
+  flex: none;
+}
+
+.more__dots {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: var(--r-md);
+  background: var(--canvas-soft);
+  color: var(--body);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+/* Стрелка-треугольник у <summary> — в двух написаниях, иначе она остаётся
+   в Safari. */
+.more__dots::-webkit-details-marker {
+  display: none;
+}
+
+.more__dots::marker {
+  content: '';
+}
+
+.more__dots:hover {
+  background: var(--pressed);
+  color: var(--ink);
+}
+
+/* Панель висит НАД содержимым, а не раздвигает меню: иначе при открытии
+   уезжает вниз весь список заявок. */
+.more__panel {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + var(--s-sm));
+  z-index: 20;
+  width: 280px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: var(--s-lg);
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.more__label {
+  margin: var(--s-lg) 0 var(--s-sm);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.more__label:first-child {
+  margin-top: 0;
+}
+
+.more__quiet {
+  font-size: 14px;
+  color: var(--mute);
+}
+
+.more__rows {
+  display: grid;
+  gap: 2px;
+}
+
+.more__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-sm);
+  width: 100%;
+  padding: var(--s-sm) var(--s-md);
+  background: none;
+  border: none;
+  border-radius: var(--r-md);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.more__row:hover {
+  background: var(--canvas-soft);
+}
+
+.more__row b {
+  color: var(--accent-strong);
+}
+
+/* Вторая строка — что за устройство или начало заметки. Обрезаем одной
+   строкой: в меню важно узнать заявку, а не прочитать её целиком. */
+.more__row em {
+  display: block;
+  font-style: normal;
+  font-size: 13px;
+  color: var(--body);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+.adminnav__tools {
+  display: flex;
+  align-items: start;
+  gap: var(--s-sm);
+}
+
+.adminnav__tools .btn {
+  flex: 1;
+}
+
+/* ─────────────── Админка: свой номер заказа ─────────────── */
+
+.shopno {
+  display: flex;
+  gap: var(--s-md);
+  align-items: center;
+}
+
+.shopno input {
+  flex: 1;
+  max-width: 220px;
+  padding: 10px var(--s-md);
+  font-family: inherit;
+  font-size: 15px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+.shopno input:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+/* ─────────────── Админка: журнал доступов ─────────────── */
+
+.logrows {
+  display: grid;
+  gap: 1px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+
+.logrow {
+  display: grid;
+  grid-template-columns: 150px 1fr 200px;
+  gap: var(--s-md);
+  align-items: baseline;
+  padding: var(--s-md) var(--s-lg);
+  background: var(--canvas);
+  font-size: 14px;
+}
+
+.logrow__when {
+  color: var(--mute);
+  font-variant-numeric: tabular-nums;
+}
+
+.logrow__who {
+  display: block;
+  color: var(--body);
+}
+
+.logrow__by {
+  color: var(--body);
+  overflow-wrap: anywhere;
+}
+
+/* Подробность уходит под всё остальное: она нужна, только когда строку
+   уже нашли глазами. */
+.logrow__detail {
+  grid-column: 2 / -1;
+  color: var(--mute);
+}
+
+@media (max-width: 900px) {
+  .logrow {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .logrow__detail {
+    grid-column: 1;
+  }
+}

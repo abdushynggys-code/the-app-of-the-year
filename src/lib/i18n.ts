@@ -33,7 +33,7 @@ type Promo = { eyebrow: string; t: string; d: string; cta: string };
 
 // Один словарь описывает все три языка — если забыть ключ, сборка упадёт с ошибкой.
 export type Dict = {
-  nav: { home: string; request: string; track: string };
+  nav: { home: string; request: string; track: string; admin: string };
   menu: string;
 
   heroTitle: string;
@@ -217,6 +217,10 @@ export type Dict = {
 
     stepsLabel: string;
     stepUndoAsk: string;
+    shopNo: string;
+    shopNoPh: string;
+    shopNoHint: string;
+    shopNoTaken: string;
     pickedUp: string;
 
     photos: string;
@@ -276,6 +280,20 @@ export type Dict = {
     demoteSelfAsk: string;
     revokeFailed: string;
 
+    moreMenu: string;
+    moreNews: string;
+    moreQuiet: string;
+    moreRecent: string;
+    moreNotes: string;
+    moreNoNotes: string;
+    moreOwner: string;
+    tabLog: string;
+    logHint: string;
+    logEmpty: string;
+    logBySite: string;
+    logNoTable: string;
+    logActions: Record<string, string>;
+
     tabDeals: string;
     dealsHint: string;
     dealPercent: string;
@@ -319,7 +337,7 @@ export type Dict = {
 export const DICT: Record<Lang, Dict> = {
   /* ─────────────────────────── Русский ─────────────────────────── */
   ru: {
-    nav: { home: 'Главная', request: 'Заявка', track: 'Статус ремонта' },
+    nav: { home: 'Главная', request: 'Заявка', track: 'Статус ремонта', admin: 'Админка' },
     menu: 'Меню',
 
     heroTitle: 'Сломалось? Посмотрим бесплатно',
@@ -622,6 +640,11 @@ export const DICT: Record<Lang, Dict> = {
       stepsLabel: 'Этапы ремонта',
       stepUndoAsk:
         'Снять этот этап и все следующие за ним? У клиента полоска ремонта откатится назад.',
+      shopNo: 'Свой номер заказа',
+      shopNoPh: 'Например, 1024 или A-12',
+      shopNoHint:
+        'Номер из вашего журнала. Клиенту он не показывается — статус тот смотрит по коду выше. Поиск работает и по нему.',
+      shopNoTaken: 'Такой номер уже стоит на другой заявке.',
       pickedUp: 'Выдано',
 
       photos: 'Фото устройства',
@@ -685,6 +708,29 @@ export const DICT: Record<Lang, Dict> = {
         'Снять с себя роль владельца? Доступы и белый список будет вести другой владелец.',
       revokeFailed: 'Доступ убрать не удалось. У владельца доступ забирают, сняв с него роль.',
 
+      moreMenu: 'Ещё',
+      moreNews: 'Что нового',
+      moreQuiet: 'Пока пусто.',
+      moreRecent: 'Последние заявки',
+      moreNotes: 'Последние заметки',
+      moreNoNotes: 'Заметок пока нет.',
+      moreOwner: 'Только для владельца',
+      tabLog: 'Журнал доступов',
+      logHint:
+        'Кто и когда открывал доступ, менял роли и переписывал номера заказов. Пишет его сама база, поэтому пропустить запись нельзя. Стереть её тоже нельзя — ни вам, ни кому-либо ещё.',
+      logEmpty: 'Записей пока нет.',
+      logBySite: 'сам сайт',
+      logNoTable: 'Журнала ещё нет в базе. Выполните в терминале: npm run db:push',
+      logActions: {
+        'access.requested': 'Попросил доступ',
+        'access.approved': 'Доступ открыт',
+        'access.pending': 'Доступ снова на рассмотрении',
+        'access.removed': 'Доступ убран',
+        'role.owner': 'Стал владельцем',
+        'role.admin': 'Снята роль владельца',
+        'order.number': 'Изменён номер заказа',
+      },
+
       tabDeals: 'Скидки',
       dealsHint: 'Скидка появится на главной странице сайта, как только вы её объявите.',
       dealPercent: 'Скидка, %',
@@ -737,7 +783,7 @@ export const DICT: Record<Lang, Dict> = {
 
   /* ─────────────────────────── Қазақша ─────────────────────────── */
   kk: {
-    nav: { home: 'Басты бет', request: 'Өтінім', track: 'Жөндеу күйі' },
+    nav: { home: 'Басты бет', request: 'Өтінім', track: 'Жөндеу күйі', admin: 'Админ' },
     menu: 'Мәзір',
 
     heroTitle: 'Сынды ма? Тегін қараймыз',
@@ -1040,6 +1086,11 @@ export const DICT: Record<Lang, Dict> = {
       stepsLabel: 'Жөндеу кезеңдері',
       stepUndoAsk:
         'Осы кезеңді және одан кейінгілерін алып тастайсыз ба? Клиенттегі жолақ артқа қайтады.',
+      shopNo: 'Өз тапсырыс нөмірі',
+      shopNoPh: 'Мысалы, 1024 немесе A-12',
+      shopNoHint:
+        'Журналыңыздағы нөмір. Клиентке көрсетілмейді — ол күйді жоғарыдағы код арқылы қарайды. Іздеу бұл нөмір бойынша да жұмыс істейді.',
+      shopNoTaken: 'Мұндай нөмір басқа өтінімде тұр.',
       pickedUp: 'Берілді',
 
       photos: 'Құрылғы фотосы',
@@ -1103,6 +1154,29 @@ export const DICT: Record<Lang, Dict> = {
         'Өзіңізден иелік рөлін аласыз ба? Рұқсаттар мен ақ тізімді басқа иесі жүргізеді.',
       revokeFailed: 'Рұқсатты алып тастау мүмкін болмады. Иесінің рұқсатын алу үшін алдымен рөлін алады.',
 
+      moreMenu: 'Тағы',
+      moreNews: 'Не жаңалық',
+      moreQuiet: 'Әзірге бос.',
+      moreRecent: 'Соңғы өтінімдер',
+      moreNotes: 'Соңғы жазбалар',
+      moreNoNotes: 'Әзірге жазба жоқ.',
+      moreOwner: 'Тек иесі үшін',
+      tabLog: 'Рұқсаттар журналы',
+      logHint:
+        'Кім және қашан рұқсат ашты, рөл өзгертті, тапсырыс нөмірін ауыстырды. Оны базаның өзі жазады, сондықтан жазбаны өткізіп жіберу мүмкін емес. Өшіру де мүмкін емес — сізге де, басқаға да.',
+      logEmpty: 'Әзірге жазба жоқ.',
+      logBySite: 'сайттың өзі',
+      logNoTable: 'Журнал базада әлі жоқ. Терминалда орындаңыз: npm run db:push',
+      logActions: {
+        'access.requested': 'Рұқсат сұрады',
+        'access.approved': 'Рұқсат ашылды',
+        'access.pending': 'Рұқсат қайта қаралуда',
+        'access.removed': 'Рұқсат алынды',
+        'role.owner': 'Иесі болды',
+        'role.admin': 'Иелік рөлі алынды',
+        'order.number': 'Тапсырыс нөмірі өзгерді',
+      },
+
       tabDeals: 'Жеңілдіктер',
       dealsHint: 'Жеңілдікті жарияласаңыз, ол сайттың басты бетінде көрінеді.',
       dealPercent: 'Жеңілдік, %',
@@ -1154,7 +1228,7 @@ export const DICT: Record<Lang, Dict> = {
 
   /* ─────────────────────────── English ─────────────────────────── */
   en: {
-    nav: { home: 'Home', request: 'Book a repair', track: 'Track repair' },
+    nav: { home: 'Home', request: 'Book a repair', track: 'Track repair', admin: 'Admin' },
     menu: 'Menu',
 
     heroTitle: 'Broken? We will look for free',
@@ -1457,6 +1531,11 @@ export const DICT: Record<Lang, Dict> = {
       stepsLabel: 'Repair steps',
       stepUndoAsk:
         'Untick this step and every step after it? The progress bar rolls back for the customer.',
+      shopNo: 'Your own order number',
+      shopNoPh: 'For example 1024 or A-12',
+      shopNoHint:
+        'The number from your own book. The customer never sees it — they track by the code above. Search works on it too.',
+      shopNoTaken: 'That number is already on another request.',
       pickedUp: 'Collected',
 
       photos: 'Device photos',
@@ -1519,6 +1598,29 @@ export const DICT: Record<Lang, Dict> = {
       demoteSelfAsk:
         'Step down from the owner role? Another owner will keep the access list and the allowlist.',
       revokeFailed: 'Could not remove that access. An owner loses access by stepping down from the role first.',
+
+      moreMenu: 'More',
+      moreNews: 'What is new',
+      moreQuiet: 'Nothing yet.',
+      moreRecent: 'Latest requests',
+      moreNotes: 'Latest notes',
+      moreNoNotes: 'No notes yet.',
+      moreOwner: 'Owner only',
+      tabLog: 'Access log',
+      logHint:
+        'Who opened access, changed roles and rewrote order numbers, and when. The database writes it itself, so an entry cannot be skipped. It cannot be erased either — not by you, not by anyone.',
+      logEmpty: 'No entries yet.',
+      logBySite: 'the site itself',
+      logNoTable: 'The log is not in the database yet. Run in the terminal: npm run db:push',
+      logActions: {
+        'access.requested': 'Asked for access',
+        'access.approved': 'Access opened',
+        'access.pending': 'Access back under review',
+        'access.removed': 'Access removed',
+        'role.owner': 'Became owner',
+        'role.admin': 'Owner role removed',
+        'order.number': 'Order number changed',
+      },
 
       tabDeals: 'Deals',
       dealsHint: 'A deal shows up on the site’s front page as soon as you announce it.',

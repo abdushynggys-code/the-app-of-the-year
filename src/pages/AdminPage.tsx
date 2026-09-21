@@ -7,6 +7,9 @@ import { AdminNav, type AdminTab } from '../components/AdminNav';
 import { AdminDeals } from '../components/AdminDeals';
 import { AdminImages } from '../components/AdminImages';
 import { AdminFarewell } from '../components/AdminLeave';
+import { AdminMore } from '../components/AdminMore';
+import { AdminLog } from '../components/AdminLog';
+import { loadLog, type LogRow } from '../lib/adminLog';
 import { loadSiteImages, SLOTS, type SiteImages } from '../lib/siteImages';
 import { isLive, loadDeals, type Deal } from '../lib/deals';
 import { canWhatsApp, fillTemplate, waLink } from '../lib/whatsapp';
@@ -14,6 +17,8 @@ import { canWhatsApp, fillTemplate, waLink } from '../lib/whatsapp';
 type Req = {
   id: string;
   track_code: string;
+  // Свой номер мастерской — тот, что написан на бумажке. Наружу не выходит.
+  shop_no: string | null;
   name: string;
   phone: string;
   email: string | null;
@@ -81,6 +86,8 @@ export function AdminPage() {
   // Почту запоминаем прямо во флаге: прощальный экран должен назвать
   // аккаунт, а email к тому моменту уже может обнулиться.
   const [leftAs, setLeftAs] = useState('');
+  const [log, setLog] = useState<LogRow[]>([]);
+  const [logError, setLogError] = useState('');
   const [stats, setStats] = useState<Record<string, number>>({});
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -101,6 +108,9 @@ export function AdminPage() {
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const [bulkStep, setBulkStep] = useState<StepKey | ''>('');
   const [drafts, setDrafts] = useState<Record<string, string>>({});
+  // Черновики своего номера заказа — отдельно от заметок: сохраняются они
+  // по-разному, и мешать их в одном объекте значит однажды перепутать.
+  const [numbers, setNumbers] = useState<Record<string, string>>({});
   const [photos, setPhotos] = useState<Record<string, Photo[]>>({});
   const [photoBusy, setPhotoBusy] = useState('');
   const fileInput = useRef<HTMLInputElement>(null);
@@ -176,6 +186,7 @@ export function AdminPage() {
         void loadAllowlist();
         void loadDealList();
         void loadImageList();
+        void loadLogRows();
       }
     }
   }
@@ -311,6 +322,12 @@ export function AdminPage() {
     setDealsError(res.error);
   }
 
+  async function loadLogRows() {
+    const res = await loadLog();
+    setLog(res.rows);
+    setLogError(res.error);
+  }
+
   async function loadImageList() {
     setImages(await loadSiteImages());
   }
@@ -330,7 +347,7 @@ export function AdminPage() {
     let q = supabase
       .from('repair_requests')
       .select(
-        'id, track_code, name, phone, email, device, model, problem, status, steps, notes, picked_up_at, created_at',
+        'id, track_code, shop_no, name, phone, email, device, model, problem, status, steps, notes, picked_up_at, created_at',
       )
       .order('created_at', { ascending: false })
       .range(from, from + PAGE - 1);
@@ -418,6 +435,34 @@ export function AdminPage() {
     setSavingId('');
   }
 
+  // Свой номер мастерской. Пустое поле значит «номера нет» — записываем null,
+  // потому что уникальность считается только по заполненным, а пустая строка
+  // заняла бы номер и вторую заявку без номера уже не сохранить.
+  async function saveShopNo(id: string) {
+    const raw = (numbers[id] ?? '').trim();
+    setSavingId(id);
+    setDbError('');
+    const { error } = await supabase
+      .from('repair_requests')
+      .update({ shop_no: raw || null })
+      .eq('id', id);
+    setSavingId('');
+
+    if (error) {
+      // 23505 — такой номер уже стоит на другой заявке. Об этом надо сказать
+      // прямо: общий «что-то пошло не так» заставил бы искать причину вслепую.
+      setDbError(error.code === '23505' ? t.admin.shopNoTaken : error.message);
+      return;
+    }
+
+    patch(id, { shop_no: raw || null });
+    setNumbers((n) => {
+      const next = { ...n };
+      delete next[id];
+      return next;
+    });
+  }
+
   // Корзина закрытая, поэтому на каждое фото просим временную ссылку.
   async function loadPhotos(id: string) {
     const { data } = await supabase.storage.from('repair-photos').list(id, { limit: 30 });
@@ -459,6 +504,14 @@ export function AdminPage() {
 
   function toggleOpen(id: string) {
     setOpen((cur) => (cur === id ? '' : id));
+    if (!photos[id]) void loadPhotos(id);
+  }
+
+  // Из трёх точек прыгаем сразу в нужную заявку: переключаем раздел
+  // и раскрываем карточку, чтобы не искать её в списке глазами.
+  function openFromMore(id: string) {
+    setTab('active');
+    setOpen(id);
     if (!photos[id]) void loadPhotos(id);
   }
 
@@ -620,6 +673,7 @@ export function AdminPage() {
     if (isOwner) {
       void loadDealList();
       void loadImageList();
+      void loadLogRows();
     }
   }
 
@@ -636,12 +690,32 @@ export function AdminPage() {
             deals: liveDeals,
             images: filledSlots,
             access: pendingRows.length,
+            log: log.length,
           }}
           isOwner={isOwner}
           email={email}
           onSignOut={() => supabase.auth.signOut()}
           onRefresh={refreshAll}
           onLeft={() => setLeftAs(email ?? '')}
+          more={
+            <AdminMore
+              isOwner={isOwner}
+              newReports={newReports}
+              pendingAccess={pendingRows.length}
+              recent={requests.slice(0, 5).map((r) => ({
+                id: r.id,
+                track_code: r.track_code,
+                shop_no: r.shop_no,
+                device: r.device,
+              }))}
+              notes={requests
+                .filter((r) => r.notes.trim())
+                .slice(0, 5)
+                .map((r) => ({ id: r.id, track_code: r.track_code, notes: r.notes }))}
+              onGo={switchTab}
+              onOpenRequest={openFromMore}
+            />
+          }
         />
 
         {/* key — чтобы раздел появлялся заново, а не подменялся молча */}
@@ -673,7 +747,9 @@ export function AdminPage() {
         </div>
       )}
 
-      {tab === 'deals' ? (
+      {tab === 'log' ? (
+        <AdminLog rows={log} loadError={logError} lang={lang} />
+      ) : tab === 'deals' ? (
         <AdminDeals deals={deals} loadError={dealsError} reload={loadDealList} />
       ) : tab === 'images' ? (
         <AdminImages images={images} reload={loadImageList} />
@@ -903,6 +979,9 @@ export function AdminPage() {
                       >
                         <span className="reqrow__code">
                           {r.track_code}
+                          {/* Свой номер сразу в строке: мастер ищет заявку
+                              по бумажке, а не по коду с сайта. */}
+                          {r.shop_no && <span className="tag tag--quiet">№ {r.shop_no}</span>}
                           {r.picked_up_at && <span className="tag">{t.admin.pickedUp}</span>}
                           {r.notes && <span className="tag tag--quiet">{t.admin.notes}</span>}
                         </span>
@@ -1001,6 +1080,38 @@ export function AdminPage() {
                               </label>
                             ))}
                           </div>
+                        </div>
+
+                        {/* Свой номер заказа — тот, что мастерская пишет на
+                            бумажке или в журнале. Наружу он не выходит: код
+                            RS- остаётся единственным, по которому клиент
+                            смотрит статус. Здесь он нужен, чтобы сойтись
+                            с бумагой, и по нему же работает поиск. */}
+                        <div className="block">
+                          <span className="block__label">{t.admin.shopNo}</span>
+                          <div className="shopno">
+                            <input
+                              value={numbers[r.id] ?? r.shop_no ?? ''}
+                              onChange={(e) =>
+                                setNumbers((n) => ({ ...n, [r.id]: e.target.value }))
+                              }
+                              placeholder={t.admin.shopNoPh}
+                              maxLength={24}
+                              aria-label={t.admin.shopNo}
+                            />
+                            {numbers[r.id] !== undefined &&
+                              numbers[r.id] !== (r.shop_no ?? '') && (
+                                <button
+                                  className="btn btn--primary"
+                                  type="button"
+                                  disabled={savingId === r.id}
+                                  onClick={() => saveShopNo(r.id)}
+                                >
+                                  {savingId === r.id ? t.admin.saving : t.admin.notesSave}
+                                </button>
+                              )}
+                          </div>
+                          <p className="form__hint">{t.admin.shopNoHint}</p>
                         </div>
 
                         <div className="block">
