@@ -1,0 +1,91 @@
+/* Decorative motion stays behind the device and never covers page content. */
+.repair-preview__atmosphere {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: 40%;
+}
+
+.repair-preview__atmosphere i {
+  position: absolute;
+  width: 76%;
+  height: 82%;
+  left: 12%;
+  top: 9%;
+  border: 1px solid #bdd0c0;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #d7e7d8b3, #e5ede366 65%, transparent 72%);
+  animation: reset-orbit 14s ease-in-out infinite;
+}
+
+.repair-preview__atmosphere i:nth-child(2) {
+  width: 92%;
+  height: 63%;
+  left: 4%;
+  top: 18%;
+  border-style: dashed;
+  background: none;
+  animation: reset-oval 19s ease-in-out -7s infinite;
+}
+
+.repair-preview__atmosphere i:nth-child(3) {
+  width: 65%;
+  height: 91%;
+  left: 17%;
+  top: 4%;
+  border-color: #afc9b570;
+  background: none;
+  animation: reset-oval 23s ease-in-out -12s infinite reverse;
+}
+
+.repair-preview__float { animation: reset-float 9s ease-in-out infinite; }
+
+/* Two small brightness dips, once on mount; no full-page flash or loading gate. */
+.device-screen, .logo__text { animation: reset-screen-start 1.4s ease-out both; }
+.device-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(transparent 40%, #dff7df30 50%, transparent 60%);
+  opacity: 0;
+  animation: reset-scan 1.4s ease-out;
+}
+
+[data-motion='paused'] .repair-preview__atmosphere i,
+[data-motion='paused'] .repair-preview__float,
+[data-motion='paused'] .device-screen,
+[data-motion='paused'] .device-screen::after { animation-play-state: paused; }
+
+@keyframes reset-orbit {
+  0%, 100% { transform: scale(.96) rotate(-8deg); opacity: .7; }
+  50% { transform: scale(1.04) rotate(8deg); opacity: 1; }
+}
+@keyframes reset-oval {
+  0%, 100% { transform: rotate(-23deg) scale(.94); opacity: .65; }
+  50% { transform: rotate(23deg) scale(1.04); opacity: 1; }
+}
+@keyframes reset-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes reset-screen-start {
+  0%, 22%, 63%, 100% { filter: brightness(1); }
+  10% { filter: brightness(.78); }
+  48% { filter: brightness(.88); }
+}
+@keyframes reset-scan {
+  0% { transform: translateY(-100%); opacity: 0; }
+  30% { opacity: .65; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .repair-preview__atmosphere i,
+  .repair-preview__float,
+  .logo__text,
+  .device-screen,
+  .device-screen::after { animation: none !important; }
+  .preview-motion { display: none; }
+}

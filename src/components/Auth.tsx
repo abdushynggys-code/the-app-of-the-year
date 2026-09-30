@@ -17,12 +17,19 @@ export function Auth() {
   // Вход через Google — один тап вместо придумывания пароля.
   // Возвращаемся на ту же страницу, чтобы не терять заполненную форму.
   async function signInGoogle() {
+    setBusy(true);
     setMessage('');
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: window.location.href },
-    });
-    if (error) setMessage(t.auth.googleHint);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: window.location.href },
+      });
+      if (error) setMessage(t.auth.googleHint);
+    } catch {
+      setMessage(t.auth.failed);
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -34,7 +41,7 @@ export function Auth() {
         ? supabase.auth.signUp({
             email,
             password,
-            options: { emailRedirectTo: window.location.origin },
+            options: { emailRedirectTo: window.location.href },
           })
         : supabase.auth.signInWithPassword({ email, password }));
 
@@ -53,7 +60,7 @@ export function Auth() {
         {mode === 'signin' ? t.auth.signin : t.auth.signup}
       </h3>
 
-      <button className="btn btn--secondary btn--block" type="button" onClick={signInGoogle}>
+      <button className="btn btn--secondary btn--block" type="button" onClick={signInGoogle} disabled={busy}>
         {t.auth.google}
       </button>
 
@@ -91,7 +98,7 @@ export function Auth() {
           />
         </label>
 
-        {message && <p className="message">{message}</p>}
+        {message && <p className="message" role="status">{message}</p>}
 
         <button className="btn btn--primary" type="submit" disabled={busy}>
           {busy ? '…' : mode === 'signin' ? t.auth.doSignin : t.auth.doSignup}

@@ -5,6 +5,8 @@ import { SupabaseSetupMessage } from '../components/SupabaseSetupMessage';
 import { Auth } from '../components/Auth';
 import { useLang } from '../lib/i18n';
 import { SHOP } from '../lib/shop';
+import { CUSTOMER_COPY } from '../lib/customerCopy';
+import { RequestContext } from '../components/RequestContext';
 
 // Код заявки вида RS-482170 — по нему клиент смотрит статус без регистрации.
 // Шесть цифр, а не четыре: четыре давали всего 9000 вариантов, и по закону
@@ -20,7 +22,8 @@ function fromUrl(key: string) {
 }
 
 export function RequestPage() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  const copy = CUSTOMER_COPY[lang];
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -44,7 +47,7 @@ export function RequestPage() {
     supabase.auth.getSession().then(({ data }) => {
       setAccount(data.session?.user.email ?? null);
       setChecked(true);
-    });
+    }).catch(() => setChecked(true));
 
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       setAccount(session?.user.email ?? null);
@@ -71,6 +74,7 @@ export function RequestPage() {
           <h1>{t.fLoginTitle}</h1>
           <p>{t.fLoginWhy}</p>
         </div>
+        <RequestContext device={device} problem={problem} />
         <Auth />
         <p className="form__hint" style={{ marginTop: 24 }}>
           <Link href="/track" className="textlink">
@@ -83,11 +87,25 @@ export function RequestPage() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (busy) return;
+    if (![name, device, model, problem].every(value => value.trim())) {
+      setError(copy.requiredError);
+      return;
+    }
+    const digits = phone.replace(/\D/g, '');
+    if (digits.length < 10 || digits.length > 15 || !/^[+\d\s().-]+$/.test(phone)) {
+      setError(copy.phoneError);
+      return;
+    }
     setBusy(true);
     setError('');
     try {
       // Если клиент вошёл — заявка привязана к аккаунту и попадёт в «Мои заявки».
       const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) {
+        setAccount(null);
+        return;
+      }
 
       // Код придумываем случайно, поэтому он может совпасть с уже занятым.
       // Тогда база вернёт ошибку 23505 (нарушено «уникальное»), и мы просто
@@ -152,7 +170,7 @@ export function RequestPage() {
   }
 
   // Ждём ответа о сессии — иначе форма мигает и сменяется окном входа
-  if (!checked) return <main className="wrap wrap--narrow page" />;
+  if (!checked) return <main className="wrap wrap--narrow page"><p role="status">{copy.loading}</p></main>;
 
   // Код уже получен — экран успеха показываем в любом случае
   if (!account && !code) return loginGate();
@@ -204,6 +222,7 @@ export function RequestPage() {
         <p>{t.formText}</p>
       </div>
 
+      <RequestContext device={device} problem={problem} />
       <form className="card card--soft form" onSubmit={submit}>
         {/* autoComplete и inputMode тут не украшение: на телефоне они
             решают, какая вылезет клавиатура и предложит ли браузер
@@ -293,7 +312,7 @@ export function RequestPage() {
           />
         </label>
 
-        {error && <p className="message message--error">{error}</p>}
+        {error && <p className="message message--error" role="alert">{error}</p>}
 
         <button
           className={busy ? 'btn btn--primary btn--lg is-busy' : 'btn btn--primary btn--lg'}

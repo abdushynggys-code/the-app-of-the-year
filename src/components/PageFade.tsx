@@ -50,6 +50,7 @@ export function PageFade({ children }: { children: ReactNode }) {
 
   return (
     <div
+      id="main-content"
       className={moved.current ? 'pageview pageview--in' : 'pageview'}
       key={path}
       ref={box}

@@ -4,6 +4,7 @@ import { SupabaseSetupMessage } from '../components/SupabaseSetupMessage';
 import { Auth } from '../components/Auth';
 import { RepairProgress } from '../components/RepairProgress';
 import { useLang, type Status, type StepKey } from '../lib/i18n';
+import { CUSTOMER_COPY } from '../lib/customerCopy';
 
 type PublicRequest = {
   track_code: string;
@@ -32,6 +33,7 @@ export function TrackPage() {
   const [code, setCode] = useState('');
   const [found, setFound] = useState<PublicRequest | null>(null);
   const [notFound, setNotFound] = useState(false);
+  const [lookupError, setLookupError] = useState(false);
   const [busy, setBusy] = useState(false);
 
   const [email, setEmail] = useState<string | null>(null);
@@ -73,19 +75,21 @@ export function TrackPage() {
   }
 
   async function lookup(value: string) {
-    const clean = value.trim();
+    const clean = value.trim().toUpperCase();
     if (!clean) return;
     setBusy(true);
     setNotFound(false);
+    setLookupError(false);
     setFound(null);
     try {
       // Читаем через функцию в базе — она отдаёт только безопасные поля.
       const { data, error } = await supabase.rpc('request_status_by_code', { code: clean });
       const row = (data as PublicRequest[] | null)?.[0];
-      if (error || !row) setNotFound(true);
+      if (error) setLookupError(true);
+      else if (!row) setNotFound(true);
       else setFound(row);
     } catch {
-      setNotFound(true);
+      setLookupError(true);
     } finally {
       setBusy(false);
     }
@@ -137,6 +141,7 @@ export function TrackPage() {
         </button>
       </form>
 
+      {lookupError && <p className="message message--error" role="alert">{CUSTOMER_COPY[lang].connectionError}</p>}
       {notFound && (
         <p className="message message--error swap-in" style={{ marginTop: 16 }}>
           {t.trackNotFound}

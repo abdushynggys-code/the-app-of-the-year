@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'wouter';
 import { useLang } from '../lib/i18n';
+import { CUSTOMER_COPY } from '../lib/customerCopy';
 import { formatAmount, groupByKind, loadPrices, priceAround, type Price } from '../lib/prices';
 
-// Цены на главной. Ничего не выдумывает: показывает ровно те строки,
-// которые владелец вписал в админке. Цен нет — раздела нет, потому что
-// заголовок «Сколько это стоит» без единой суммы под ним отвечает на
-// вопрос хуже, чем его отсутствие.
+// Show the owner's published prices, or explain how to get an exact quote.
 //
 // Перед каждой суммой стоит «от». Это не оговорка ради осторожности:
 // точную цену называют после бесплатной диагностики, и написать её
@@ -27,7 +25,14 @@ export function PriceList() {
     };
   }, []);
 
-  if (prices.length === 0) return null;
+  if (prices.length === 0) return (
+    <section className="band band--soft" id="prices">
+      <div className="wrap price-explainer">
+        <div><p className="eyebrow">{t.pricesEyebrow}</p><h2>{CUSTOMER_COPY[lang].priceTitle}</h2><p>{CUSTOMER_COPY[lang].priceText}</p></div>
+        <Link href="/request" className="btn btn--primary btn--lg">{t.pricesCta}<span aria-hidden="true">↗</span></Link>
+      </div>
+    </section>
+  );
 
   const groups = groupByKind(prices);
 

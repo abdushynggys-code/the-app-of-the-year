@@ -5,6 +5,7 @@ import { SHOP } from '../lib/shop';
 import { Icon } from './Art';
 import { Logo } from './Logo';
 import { useAdmin } from '../lib/useAdmin';
+import { CUSTOMER_COPY } from '../lib/customerCopy';
 
 // Шапка: логотип, меню, переключатель языка на три положения, кнопка звонка.
 export function Header() {
@@ -52,6 +53,7 @@ export function Header() {
 
   return (
     <header className="header" ref={box}>
+      <a className="skip-link" href="#main-content">{CUSTOMER_COPY[lang].skip}</a>
       <div className="header__inner">
         <Link href="/" className="logo" onClick={() => setOpen(false)}>
           <Logo />
@@ -62,12 +64,13 @@ export function Header() {
 
         {/* Переключатель языка живёт внутри меню: в строке шапки на телефоне
             он не помещался вместе с номером и логотипом. */}
-        <nav className={open ? 'nav is-open' : 'nav'}>
+        <nav id="primary-navigation" className={open ? 'nav is-open' : 'nav'} aria-label={t.menu}>
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
               className={path === l.href ? 'nav__link is-active' : 'nav__link'}
+              aria-current={path === l.href ? 'page' : undefined}
               onClick={() => setOpen(false)}
             >
               {l.label}
@@ -107,6 +110,7 @@ export function Header() {
           onClick={() => setOpen((v) => !v)}
           aria-label={t.menu}
           aria-expanded={open}
+          aria-controls="primary-navigation"
         >
           <svg width="18" height="14" viewBox="0 0 18 14" aria-hidden="true">
             <path

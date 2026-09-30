@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useLang } from '../lib/i18n';
 import { SHOP } from '../lib/shop';
@@ -17,11 +18,25 @@ import { Icon } from './Art';
 export function MobileBar() {
   const { t } = useLang();
   const [path] = useLocation();
+  const [heroVisible, setHeroVisible] = useState(path === '/');
+
+  // The hero already has a booking button. Keep its illustration and controls clear.
+  useEffect(() => {
+    const hero = document.querySelector('.repair-hero');
+    if (!hero) {
+      setHeroVisible(false);
+      return;
+    }
+    const observer = new IntersectionObserver(([entry]) => setHeroVisible(entry.isIntersecting));
+    observer.observe(hero);
+    return () => observer.disconnect();
+  }, [path]);
 
   // На самой форме заявки полоса не нужна: она вела бы на страницу, где
   // человек уже стоит, и закрывала бы собой поля снизу.
   // В админке её тоже нет — это рабочий экран мастерской, а не витрина.
   if (path === '/request' || path === '/admin') return null;
+  if (path === '/' && heroVisible) return null;
 
   return (
     <div className="mobilebar">
