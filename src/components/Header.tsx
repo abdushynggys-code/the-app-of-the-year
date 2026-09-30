@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { LANGS, useLang } from '../lib/i18n';
 import { SHOP } from '../lib/shop';
@@ -11,6 +11,7 @@ export function Header() {
   const { t, lang, setLang } = useLang();
   const [path] = useLocation();
   const [open, setOpen] = useState(false);
+  const box = useRef<HTMLElement>(null);
   // Ссылка на админку появляется только у того, кому уже открыли доступ.
   // До ответа базы её нет: мигнуть ссылкой и убрать хуже, чем не показать.
   const { isAdmin } = useAdmin();
@@ -22,8 +23,35 @@ export function Header() {
     ...(isAdmin ? [{ href: '/admin', label: t.nav.admin }] : []),
   ];
 
+  // Открытое меню закрывается нажатием мимо него и клавишей Esc.
+  //
+  // Без этого на телефоне был тупик: меню перекрывает начало страницы,
+  // и единственный способ его убрать — попасть в маленький крестик в углу.
+  // Человек жмёт «куда-нибудь мимо», как во всех остальных приложениях,
+  // ничего не происходит, и он жмёт ещё раз уже по ссылке под меню.
+  //
+  // pointerdown, а не click: закрыть надо в момент касания, до того как
+  // браузер решит, что это было нажатие по тому, что лежит под меню.
+  useEffect(() => {
+    if (!open) return;
+
+    const outside = (e: PointerEvent) => {
+      if (!box.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const escape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+
+    document.addEventListener('pointerdown', outside);
+    document.addEventListener('keydown', escape);
+    return () => {
+      document.removeEventListener('pointerdown', outside);
+      document.removeEventListener('keydown', escape);
+    };
+  }, [open]);
+
   return (
-    <header className="header">
+    <header className="header" ref={box}>
       <div className="header__inner">
         <Link href="/" className="logo" onClick={() => setOpen(false)}>
           <Logo />

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Route, Switch } from 'wouter';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
+import { MobileBar } from './components/MobileBar';
 import { PageFade } from './components/PageFade';
 import { SiteSchema } from './components/SiteSchema';
 import { HomePage } from './pages/HomePage';
@@ -10,8 +11,6 @@ import { TrackPage } from './pages/TrackPage';
 import { AdminPage } from './pages/AdminPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { LangContext, type Lang } from './lib/i18n';
-import { useReboot } from './lib/motion';
-import { Boot } from './components/Boot';
 
 const SAVED = ['ru', 'kk', 'en'];
 
@@ -30,19 +29,8 @@ export default function App() {
     document.documentElement.lang = lang;
   }, [lang]);
 
-  // Язык меняет не кнопка, а весь экран: он гаснет ступенями, меняет язык
-  // в темноте и включается заново. Иначе каждая надпись на странице
-  // перескакивает разом, и непонятно, что вообще произошло.
-  const { rebooting, reboot } = useReboot();
-
-  function switchLang(next: Lang) {
-    if (next === lang) return;
-    reboot(() => setLang(next));
-  }
-
   return (
-    <LangContext.Provider value={{ lang, setLang: switchLang }}>
-      {rebooting && <Boot full />}
+    <LangContext.Provider value={{ lang, setLang }}>
       <SiteSchema />
       <Header />
       <PageFade>
@@ -55,6 +43,9 @@ export default function App() {
         </Switch>
       </PageFade>
       <Footer />
+      {/* Полоса действий внизу экрана телефона. Стоит последней и снаружи
+          PageFade: она не должна мигать при переходе между страницами. */}
+      <MobileBar />
     </LangContext.Provider>
   );
 }

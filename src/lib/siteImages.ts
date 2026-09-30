@@ -8,9 +8,18 @@ import { isSupabaseConfigured, supabase } from './supabase';
 
 // Места, куда можно поставить фотографию. Список закрытый: у каждого слота
 // своё место в вёрстке и своя подпись на трёх языках.
-export const SLOTS = ['hero', 'workbench', 'warranty'] as const;
+//
+// work1–work3 — снимки настоящих ремонтов. Они стоят отдельной полосой на
+// главной, и это единственное место на сайте, где видно саму работу, а не
+// слова о ней. Слотов ровно три: на телефоне больше трёх фотографий подряд
+// никто не листает, а мастерской проще выбрать три хороших, чем двадцать.
+export const SLOTS = ['hero', 'workbench', 'warranty', 'work1', 'work2', 'work3'] as const;
 
 export type Slot = (typeof SLOTS)[number];
+
+// Слоты полосы «как мы работаем». Порядок важен: пустые пропускаются,
+// поэтому одна фотография встанет первой, а не оставит дыру.
+export const WORK_SLOTS: Slot[] = ['work1', 'work2', 'work3'];
 
 export type SiteImages = Partial<Record<Slot, string>>;
 

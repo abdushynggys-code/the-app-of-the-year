@@ -1,4 +1,5 @@
-import type { DealKind } from './deals';
+import type { Kind } from './kinds';
+import type { ReviewSource } from './reviews';
 import type { Slot } from './siteImages';
 import { createContext, useContext } from 'react';
 
@@ -44,6 +45,12 @@ export type Dict = {
   proofTitle: string;
   proof: Pair[];
 
+  // Три коротких факта прямо на обложке. Всё это сказано и ниже по странице,
+  // но ниже — значит после свайпа, а доверие нужно в первом экране.
+  trustRating: string;
+  trustWarranty: string;
+  trustFree: string;
+
   cardTabRepair: string;
   cardTabTrack: string;
   cardDevice: string;
@@ -62,7 +69,33 @@ export type Dict = {
   // тут только подписи вокруг них.
   dealsEyebrow: string;
   dealsUntil: string;
-  kinds: Record<DealKind, string>;
+  kinds: Record<Kind, string>;
+
+  // Цены. Сами суммы вписывает владелец в админке — здесь только подписи
+  // вокруг них. Ни одной цифры в словаре быть не должно.
+  pricesEyebrow: string;
+  pricesTitle: string;
+  pricesText: string;
+  // Шаблон целиком, а не «от» и «₸» по отдельности: в казахском «бастап»
+  // стоит ПОСЛЕ суммы, и из двух кусков фразу на три языка не собрать.
+  priceFromTpl: string;
+  pricesNote: string;
+  pricesCta: string;
+
+  // Отзывы. Сами отзывы переносит владелец из 2ГИС и других мест.
+  reviewsEyebrow: string;
+  reviewsTitle: string;
+  reviewsAll: string;
+  reviewSources: Record<ReviewSource, string>;
+
+  // Полоса с фотографиями настоящих ремонтов.
+  workEyebrow: string;
+  workTitle: string;
+  workText: string;
+
+  // Липкая полоса действий внизу экрана телефона.
+  barRequest: string;
+  barCall: string;
 
   promos: Promo[];
 
@@ -323,6 +356,46 @@ export type Dict = {
     imageNoBucket: string;
     slots: Record<Slot, string>;
     slotWhere: Record<Slot, string>;
+
+    tabPrices: string;
+    pricesHint: string;
+    priceKind: string;
+    priceService: string;
+    priceServicePh: string;
+    priceAmount: string;
+    priceAmountHint: string;
+    priceNote: string;
+    priceNotePh: string;
+    priceAdd: string;
+    priceAdding: string;
+    priceEmpty: string;
+    priceOn: string;
+    priceOff: string;
+    priceHidden: string;
+    priceDelete: string;
+    priceDeleteAsk: string;
+    priceNoTable: string;
+    priceDuplicate: string;
+
+    tabReviews: string;
+    reviewsHint: string;
+    reviewAuthor: string;
+    reviewAuthorPh: string;
+    reviewBody: string;
+    reviewBodyPh: string;
+    reviewRating: string;
+    reviewSource: string;
+    reviewDate: string;
+    reviewDateHint: string;
+    reviewAdd: string;
+    reviewAdding: string;
+    reviewEmpty: string;
+    reviewOn: string;
+    reviewOff: string;
+    reviewHidden: string;
+    reviewDelete: string;
+    reviewDeleteAsk: string;
+    reviewNoTable: string;
   };
 
   backHome: string;
@@ -345,6 +418,9 @@ export const DICT: Record<Lang, Dict> = {
       'Смартфоны, планшеты, часы и ноутбуки в Астане. Без записи, каждый день с 10:00 до 20:00.',
 
     proofEyebrow: 'Оценка на 2ГИС',
+    trustRating: 'на 2ГИС',
+    trustWarranty: 'Гарантия 1 год',
+    trustFree: 'Диагностика бесплатно',
     proofReviews: 'отзывов',
     proofTitle: 'Цену вы узнаёте до ремонта, а не после',
     proof: [
@@ -367,7 +443,7 @@ export const DICT: Record<Lang, Dict> = {
     ],
 
     cardTabRepair: 'Ремонт',
-    cardTabTrack: 'Проверить статус',
+    cardTabTrack: 'Статус',
     cardDevice: 'Устройство',
     cardDevicePh: 'iPhone 13, MacBook Air…',
     cardProblem: 'Что случилось',
@@ -400,6 +476,30 @@ export const DICT: Record<Lang, Dict> = {
       monitor: 'Мониторы',
       other: 'Остальное',
     },
+
+    pricesEyebrow: 'Цены',
+    pricesTitle: 'Сколько это стоит',
+    pricesText: 'Начальные цены на частые работы. Точную сумму называем после бесплатной диагностики — до начала ремонта.',
+    priceFromTpl: 'от {sum} ₸',
+    pricesNote: 'Цена зависит от модели и от того, что именно сломалось. Дороже, чем назвали, не станет: если по ходу выяснится что-то ещё, сначала позвоним.',
+    pricesCta: 'Узнать цену для своей модели',
+
+    reviewsEyebrow: 'Отзывы',
+    reviewsTitle: 'Что о нас пишут',
+    reviewsAll: 'Все отзывы на 2ГИС',
+    reviewSources: {
+      '2gis': '2ГИС',
+      google: 'Google',
+      instagram: 'Instagram',
+      whatsapp: 'WhatsApp',
+    },
+
+    workEyebrow: 'Мастерская',
+    workTitle: 'Как выглядит наша работа',
+    workText: 'Снимки из мастерской: те самые устройства, которые нам приносили.',
+
+    barRequest: 'Оставить заявку',
+    barCall: 'Позвонить',
 
     promos: [
       {
@@ -764,12 +864,60 @@ export const DICT: Record<Lang, Dict> = {
         hero: 'Фон обложки',
         workbench: 'Рабочий стол',
         warranty: 'Гарантия',
+        work1: 'Работа 1',
+        work2: 'Работа 2',
+        work3: 'Работа 3',
       },
       slotWhere: {
         hero: 'Самый верх главной страницы, за заголовком.',
         workbench: 'Блок про бесплатную диагностику.',
         warranty: 'Чёрный блок про гарантию на год.',
+        work1: 'Полоса «Как выглядит наша работа» на главной.',
+        work2: 'Там же, вторая фотография.',
+        work3: 'Там же, третья фотография.',
       },
+
+      tabPrices: 'Цены',
+      pricesHint:
+        'Это начальные цены — на сайте перед каждой написано «от». Пока не добавлена ни одна, раздела цен на сайте нет. Добавляйте те работы, которые заказывают чаще всего: длинный прайс на телефоне не читают.',
+      priceKind: 'Вид техники',
+      priceService: 'Что за работа',
+      priceServicePh: 'Замена экрана iPhone 13',
+      priceAmount: 'Цена от, ₸',
+      priceAmountHint: 'Только цифры. На сайте сумма покажется как «от 15 000 ₸».',
+      priceNote: 'Приписка (необязательно)',
+      priceNotePh: 'с оригинальным дисплеем',
+      priceAdd: 'Добавить цену',
+      priceAdding: 'Добавляем…',
+      priceEmpty: 'Цен пока нет. Добавьте первую — и на главной появится раздел.',
+      priceOn: 'Показать',
+      priceOff: 'Скрыть',
+      priceHidden: 'Скрыта',
+      priceDelete: 'Удалить',
+      priceDeleteAsk: 'Удалить эту цену? С сайта она пропадёт сразу.',
+      priceNoTable: 'Таблица цен ещё не создана в базе. Выполните в терминале: npm run db:push',
+      priceDuplicate: 'Такая работа для этого вида техники уже есть — исправьте её вместо новой строки.',
+
+      tabReviews: 'Отзывы',
+      reviewsHint:
+        'Переносите сюда НАСТОЯЩИЕ отзывы: с 2ГИС, из Google, из директа или переписки. Выдуманные отзывы люди проверяют по ссылке и не находят — это стоит доверия дороже, чем пустой раздел. Пока не добавлен ни один, на сайте остаётся только оценка 2ГИС.',
+      reviewAuthor: 'Кто написал',
+      reviewAuthorPh: 'Айгерим К.',
+      reviewBody: 'Текст отзыва',
+      reviewBodyPh: 'Скопируйте отзыв как есть, ничего не переписывая.',
+      reviewRating: 'Сколько звёзд',
+      reviewSource: 'Откуда отзыв',
+      reviewDate: 'Дата отзыва (необязательно)',
+      reviewDateHint: 'Свежие отзывы показываются первыми.',
+      reviewAdd: 'Добавить отзыв',
+      reviewAdding: 'Добавляем…',
+      reviewEmpty: 'Отзывов пока нет. Добавьте первый — и на главной появится раздел.',
+      reviewOn: 'Показать',
+      reviewOff: 'Скрыть',
+      reviewHidden: 'Скрыт',
+      reviewDelete: 'Удалить',
+      reviewDeleteAsk: 'Удалить этот отзыв? С сайта он пропадёт сразу.',
+      reviewNoTable: 'Таблица отзывов ещё не создана в базе. Выполните в терминале: npm run db:push',
     },
 
     backHome: 'На главную',
@@ -791,6 +939,9 @@ export const DICT: Record<Lang, Dict> = {
       'Астанада смартфон, планшет, сағат және ноутбук. Жазылусыз, күн сайын 10:00-ден 20:00-ге дейін.',
 
     proofEyebrow: '2ГИС-тегі баға',
+    trustRating: '2ГИС-те',
+    trustWarranty: '1 жыл кепілдік',
+    trustFree: 'Диагностика тегін',
     proofReviews: 'пікір',
     proofTitle: 'Бағаны жөндеуден кейін емес, бұрын білесіз',
     proof: [
@@ -813,7 +964,7 @@ export const DICT: Record<Lang, Dict> = {
     ],
 
     cardTabRepair: 'Жөндеу',
-    cardTabTrack: 'Күйін тексеру',
+    cardTabTrack: 'Күйі',
     cardDevice: 'Құрылғы',
     cardDevicePh: 'iPhone 13, MacBook Air…',
     cardProblem: 'Не болды',
@@ -846,6 +997,30 @@ export const DICT: Record<Lang, Dict> = {
       monitor: 'Мониторлар',
       other: 'Басқасы',
     },
+
+    pricesEyebrow: 'Бағалар',
+    pricesTitle: 'Бұл қанша тұрады',
+    pricesText: 'Жиі жасалатын жұмыстардың бастапқы бағасы. Нақты сомасын тегін диагностикадан кейін, жөндеу басталмай тұрып айтамыз.',
+    priceFromTpl: '{sum} ₸ бастап',
+    pricesNote: 'Баға модельге және нақты не бұзылғанына байланысты. Айтқаннан қымбат болмайды: жұмыс барысында тағы бірдеңе шықса, алдымен қоңырау шаламыз.',
+    pricesCta: 'Өз моделіңіздің бағасын білу',
+
+    reviewsEyebrow: 'Пікірлер',
+    reviewsTitle: 'Біз туралы не жазады',
+    reviewsAll: '2ГИС-тегі барлық пікір',
+    reviewSources: {
+      '2gis': '2ГИС',
+      google: 'Google',
+      instagram: 'Instagram',
+      whatsapp: 'WhatsApp',
+    },
+
+    workEyebrow: 'Шеберхана',
+    workTitle: 'Жұмысымыз қалай көрінеді',
+    workText: 'Шеберханадан түсірілген суреттер: бізге әкелген нақты құрылғылар.',
+
+    barRequest: 'Өтінім қалдыру',
+    barCall: 'Қоңырау шалу',
 
     promos: [
       {
@@ -1209,12 +1384,60 @@ export const DICT: Record<Lang, Dict> = {
         hero: 'Мұқаба фоны',
         workbench: 'Жұмыс үстелі',
         warranty: 'Кепілдік',
+        work1: 'Жұмыс 1',
+        work2: 'Жұмыс 2',
+        work3: 'Жұмыс 3',
       },
       slotWhere: {
         hero: 'Басты беттің ең жоғарысы, тақырыптың артында.',
         workbench: 'Тегін диагностика туралы блок.',
         warranty: 'Бір жылдық кепілдік туралы қара блок.',
+        work1: 'Басты беттегі «Жұмысымыз қалай көрінеді» жолағы.',
+        work2: 'Сол жерде, екінші фото.',
+        work3: 'Сол жерде, үшінші фото.',
       },
+
+      tabPrices: 'Бағалар',
+      pricesHint:
+        'Бұл — бастапқы бағалар, сайтта әрқайсысының алдында «бастап» деп жазылады. Бірде-бір баға қосылмаса, сайтта бағалар бөлімі болмайды. Жиі тапсырыс берілетін жұмыстарды қосыңыз: ұзын прайсты телефоннан оқымайды.',
+      priceKind: 'Техника түрі',
+      priceService: 'Қандай жұмыс',
+      priceServicePh: 'iPhone 13 экранын ауыстыру',
+      priceAmount: 'Бағасы бастап, ₸',
+      priceAmountHint: 'Тек сандар. Сайтта «15 000 ₸ бастап» болып көрінеді.',
+      priceNote: 'Қосымша ескертпе (міндетті емес)',
+      priceNotePh: 'түпнұсқа дисплеймен',
+      priceAdd: 'Баға қосу',
+      priceAdding: 'Қосудамыз…',
+      priceEmpty: 'Әзірге баға жоқ. Біріншісін қосыңыз — басты бетте бөлім пайда болады.',
+      priceOn: 'Көрсету',
+      priceOff: 'Жасыру',
+      priceHidden: 'Жасырылған',
+      priceDelete: 'Жою',
+      priceDeleteAsk: 'Бұл бағаны жоясыз ба? Сайттан бірден жоғалады.',
+      priceNoTable: 'Бағалар кестесі базада әлі жоқ. Терминалда орындаңыз: npm run db:push',
+      priceDuplicate: 'Техниканың бұл түрі үшін мұндай жұмыс бар — жаңа жол қоспай, барын түзетіңіз.',
+
+      tabReviews: 'Пікірлер',
+      reviewsHint:
+        'Мұнда ШЫНАЙЫ пікірлерді көшіріңіз: 2ГИС-тен, Google-дан, директтен немесе хат алмасудан. Ойдан шығарылған пікірді адамдар сілтеме арқылы тексеріп, таппайды — бұл бос бөлімнен қымбатқа түседі. Бірде-бір пікір қосылмаса, сайтта тек 2ГИС бағасы қалады.',
+      reviewAuthor: 'Кім жазды',
+      reviewAuthorPh: 'Айгерім Қ.',
+      reviewBody: 'Пікір мәтіні',
+      reviewBodyPh: 'Пікірді сол күйінде көшіріңіз, қайта жазбаңыз.',
+      reviewRating: 'Неше жұлдыз',
+      reviewSource: 'Пікір қайдан',
+      reviewDate: 'Пікір күні (міндетті емес)',
+      reviewDateHint: 'Жаңа пікірлер бірінші көрсетіледі.',
+      reviewAdd: 'Пікір қосу',
+      reviewAdding: 'Қосудамыз…',
+      reviewEmpty: 'Әзірге пікір жоқ. Біріншісін қосыңыз — басты бетте бөлім пайда болады.',
+      reviewOn: 'Көрсету',
+      reviewOff: 'Жасыру',
+      reviewHidden: 'Жасырылған',
+      reviewDelete: 'Жою',
+      reviewDeleteAsk: 'Бұл пікірді жоясыз ба? Сайттан бірден жоғалады.',
+      reviewNoTable: 'Пікірлер кестесі базада әлі жоқ. Терминалда орындаңыз: npm run db:push',
     },
 
     backHome: 'Басты бетке',
@@ -1236,6 +1459,9 @@ export const DICT: Record<Lang, Dict> = {
       'Phones, tablets, watches and laptops in Astana. No appointment, every day from 10:00 to 20:00.',
 
     proofEyebrow: 'Rated on 2GIS',
+    trustRating: 'on 2GIS',
+    trustWarranty: '1-year warranty',
+    trustFree: 'Free diagnostics',
     proofReviews: 'reviews',
     proofTitle: 'You learn the price before the repair, not after',
     proof: [
@@ -1258,7 +1484,7 @@ export const DICT: Record<Lang, Dict> = {
     ],
 
     cardTabRepair: 'Repair',
-    cardTabTrack: 'Track repair',
+    cardTabTrack: 'Track',
     cardDevice: 'Device',
     cardDevicePh: 'iPhone 13, MacBook Air…',
     cardProblem: 'What happened',
@@ -1291,6 +1517,30 @@ export const DICT: Record<Lang, Dict> = {
       monitor: 'Monitors',
       other: 'Anything else',
     },
+
+    pricesEyebrow: 'Prices',
+    pricesTitle: 'What it costs',
+    pricesText: 'Starting prices for the repairs we do most. We name the exact figure after the free diagnostic, before any work begins.',
+    priceFromTpl: 'from {sum} ₸',
+    pricesNote: 'The price depends on the model and on what actually broke. It will not go above what we quoted: if we find something else along the way, we call you first.',
+    pricesCta: 'Get a price for your model',
+
+    reviewsEyebrow: 'Reviews',
+    reviewsTitle: 'What people say about us',
+    reviewsAll: 'All reviews on 2GIS',
+    reviewSources: {
+      '2gis': '2GIS',
+      google: 'Google',
+      instagram: 'Instagram',
+      whatsapp: 'WhatsApp',
+    },
+
+    workEyebrow: 'The workshop',
+    workTitle: 'What our work looks like',
+    workText: 'Photos from the bench: the actual devices people brought us.',
+
+    barRequest: 'Book a repair',
+    barCall: 'Call us',
 
     promos: [
       {
@@ -1654,12 +1904,60 @@ export const DICT: Record<Lang, Dict> = {
         hero: 'Cover background',
         workbench: 'Workbench',
         warranty: 'Warranty',
+        work1: 'Job 1',
+        work2: 'Job 2',
+        work3: 'Job 3',
       },
       slotWhere: {
         hero: 'The very top of the front page, behind the heading.',
         workbench: 'The free-diagnostics block.',
         warranty: 'The black one-year-warranty block.',
+        work1: 'The "What our work looks like" strip on the front page.',
+        work2: 'Same strip, second photo.',
+        work3: 'Same strip, third photo.',
       },
+
+      tabPrices: 'Prices',
+      pricesHint:
+        'These are starting prices — the site puts "from" in front of each one. While there is not a single price here, the site has no prices section at all. Add the jobs people order most: nobody reads a long price list on a phone.',
+      priceKind: 'Device type',
+      priceService: 'What the job is',
+      priceServicePh: 'iPhone 13 screen replacement',
+      priceAmount: 'Price from, ₸',
+      priceAmountHint: 'Digits only. The site shows it as "from 15 000 ₸".',
+      priceNote: 'Note (optional)',
+      priceNotePh: 'with an original display',
+      priceAdd: 'Add price',
+      priceAdding: 'Adding…',
+      priceEmpty: 'No prices yet. Add the first one and the section appears on the front page.',
+      priceOn: 'Show',
+      priceOff: 'Hide',
+      priceHidden: 'Hidden',
+      priceDelete: 'Delete',
+      priceDeleteAsk: 'Delete this price? It disappears from the site straight away.',
+      priceNoTable: 'The prices table is not in the database yet. Run in the terminal: npm run db:push',
+      priceDuplicate: 'That job already exists for this device type — edit the existing row instead of adding a new one.',
+
+      tabReviews: 'Reviews',
+      reviewsHint:
+        'Copy REAL reviews in here: from 2GIS, Google, your direct messages or chats. People check invented reviews against the link and do not find them, which costs more trust than an empty section. While there is not a single review here, the site shows only the 2GIS rating.',
+      reviewAuthor: 'Who wrote it',
+      reviewAuthorPh: 'Aigerim K.',
+      reviewBody: 'Review text',
+      reviewBodyPh: 'Paste the review as it stands, without rewriting it.',
+      reviewRating: 'How many stars',
+      reviewSource: 'Where it came from',
+      reviewDate: 'Review date (optional)',
+      reviewDateHint: 'Recent reviews are shown first.',
+      reviewAdd: 'Add review',
+      reviewAdding: 'Adding…',
+      reviewEmpty: 'No reviews yet. Add the first one and the section appears on the front page.',
+      reviewOn: 'Show',
+      reviewOff: 'Hide',
+      reviewHidden: 'Hidden',
+      reviewDelete: 'Delete',
+      reviewDeleteAsk: 'Delete this review? It disappears from the site straight away.',
+      reviewNoTable: 'The reviews table is not in the database yet. Run in the terminal: npm run db:push',
     },
 
     backHome: 'Back to home',

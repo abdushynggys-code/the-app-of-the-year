@@ -2,7 +2,11 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- viewport-fit=cover обязателен для полосы действий внизу экрана:
+         без него iPhone не отдаёт env(safe-area-inset-bottom), и кнопки
+         «Оставить заявку» и «Позвонить» уезжают под чёрную чёрточку
+         домой-индикатора. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>RESET — device repair in Astana | Ремонт техники в Астане</title>
     <meta
       name="description"

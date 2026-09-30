@@ -6,18 +6,20 @@ import { Icon, PromoArt } from '../components/Art';
 import { ProofStrip } from '../components/ProofStrip';
 import { BrandStrip } from '../components/BrandStrip';
 import { DealsStrip } from '../components/DealsStrip';
+import { PriceList } from '../components/PriceList';
+import { ReviewStrip } from '../components/ReviewStrip';
+import { WorkStrip } from '../components/WorkStrip';
 import { loadSiteImages, type SiteImages } from '../lib/siteImages';
-import { useBootOnce } from '../lib/motion';
-import { Boot } from '../components/Boot';
 
-// Главная: обложка с карточкой-формой, чипы, промо-полосы,
-// услуги, шаги, вопросы-ответы и контакты.
+// Главная. Порядок разделов выбран под один вопрос: что человек успевает
+// понять за первые несколько секунд с телефона в руке. Ответить надо на
+// четыре вещи — что чиним, сколько стоит, как записаться и почему нам можно
+// верить, — поэтому сверху идут обложка с формой, оценка, частые поломки,
+// цены и «как это работает». Услуги, марки и вопросы-ответы ушли ниже:
+// это чтение для тех, кто уже заинтересовался.
 export function HomePage() {
   const { t } = useLang();
   const [, navigate] = useLocation();
-  // Включение экрана: один раз за вкладку и только тем, кто не просил
-  // систему уменьшить движение.
-  const boot = useBootOnce();
 
   // Фотографии, которые владелец поставил в админке. Пока их нет, на сайте
   // остаются рисунки — поэтому пустой ответ это норма, а не ошибка.
@@ -63,9 +65,7 @@ export function HomePage() {
   return (
     <main>
       {/* ───── Обложка: чёрная панель ───── */}
-      <section className={boot ? 'hero band--dark is-booting' : 'hero band--dark'}>
-        {/* Лампочки, линия света и створки. Слой чисто декоративный: кликов
-            не ловит, для скринридера его нет, в покое створки уже разъехались. */}
+      <section className="hero band--dark">
         {/* Фото обложки лежит под всем остальным и притушено: поверх него
             идёт белый заголовок, и на светлом снимке его было бы не прочитать.
             Пока фотографии нет, обложка остаётся просто чёрной. */}
@@ -76,10 +76,10 @@ export function HomePage() {
             aria-hidden="true"
           />
         )}
-        {boot && <Boot />}
         <div className="wrap hero__grid">
           <div data-parallax="-10">
-            {/* Каждое слово — свой элемент, чтобы они вставали по очереди */}
+            {/* Каждое слово — свой элемент: так заголовок можно набрать
+                крупно и не бояться, что длинное слово распорет строку */}
             <h1 className="hero__title">
               {t.heroTitle.split(' ').map((word, i) => (
                 <Fragment key={`${word}-${i}`}>
@@ -88,9 +88,12 @@ export function HomePage() {
               ))}
             </h1>
             <p className="hero__text">{t.heroText}</p>
+            {/* На телефоне эта пара кнопок скрыта (index.css): там то же
+                действие уже стоит в карточке ниже и в полосе внизу экрана,
+                а три одинаковые кнопки подряд не оставляют главной. */}
             <div className="hero__cta btn-row">
               <Link href="/request" className="btn btn--primary btn--lg">
-                {t.nav.request}
+                {t.barRequest}
               </Link>
               <a href={SHOP.whatsapp} className="btn btn--secondary btn--lg" target="_blank" rel="noreferrer">
                 WhatsApp
@@ -148,7 +151,10 @@ export function HomePage() {
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
                     placeholder={t.cardTrackPh}
-                    aria-label={t.cardTabTrack}
+                    aria-label={t.trackTitle}
+                    autoComplete="off"
+                    autoCapitalize="characters"
+                    spellCheck={false}
                     maxLength={12}
                   />
                 </div>
@@ -162,9 +168,22 @@ export function HomePage() {
             <p className="herocard__note">{t.cardNote}</p>
           </form>
         </div>
+
+        {/* Три факта прямо на обложке. Всё это написано и ниже по странице,
+            но ниже — значит после свайпа. Оценку ставим не мы, и она
+            единственная здесь проверяется по ссылке. */}
+        <div className="wrap">
+          <ul className="herotrust">
+            <li>
+              <b>{SHOP.rating}</b> {t.trustRating}
+            </li>
+            <li>{t.trustWarranty}</li>
+            <li>{t.trustFree}</li>
+          </ul>
+        </div>
       </section>
 
-      {/* ───── Хук: чем вы рискуете ───── */}
+      {/* ───── Хук: оценка и четыре обещания ───── */}
       <ProofStrip />
 
       {/* ───── Частые поломки ───── */}
@@ -182,6 +201,37 @@ export function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ───── Цены ─────
+          Появляются, только когда владелец вписал их в админке. */}
+      <PriceList />
+
+      {/* ───── Как это работает ─────
+          Раньше стояло девятым разделом — до него доходил один человек из
+          многих. Теперь сразу после цен: «сколько стоит» и «что дальше
+          делать» — это один вопрос, заданный дважды. */}
+      <section className="band band--soft">
+        <div className="wrap">
+          <div className="band__head" data-reveal>
+            <h2>{t.stepsTitle}</h2>
+          </div>
+          <ol className="steps" data-reveal="stagger">
+            {t.steps.map((s, i) => (
+              <li key={s.t} className="step">
+                <p className="step__num">{String(i + 1).padStart(2, '0')}</p>
+                <h3>{s.t}</h3>
+                <p>{s.d}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* ───── Отзывы и фотографии из мастерской ─────
+          Оба раздела пустые до тех пор, пока владелец не перенёс настоящие
+          отзывы и не загрузил снимки. Придумывать их нельзя. */}
+      <ReviewStrip />
+      <WorkStrip images={images} />
 
       {/* ───── Скидки, если мастерская их объявила ───── */}
       <DealsStrip />
@@ -244,26 +294,8 @@ export function HomePage() {
       {/* ───── Марки ───── */}
       <BrandStrip />
 
-      {/* ───── Как это работает ───── */}
-      <section className="band">
-        <div className="wrap">
-          <div className="band__head" data-reveal>
-            <h2>{t.stepsTitle}</h2>
-          </div>
-          <ol className="steps" data-reveal="stagger">
-            {t.steps.map((s, i) => (
-              <li key={s.t} className="step">
-                <p className="step__num">{String(i + 1).padStart(2, '0')}</p>
-                <h3>{s.t}</h3>
-                <p>{s.d}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
       {/* ───── Вопросы и ответы ───── */}
-      <section className="band band--soft">
+      <section className="band">
         <div className="wrap">
           <div className="band__head" data-reveal>
             <h2>{t.faqTitle}</h2>
@@ -321,7 +353,7 @@ export function HomePage() {
             <p>{t.ctaBandText}</p>
           </div>
           <Link href="/request" className="btn btn--primary btn--lg">
-            {t.nav.request}
+            {t.barRequest}
           </Link>
         </div>
       </section>

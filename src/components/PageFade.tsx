@@ -30,9 +30,20 @@ export function PageFade({ children }: { children: ReactNode }) {
     seen.current = path;
     if (!changed) return;
 
-    // behavior: 'instant' сильнее, чем scroll-behavior: smooth у html,
-    // поэтому новая страница не «едет» сверху, а сразу открыта с начала.
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    // Новая страница должна открыться с начала мгновенно, а не «ехать»
+    // сверху: у html стоит scroll-behavior: smooth, и без этого переход
+    // на форму заявки выглядел бы как прокрутка длинной главной.
+    //
+    // behavior: 'instant' здесь не годится. В Safari до 15.4 это значение
+    // не существует, а лишнее значение в словаре ScrollToOptions —
+    // не «проигнорируем», а TypeError: прокрутка не сработала бы вообще,
+    // и человек попадал бы на новую страницу с её середины. Поэтому
+    // гасим плавность на время самого вызова и сразу возвращаем.
+    const root = document.documentElement;
+    const was = root.style.scrollBehavior;
+    root.style.scrollBehavior = 'auto';
+    window.scrollTo(0, 0);
+    root.style.scrollBehavior = was;
     // Фокус на новый экран — чтобы клавиатура и скринридер начали сверху.
     box.current?.focus({ preventScroll: true });
   }, [path]);

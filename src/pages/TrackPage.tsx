@@ -113,12 +113,19 @@ export function TrackPage() {
           void lookup(code);
         }}
       >
+        {/* Код вида RS-482170 набирают с бумажки. Автозамена и автоподстановка
+            тут только мешают: телефон исправляет «RS» на слово и дописывает
+            заглавные не туда. */}
         <input
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder={t.trackPh}
           maxLength={12}
           required
+          autoComplete="off"
+          autoCapitalize="characters"
+          autoCorrect="off"
+          spellCheck={false}
           aria-label={t.trackTitle}
         />
         <button

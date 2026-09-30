@@ -84,6 +84,12 @@
 
 html {
   scroll-behavior: smooth;
+  /* Страховка на будущее, а не починка сегодняшней поломки: ссылок вида
+     #contacts в разметке пока нет, так что попасть под липкую шапку
+     сейчас неоткуда. Но якоря id="contacts" и id="prices" уже стоят,
+     и первая же ссылка на них без этой строки привела бы человека
+     не к заголовку раздела, а к его середине. Одна строка. */
+  scroll-padding-top: calc(var(--header-h) + var(--s-lg));
 }
 
 body {
@@ -598,7 +604,7 @@ p {
   margin-top: var(--s-md);
   font-size: 12px;
   line-height: 20px;
-  color: var(--mute);
+  color: var(--body);
   text-align: center;
 }
 
@@ -1139,7 +1145,7 @@ p {
 .field__hint {
   font-size: 13px;
   line-height: 18px;
-  color: var(--mute);
+  color: var(--body);
 }
 
 .message {
@@ -1257,73 +1263,6 @@ p {
   margin-top: var(--s-sm);
   font-size: 12px;
   line-height: 20px;
-  color: var(--mute);
-}
-
-.statusbar {
-  list-style: none;
-  display: flex;
-  margin: var(--s-2xl) 0 var(--s-lg);
-  padding: 0;
-}
-
-.statusbar__step {
-  flex: 1;
-  min-width: 0;
-  position: relative;
-  padding-top: 26px;
-}
-
-/* линия-рельс */
-.statusbar__step::before {
-  content: '';
-  position: absolute;
-  top: 8px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--pressed);
-}
-
-.statusbar__step.is-done::before,
-.statusbar__step.is-current::before {
-  background: var(--ink);
-}
-
-.statusbar__step::after {
-  content: '';
-  position: absolute;
-  top: 3px;
-  left: 0;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--pressed);
-}
-
-.statusbar__step.is-done::after,
-.statusbar__step.is-current::after {
-  background: var(--ink);
-}
-
-.statusbar__step.is-current::after {
-  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.12);
-}
-
-.statusbar__label {
-  display: block;
-  font-size: 12px;
-  line-height: 16px;
-  color: var(--mute);
-  padding-right: var(--s-sm);
-}
-
-.statusbar__step.is-current .statusbar__label {
-  color: var(--ink);
-  font-weight: 500;
-}
-
-.statusbar__step.is-done .statusbar__label {
   color: var(--body);
 }
 
@@ -1460,9 +1399,6 @@ p {
     gap: var(--s-2xl);
   }
 
-  .statusbar__label {
-    font-size: 10px;
-  }
 }
 
 /* ─────────────── Сообщить о проблеме ─────────────── */
@@ -1510,7 +1446,7 @@ p {
   gap: var(--s-md);
   margin-block: var(--s-lg);
   font-size: 13px;
-  color: var(--mute);
+  color: var(--body);
 }
 
 .auth__or::before,
@@ -1553,7 +1489,11 @@ p {
   gap: 0;
 }
 
-/* Подложка активного пункта. Едет, а не мигает */
+/* Подложка активного пункта. Едет, а не мигает.
+   Номер пункта приходит из AdminNav.tsx в --nav-i: пункты одинаковой
+   высоты, поэтому сдвиг ровно на столько же сотен процентов попадает
+   в цель. Раньше на каждый раздел тут стояло своё готовое правило —
+   и добавленный в середину раздел сдвигал подложку не на тот пункт. */
 .adminnav__pill {
   position: absolute;
   top: 0;
@@ -1563,28 +1503,8 @@ p {
   background: var(--canvas-soft);
   border-radius: var(--r-md);
   pointer-events: none;
+  transform: translateY(calc(var(--nav-i, 0) * 100%));
   transition: transform var(--t-slow) var(--ease-out);
-}
-
-/* Пункты одинаковой высоты, поэтому сдвиг ровно на 100% попадает в цель */
-.adminnav[data-tab='history'] .adminnav__pill {
-  transform: translateY(100%);
-}
-
-.adminnav[data-tab='reports'] .adminnav__pill {
-  transform: translateY(200%);
-}
-
-.adminnav[data-tab='deals'] .adminnav__pill {
-  transform: translateY(300%);
-}
-
-.adminnav[data-tab='images'] .adminnav__pill {
-  transform: translateY(400%);
-}
-
-.adminnav[data-tab='access'] .adminnav__pill {
-  transform: translateY(500%);
 }
 
 .adminnav__item {
@@ -1640,7 +1560,7 @@ p {
 .adminnav__role {
   font-size: 13px;
   line-height: 18px;
-  color: var(--mute);
+  color: var(--body);
 }
 
 /* На узком экране меню ложится сверху одной прокручиваемой строкой */
@@ -2178,7 +2098,7 @@ p {
 
 .progress__steps li {
   font-size: 13px;
-  color: var(--mute);
+  color: var(--body);
   background: var(--canvas-soft);
   border-radius: var(--r-pill);
   padding: 4px 12px;
@@ -2258,20 +2178,34 @@ p {
 /* Фон обложки. Лежит под текстом и притушен: поверх идёт белый заголовок,
    и на светлом снимке его было бы не прочитать. Градиент снизу добирает
    темноту там, где стоит карточка заявки. */
+/* Затемнение снимка живёт ТОЛЬКО в градиенте, без opacity у самого слоя.
+   Картинка от этого не изменилась — это перестановка, а не правка.
+
+   Было так: слой стоял с opacity: 0.38, а поверх него ::after клал
+   градиент 30–75% черноты. Прозрачность создаёт слой целиком, вместе
+   с ::after, поэтому градиент работал не на свои 30–75%, а на 11–29%,
+   и в сумме от снимка оставалось 34% сверху и 27% снизу. Прочитать
+   в коде эти два числа было нельзя: надо было перемножить в уме.
+
+   Сейчас числа в файле и есть то, что видно на экране: 66% черноты
+   сверху, 73% снизу — те же 34% и 27% снимка. Захочется показать
+   фотографию ярче — правится одна строка, и она работает как написано.
+
+   Контраст при этом не трогаем: даже поверх совсем белого кадра
+   белый заголовок остаётся на 7:1 при нужных 4.5:1. */
 .hero__photo {
   position: absolute;
   inset: 0;
   z-index: 0;
   background-size: cover;
   background-position: center;
-  opacity: 0.38;
 }
 
 .hero__photo::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.75) 100%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.66) 0%, rgba(0, 0, 0, 0.73) 100%);
 }
 
 /* ─────────────── Админка: места под картинки ─────────────── */
@@ -2508,7 +2442,7 @@ p {
 }
 
 .logrow__when {
-  color: var(--mute);
+  color: var(--body);
   font-variant-numeric: tabular-nums;
 }
 
@@ -2594,5 +2528,617 @@ p {
 
   .admin__row .btn-row {
     width: 100%;
+  }
+}
+
+/* ============================================================
+   ДОВЕРИЕ И ГЛАВНОЕ ДЕЙСТВИЕ
+   Всё, что появилось после разбора сайта на телефоне: три факта
+   на обложке, цены, отзывы, снимки из мастерской и полоса действий
+   внизу экрана. Ниже — разбор телефонной вёрстки целиком.
+   ============================================================ */
+
+/* ─────────────── Три факта на обложке ─────────────── */
+
+/* Оценка, гарантия и бесплатная диагностика стоят прямо под карточкой
+   заявки. Всё это написано и ниже по странице, но ниже — значит после
+   свайпа, а первый экран решает, останется человек или уйдёт. */
+.herotrust {
+  list-style: none;
+  margin: var(--s-3xl) 0 0;
+  padding: var(--s-lg) 0 0;
+  border-top: 1px solid var(--ink-elevated);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-sm) var(--s-2xl);
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--on-ink);
+}
+
+/* Оценку набираем акцентом: это единственная цифра на сайте, которую
+   поставили не мы, и её можно проверить по ссылке ниже. */
+.herotrust b {
+  color: var(--accent-light);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Точка рисуется, а не печатается: в разметке её нет, поэтому скринридер
+   не читает «точка» между фактами.
+
+   Точка стоит у КАЖДОГО факта, включая первый, — и это не про симметрию.
+   Разделитель «только между» на телефоне переносится вместе со вторым
+   фактом, и строка начинается с висящей точки: выглядит как опечатка.
+   Маркер у каждого пункта переносится вместе со своим текстом и в любой
+   строке читается как маркер списка, которым он и является. */
+.herotrust li {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-sm);
+}
+
+.herotrust li::before {
+  content: '';
+  flex: none;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent-light);
+  /* baseline у пустого элемента — его низ, поэтому точку поднимаем
+     к середине строчной буквы вручную. */
+  transform: translateY(-4px);
+}
+
+/* ─────────────── Цены ─────────────── */
+
+.prices {
+  display: grid;
+  gap: var(--s-3xl);
+  --reveal-step: 60ms;
+}
+
+.pricegroup__kind {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--body);
+  padding-bottom: var(--s-md);
+  border-bottom: 1px solid var(--hairline);
+  margin-bottom: var(--s-sm);
+}
+
+.pricegroup__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Строка цены: слева работа, справа сумма. Пунктира между ними нет —
+   на телефоне он превращается в кашу. Работают выравнивание и волосок. */
+.pricerow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-lg);
+  padding-block: var(--s-md);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.pricerow:last-child {
+  border-bottom: none;
+}
+
+.pricerow__what {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+/* Приписка уходит на свою строку: она уточнение к работе, а не её часть */
+.pricerow__note {
+  display: block;
+  font-size: 14px;
+  line-height: 20px;
+  font-style: normal;
+  color: var(--body);
+}
+
+.pricerow__sum {
+  flex: none;
+  font-size: 16px;
+  line-height: 24px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* «от» набрано мельче и серым: оно важное, но это служебное слово,
+   а новость — сама сумма. */
+.pricerow__from {
+  font-size: 13px;
+  color: var(--body);
+}
+
+.pricerow__sum b {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.prices__foot {
+  margin-top: var(--s-3xl);
+  padding-top: var(--s-xl);
+  border-top: 1px solid var(--hairline);
+}
+
+.prices__note {
+  max-width: 60ch;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--body);
+  margin-bottom: var(--s-xl);
+}
+
+/* ─────────────── Отзывы ─────────────── */
+
+.reviews {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--s-lg);
+  --reveal-step: 60ms;
+}
+
+.review {
+  background: var(--canvas-softer);
+  border-radius: var(--r-xl);
+  padding: var(--s-2xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-md);
+}
+
+.band--soft .review {
+  background: var(--canvas);
+}
+
+.review__stars {
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: 0.1em;
+  color: var(--accent-strong);
+}
+
+/* Незаполненные звёзды остаются на месте: пять символов всегда,
+   иначе «четыре звезды» и «пять звёзд» не сравнить глазом. */
+.review__stars-off {
+  color: var(--pressed);
+}
+
+.review__body {
+  margin: 0;
+  font-size: 16px;
+  line-height: 24px;
+  /* Кавычек нет: текст чужой, и лишний знак препинания в нём — уже правка */
+  overflow-wrap: anywhere;
+}
+
+.review__who {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s-sm);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+/* Откуда отзыв — обязательная часть подписи, а не мелкий шрифт для вида:
+   именно она делает отзыв проверяемым. */
+.review__who span {
+  color: var(--body);
+}
+
+.reviews__foot {
+  margin-top: var(--s-xl);
+}
+
+/* ─────────────── Снимки из мастерской ─────────────── */
+
+.works {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--s-lg);
+  --reveal-step: 60ms;
+}
+
+.work {
+  background: var(--canvas-soft);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+}
+
+.work img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ─────────────── Полоса действий внизу экрана ─────────────── */
+
+/* Видна только на телефоне — правило ниже, в телефонном блоке.
+   Здесь она спрятана: на компьютере кнопка звонка и так стоит в шапке
+   и никуда не уезжает, а вторая плавающая панель была бы шумом. */
+.mobilebar {
+  display: none;
+}
+
+/* ============================================================
+   ТЕЛЕФОН · разбор
+   Всё, что ниже, — ответы на конкретные поломки узкого экрана.
+   Блок стоит последним в файле, чтобы перебивать правила выше
+   без гонки за вес селектора.
+   ============================================================ */
+
+@media (max-width: 760px) {
+  /* ─── Обложка: убрать лишнее и подняться ───
+     Обложка занимала около 944px при экране в 844px: до неё не помещалось
+     ничего, включая первый признак доверия. Режем воздух. */
+  .hero {
+    padding-block: 32px 36px;
+  }
+
+  .hero__grid {
+    gap: var(--s-xl);
+  }
+
+  .hero h1 {
+    font-size: clamp(30px, 8.4vw, 38px);
+  }
+
+  .hero__text {
+    margin-top: var(--s-md);
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  /* Пара кнопок с обложки на телефоне не нужна. То же действие стоит
+     в карточке прямо под ними и в полосе внизу экрана: три одинаковые
+     кнопки подряд не оставляют главной ни одной. */
+  .hero__cta {
+    display: none;
+  }
+
+  .herotrust {
+    margin-top: var(--s-xl);
+    gap: var(--s-sm) var(--s-lg);
+    font-size: 14px;
+  }
+
+  /* ─── Карточка заявки ───
+     Она и есть главное действие первого экрана, поэтому ей воздуха
+     не жалеем, а вот скруглениям и отступам — да. */
+  .herocard {
+    padding: var(--s-lg);
+  }
+
+  /* Строка ввода: раньше отступы висели на самой строке, а поле внутри
+     было высотой в 24px — серая рамка выглядела кнопкой, но нажималась
+     только тонкая полоска посередине. Теперь отступы у поля, и пальцем
+     попадаешь в любое место строки. */
+  .inputrow {
+    padding: 0 var(--s-lg);
+  }
+
+  .inputrow input {
+    padding-block: 15px;
+    /* 16px обязательны: на меньшем Safari сам увеличивает страницу,
+       как только человек ставит курсор в поле. */
+    font-size: 16px;
+  }
+
+  /* ─── Полоса действий внизу ───
+     Главная длинная: пока человек дочитал до отзывов и цен, кнопка
+     с обложки уехала далеко вверх. Полоса держит заявку и звонок
+     под большим пальцем на любой высоте страницы. */
+  .mobilebar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: var(--s-sm);
+    padding: var(--s-sm) var(--s-lg);
+    /* Запас под домашний индикатор iPhone. Без viewport-fit=cover
+       в index.html значение равно нулю, и кнопки уезжают под чёрточку. */
+    padding-bottom: calc(var(--s-sm) + env(safe-area-inset-bottom, 0px));
+    background: var(--canvas);
+    border-top: 1px solid var(--hairline);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .mobilebar__main {
+    flex: 1;
+    min-width: 0;
+    height: 52px;
+    padding-inline: var(--s-lg);
+  }
+
+  /* Звонок и WhatsApp — значками: подписи не влезут, а что это такое,
+     понятно и так. Настоящее название уходит в aria-label. */
+  .mobilebar__icon {
+    flex: none;
+    width: 52px;
+    height: 52px;
+    padding: 0;
+  }
+
+  /* Полоса перекрывает низ страницы — поднимаем подвал над ней,
+     иначе последняя строка подвала всегда под кнопками. */
+  .footer {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* ─── Шапка ───
+     Кнопка звонка перестаёт быть акцентной: звонок теперь живёт в полосе
+     внизу, и две заливки цветом на одном экране снова спорили бы
+     за то, какое действие главное. */
+  .header__call {
+    background: var(--canvas-soft);
+    color: var(--ink);
+  }
+
+  /* Логотип — ссылка на главную, и это самая маленькая цель в шапке.
+     Тянем min-height, а не padding: отступы прибавились бы к высоте
+     шапки, а она посчитана в --header-h (71px = 12 + 46 + 12 + 1)
+     и от неё же отсчитываются липкое меню админки и scroll-padding.
+     44px помещаются в 46px и ничего не сдвигают. */
+  .logo {
+    min-height: 44px;
+  }
+
+  /* Пункты открытого меню на всю ширину: раньше align-items: center
+     сжимал каждый до длины подписи, и разделительные линии выходили
+     рваными, а мимо короткого слова палец промахивался. */
+  .nav.is-open {
+    align-items: stretch;
+  }
+
+  .nav.is-open .nav__link {
+    display: block;
+    width: 100%;
+  }
+
+  /* ─── Цели под палец ───
+     Ниже 44px пальцем попадают не с первого раза. */
+  .langs {
+    width: 100%;
+  }
+
+  .langs button {
+    min-height: 44px;
+  }
+
+  .chip {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding-inline: var(--s-xl);
+  }
+
+  /* Отступ вешаем на саму ссылку, а не на строку списка: у строки палец
+     попадает в пустое место рядом со словом и ничего не происходит.
+     inline-block нужен, чтобы вертикальный отступ вообще применился. */
+  .footer li a {
+    display: inline-block;
+    padding-block: var(--s-sm);
+  }
+
+  .footer__social {
+    gap: var(--s-lg) var(--s-2xl);
+  }
+
+  .footer__social a {
+    display: inline-block;
+    padding-block: var(--s-sm);
+  }
+
+  /* ─── Текст во всю ширину ───
+     34ch и 18ch — меры для широкого экрана, где они держат строку
+     читаемой длины. На телефоне столбец и так узкий: у .band__head
+     ограничение отъедает около 30px на экране в 390px, у промо-заголовка
+     в 18ch — заметно больше. Отдаём эту ширину тексту. */
+  .band__head,
+  .promo__body h2,
+  .promo__body p,
+  .hero__text {
+    max-width: none;
+  }
+
+  /* ─── Услуги ───
+     Восемь карточек в столбик — это больше трёх экранов подряд между
+     человеком и тем, что он ищет. Ужимаем: иконка уходит в строку
+     с заголовком, отступы меньше. */
+  .service {
+    padding: var(--s-lg);
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 0 var(--s-md);
+  }
+
+  .service__icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 0;
+    grid-row: span 2;
+  }
+
+  .service__icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .service h3 {
+    font-size: 17px;
+    line-height: 24px;
+    align-self: center;
+  }
+
+  .service p {
+    grid-column: 2;
+  }
+
+  /* ─── Как это работает ───
+     Номер шага занимал отдельную строку во всю ширину, под ним черта,
+     и только потом заголовок: четыре шага съедали почти целый экран
+     на одних только цифрах. Ставим номер в строку с заголовком. */
+  .steps {
+    gap: var(--s-xl);
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 26px 1fr;
+    gap: var(--s-xs) var(--s-md);
+    padding-top: var(--s-lg);
+    border-top: 1px solid var(--hairline);
+  }
+
+  .band--dark .step {
+    border-color: var(--ink-elevated);
+  }
+
+  .step .step__num {
+    font-size: 18px;
+    line-height: 28px;
+    padding-bottom: 0;
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  .step h3,
+  .step p:not(.step__num) {
+    grid-column: 2;
+  }
+
+  /* ─── Формы ───
+     Карточка формы забирала по 24px с каждой стороны сверх отступов
+     .wrap — поля оставались шириной в 280px на экране в 360px. */
+  .card {
+    padding: var(--s-lg);
+  }
+
+  /* ─── Заявка принята ───
+     Почта в подтверждении стояла с nowrap и разваливала экран вбок:
+     длинный адрес просто не помещается в 360px. */
+  .done__account b {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* ============================================================
+   НАЖАТИЕ БЕЗ МЫШИ
+   На телефоне :hover не снимается после тапа — нажатая кнопка
+   остаётся в состоянии «наведено», пока не тронешь другую. Выглядит
+   это как «кнопка залипла». Возвращаем обычный вид там, где мыши нет.
+   Блок последний в файле: вес селекторов тот же, побеждает порядком.
+   ============================================================ */
+
+@media (hover: none) {
+  .btn--primary:hover,
+  .band--dark .btn--primary:hover {
+    background: var(--accent);
+  }
+
+  .btn--secondary:hover {
+    background: var(--canvas);
+  }
+
+  .band--dark .btn--secondary:hover {
+    background: transparent;
+  }
+
+  .btn--subtle:hover {
+    background: var(--canvas-soft);
+  }
+
+  .chip:hover {
+    background: var(--canvas-soft);
+  }
+
+  .ghost:hover {
+    color: var(--body);
+  }
+
+  .footer a:hover {
+    color: inherit;
+  }
+
+  /* .reportlink — это button, а не ссылка, поэтому под .footer a он
+     не попадает и залипал бы белым после нажатия. */
+  .reportlink:hover {
+    color: var(--mute);
+    border-bottom-color: var(--mute);
+  }
+}
+
+/* ============================================================
+   ДВЕ ОДИНАКОВЫЕ ПОЛОСЫ ПОДРЯД
+   Полосы чередуются по фону: белая, светло-серая, белая. Но четыре
+   раздела на главной — цены, отзывы, снимки, скидки — появляются,
+   только когда мастерская их заполнила. Любая их комбинация меняет
+   порядок, и заранее расставить фоны так, чтобы они никогда не
+   совпали, нельзя: вариантов шестнадцать.
+   Поэтому не расставляем, а страхуем: две полосы одного фона подряд
+   разделяет волосок. Пустой раздел не рисует элемент, и соседство
+   считается через него правильно.
+   ============================================================ */
+
+.band--soft + .band--soft,
+.band:not(.band--soft):not(.band--dark) + .band:not(.band--soft):not(.band--dark) {
+  border-top: 1px solid var(--hairline);
+}
+
+/* ============================================================
+   АДМИНКА НА ТЕЛЕФОНЕ
+   Мастерская работает с заявками с телефона не реже, чем с
+   компьютера: устройство в одной руке, телефон в другой.
+   ============================================================ */
+
+@media (max-width: 760px) {
+  /* Ниже 16px Safari увеличивает всю страницу, как только человек
+     ставит курсор в поле, и обратно уже не возвращает. Мастер тыкает
+     в «Статус», страница прыгает — и он ищет, куда уехал список.
+     Четыре поля были набраны 14–15px, поэтому это случалось постоянно. */
+  .admin__status select,
+  .bulkbar select,
+  .block textarea,
+  .shopno input,
+  .field select {
+    font-size: 16px;
+  }
+
+  /* Галочку 18×18 пальцем не поймать, а ошибка тут дорогая: она
+     выбирает заявку для действия сразу над пачкой заявок. */
+  .reqrow__pick {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Панель «три точки» открывалась вверх — а на телефоне меню лежит
+     сверху страницы, и панель уезжала за край экрана. Вниз ей есть куда. */
+  .more__panel {
+    top: calc(100% + var(--s-sm));
+    bottom: auto;
   }
 }

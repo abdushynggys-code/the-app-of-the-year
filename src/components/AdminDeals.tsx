@@ -1,14 +1,7 @@
 import { useState } from 'react';
 import { useLang } from '../lib/i18n';
-import {
-  DEAL_KINDS,
-  addDeal,
-  isLive,
-  removeDeal,
-  setDealActive,
-  type Deal,
-  type DealKind,
-} from '../lib/deals';
+import { addDeal, isLive, removeDeal, setDealActive, type Deal } from '../lib/deals';
+import { KINDS, type Kind } from '../lib/kinds';
 
 type Props = {
   deals: Deal[];
@@ -27,14 +20,14 @@ export function AdminDeals({ deals, loadError, reload }: Props) {
   const { t } = useLang();
 
   const [percent, setPercent] = useState('5');
-  const [kinds, setKinds] = useState<DealKind[]>([]);
+  const [kinds, setKinds] = useState<Kind[]>([]);
   const [note, setNote] = useState('');
   const [endsOn, setEndsOn] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [workingId, setWorkingId] = useState('');
 
-  function toggleKind(kind: DealKind) {
+  function toggleKind(kind: Kind) {
     setKinds((list) => (list.includes(kind) ? list.filter((k) => k !== kind) : [...list, kind]));
   }
 
@@ -102,7 +95,7 @@ export function AdminDeals({ deals, loadError, reload }: Props) {
           <div className="field dealform__kinds">
             <span>{t.admin.dealKinds}</span>
             <div className="chips chips--pick">
-              {DEAL_KINDS.map((kind) => (
+              {KINDS.map((kind) => (
                 <button
                   key={kind}
                   type="button"

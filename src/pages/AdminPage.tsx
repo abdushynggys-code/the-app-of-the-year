@@ -5,6 +5,8 @@ import { Auth } from '../components/Auth';
 import { useLang, STEP_ORDER, type Status, type StepKey } from '../lib/i18n';
 import { AdminNav, type AdminTab } from '../components/AdminNav';
 import { AdminDeals } from '../components/AdminDeals';
+import { AdminPrices } from '../components/AdminPrices';
+import { AdminReviews } from '../components/AdminReviews';
 import { AdminImages } from '../components/AdminImages';
 import { AdminFarewell } from '../components/AdminLeave';
 import { AdminMore } from '../components/AdminMore';
@@ -12,6 +14,8 @@ import { AdminLog } from '../components/AdminLog';
 import { loadLog, type LogRow } from '../lib/adminLog';
 import { loadSiteImages, SLOTS, type SiteImages } from '../lib/siteImages';
 import { isLive, loadDeals, type Deal } from '../lib/deals';
+import { loadPrices, type Price } from '../lib/prices';
+import { loadReviews, type Review } from '../lib/reviews';
 import { canWhatsApp, fillTemplate, waLink } from '../lib/whatsapp';
 
 type Req = {
@@ -82,6 +86,10 @@ export function AdminPage() {
   const [reports, setReports] = useState<Report[]>([]);
   const [deals, setDeals] = useState<Deal[]>([]);
   const [dealsError, setDealsError] = useState('');
+  const [prices, setPrices] = useState<Price[]>([]);
+  const [pricesError, setPricesError] = useState('');
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewsError, setReviewsError] = useState('');
   const [images, setImages] = useState<SiteImages>({});
   // Почту запоминаем прямо во флаге: прощальный экран должен назвать
   // аккаунт, а email к тому моменту уже может обнулиться.
@@ -170,11 +178,12 @@ export function AdminPage() {
     setMe(row);
     setChecked(true);
 
-    // Сняли с себя роль владельца — разделы «Скидки», «Картинки» и «Доступ»
-    // исчезают из меню. Если стоять в одном из них, страница осталась бы
-    // на разделе, которого больше нет в списке, а подложка меню уехала бы
-    // к несуществующему пункту.
-    if (row?.role !== 'owner' && ['deals', 'images', 'access', 'log'].includes(tab)) {
+    // Сняли с себя роль владельца — разделы «Цены», «Отзывы», «Скидки»,
+    // «Картинки» и «Доступ» исчезают из меню. Если стоять в одном из них,
+    // страница осталась бы на разделе, которого больше нет в списке,
+    // а подложка меню уехала бы к несуществующему пункту.
+    const ownerOnly = ['prices', 'reviews', 'deals', 'images', 'access', 'log'];
+    if (row?.role !== 'owner' && ownerOnly.includes(tab)) {
       setTab('active');
     }
 
@@ -185,6 +194,8 @@ export function AdminPage() {
         void loadAccess();
         void loadAllowlist();
         void loadDealList();
+        void loadPriceList();
+        void loadReviewList();
         void loadImageList();
         void loadLogRows();
       }
@@ -320,6 +331,20 @@ export function AdminPage() {
     const res = await loadDeals(true);
     setDeals(res.deals);
     setDealsError(res.error);
+  }
+
+  // Владельцу показываем и скрытые цены с отзывами: он правит весь список,
+  // а не только то, что сейчас видно на сайте.
+  async function loadPriceList() {
+    const res = await loadPrices(true);
+    setPrices(res.prices);
+    setPricesError(res.error);
+  }
+
+  async function loadReviewList() {
+    const res = await loadReviews(true);
+    setReviews(res.reviews);
+    setReviewsError(res.error);
   }
 
   async function loadLogRows() {
@@ -658,6 +683,10 @@ export function AdminPage() {
   // В меню показываем число действующих скидок, а не всех в списке:
   // выключенная скидка на сайте не висит, и считать её нечестно.
   const liveDeals = deals.filter(isLive).length;
+  // Так же и здесь: в меню — сколько строк реально видно на сайте.
+  // Скрытая цена и снятый отзыв там не висят, и считать их нечестно.
+  const livePrices = prices.filter((p) => p.active).length;
+  const liveReviews = reviews.filter((r) => r.active).length;
   // Сколько мест на сайте уже с фотографией, а не с рисунком.
   const filledSlots = SLOTS.filter((s) => images[s]).length;
   const pendingRows = access.filter((a) => a.status === 'pending');
@@ -672,6 +701,8 @@ export function AdminPage() {
     void loadReports();
     if (isOwner) {
       void loadDealList();
+      void loadPriceList();
+      void loadReviewList();
       void loadImageList();
       void loadLogRows();
     }
@@ -687,6 +718,8 @@ export function AdminPage() {
             active: activeTotal,
             history: doneTotal,
             reports: newReports,
+            prices: livePrices,
+            reviews: liveReviews,
             deals: liveDeals,
             images: filledSlots,
             access: pendingRows.length,
@@ -749,6 +782,10 @@ export function AdminPage() {
 
       {tab === 'log' && isOwner ? (
         <AdminLog rows={log} loadError={logError} lang={lang} />
+      ) : tab === 'prices' ? (
+        <AdminPrices prices={prices} loadError={pricesError} reload={loadPriceList} />
+      ) : tab === 'reviews' ? (
+        <AdminReviews reviews={reviews} loadError={reviewsError} reload={loadReviewList} />
       ) : tab === 'deals' ? (
         <AdminDeals deals={deals} loadError={dealsError} reload={loadDealList} />
       ) : tab === 'images' ? (

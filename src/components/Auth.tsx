@@ -60,10 +60,17 @@ export function Auth() {
       <p className="auth__or">{t.auth.or}</p>
 
       <form onSubmit={handleSubmit} className="form">
+        {/* autoComplete нужен не для красоты: без него менеджер паролей
+            на телефоне не предлагает сохранённую пару и человек вводит
+            почту с паролем руками на маленькой клавиатуре. */}
         <label className="field">
           <span>{t.auth.email}</span>
           <input
             type="email"
+            inputMode="email"
+            autoComplete="email"
+            autoCapitalize="off"
+            spellCheck={false}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -74,6 +81,9 @@ export function Auth() {
           <span>{t.auth.password}</span>
           <input
             type="password"
+            // Вход и регистрация — разные подсказки: во втором случае
+            // браузер предлагает придумать новый пароль, а не подставить старый.
+            autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             minLength={6}

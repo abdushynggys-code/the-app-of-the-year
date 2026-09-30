@@ -8,7 +8,7 @@ export function BrandStrip() {
   const { t } = useLang();
 
   return (
-    <section className="band band--tight band--soft">
+    <section className="band band--tight">
       <div className="wrap">
         <div className="band__head" data-reveal>
           <p className="eyebrow">{t.brandsEyebrow}</p>

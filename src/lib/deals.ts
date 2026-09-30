@@ -1,4 +1,5 @@
 import { isSupabaseConfigured, supabase } from './supabase';
+import type { Kind } from './kinds';
 
 // Скидки. Владелец объявляет в админке, скажем, −5% на ноутбуки и мониторы,
 // и на главной появляется полоса с этой скидкой. Одна скидка может
@@ -6,28 +7,13 @@ import { isSupabaseConfigured, supabase } from './supabase';
 // несколько сразу.
 //
 // Все запросы к базе — здесь, чтобы страницы занимались только показом.
-
-// Виды техники, на которые бывает скидка. Список закрытый: у каждого вида
-// есть подпись на трёх языках в i18n.ts (t.kinds), и вид без подписи
-// показать было бы нечем. Такой же список стоит в миграции.
-export const DEAL_KINDS = [
-  'phone',
-  'tablet',
-  'watch',
-  'laptop',
-  'pc',
-  'monitor',
-  // «Остальное» — для техники, которой в списке нет: колонок, наушников,
-  // приставок. Без него на них нельзя объявить скидку вообще.
-  'other',
-] as const;
-
-export type DealKind = (typeof DEAL_KINDS)[number];
+// Сам список видов техники лежит в kinds.ts: по тем же видам сгруппированы
+// цены, и двух одинаковых списков в двух файлах быть не должно.
 
 export type Deal = {
   id: string;
   percent: number;
-  kinds: DealKind[];
+  kinds: Kind[];
   note: string | null;
   active: boolean;
   // Последний день скидки в виде 'ГГГГ-ММ-ДД' или null — бессрочно.
@@ -38,7 +24,7 @@ export type Deal = {
 // Черновик новой скидки — то, что владелец ввёл в форме.
 export type DealDraft = {
   percent: number;
-  kinds: DealKind[];
+  kinds: Kind[];
   note: string;
   ends_on: string;
 };

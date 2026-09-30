@@ -205,15 +205,28 @@ export function RequestPage() {
       </div>
 
       <form className="card card--soft form" onSubmit={submit}>
+        {/* autoComplete и inputMode тут не украшение: на телефоне они
+            решают, какая вылезет клавиатура и предложит ли браузер
+            подставить уже сохранённые имя и номер. Без них человек
+            набирает всё заново, да ещё и буквенной клавиатурой. */}
         <label className="field">
           <span>{t.fName}</span>
-          <input value={name} onChange={(e) => setName(e.target.value)} required maxLength={80} />
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            autoComplete="name"
+            autoCapitalize="words"
+            required
+            maxLength={80}
+          />
         </label>
 
         <label className="field">
           <span>{t.fPhone}</span>
           <input
             type="tel"
+            inputMode="tel"
+            autoComplete="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="+7 7__ ___ __ __"
@@ -228,11 +241,14 @@ export function RequestPage() {
           <span>{t.fEmail}</span>
           <input
             type="email"
+            inputMode="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder={t.fEmailPh}
             maxLength={120}
             autoComplete="email"
+            autoCapitalize="off"
+            spellCheck={false}
           />
           <small className="field__hint">{t.fEmailHint}</small>
         </label>
@@ -243,6 +259,7 @@ export function RequestPage() {
             value={device}
             onChange={(e) => setDevice(e.target.value)}
             placeholder={t.fDevicePh}
+            autoCapitalize="words"
             required
             maxLength={80}
           />
@@ -256,6 +273,7 @@ export function RequestPage() {
             value={model}
             onChange={(e) => setModel(e.target.value)}
             placeholder={t.fModelPh}
+            autoCapitalize="characters"
             required
             maxLength={80}
           />
@@ -268,6 +286,7 @@ export function RequestPage() {
             value={problem}
             onChange={(e) => setProblem(e.target.value)}
             placeholder={t.fProblemPh}
+            autoCapitalize="sentences"
             required
             rows={4}
             maxLength={800}

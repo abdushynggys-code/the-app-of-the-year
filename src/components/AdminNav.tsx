@@ -1,10 +1,19 @@
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { useLang } from '../lib/i18n';
 import { AdminLeave } from './AdminLeave';
 
 // 'log' в список пунктов ниже намеренно не попадает: в журнал заходят
 // через три точки, а не каждый день мимо него.
-export type AdminTab = 'active' | 'history' | 'reports' | 'deals' | 'images' | 'access' | 'log';
+export type AdminTab =
+  | 'active'
+  | 'history'
+  | 'reports'
+  | 'prices'
+  | 'reviews'
+  | 'deals'
+  | 'images'
+  | 'access'
+  | 'log';
 
 type Props = {
   tab: AdminTab;
@@ -41,18 +50,29 @@ export function AdminNav({
     { id: 'history', label: t.admin.tabHistory },
     { id: 'reports', label: t.admin.tabReports },
   ];
-  // Скидки и доступы — решения владельца, мастеру этих разделов не видно
+  // Цены, отзывы, скидки, картинки и доступы — решения владельца,
+  // мастеру этих разделов не видно
   if (isOwner) {
+    items.push({ id: 'prices', label: t.admin.tabPrices });
+    items.push({ id: 'reviews', label: t.admin.tabReviews });
     items.push({ id: 'deals', label: t.admin.tabDeals });
     items.push({ id: 'images', label: t.admin.tabImages });
     items.push({ id: 'access', label: t.admin.tabAccess });
   }
 
+  // Куда встать подложке. Раньше на каждый раздел было своё правило в CSS
+  // с готовым процентом сдвига — и стоило добавить раздел в середину,
+  // как подложка уезжала не на тот пункт. Теперь номер считает тот же код,
+  // который строит список, и разъехаться им негде.
+  // −1 бывает у журнала: его в списке нет, и подложке вставать некуда.
+  const activeIndex = items.findIndex((item) => item.id === tab);
+  const pillStyle = { '--nav-i': activeIndex } as CSSProperties;
+
   return (
     <aside className="adminnav" data-tab={tab}>
       <nav className="adminnav__list">
         {/* Подложка едет между пунктами, а не перекрашивается скачком */}
-        <span className="adminnav__pill" aria-hidden="true" />
+        {activeIndex >= 0 && <span className="adminnav__pill" style={pillStyle} aria-hidden="true" />}
         {items.map((item) => (
           <button
             key={item.id}
