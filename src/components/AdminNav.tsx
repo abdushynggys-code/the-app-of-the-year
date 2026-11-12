@@ -70,7 +70,14 @@ export function AdminNav({
 
   return (
     <aside className="adminnav" data-tab={tab}>
-      <nav className="adminnav__list">
+      <label className="adminnav__mobile field">
+        <span>{t.footerNav}</span>
+        <select value={tab} onChange={event => onSwitch(event.target.value as AdminTab)}>
+          {items.map(item => <option key={item.id} value={item.id}>{item.label} · {counts[item.id]}</option>)}
+          {isOwner && <option value="log">{t.admin.tabLog} · {counts.log}</option>}
+        </select>
+      </label>
+      <nav className="adminnav__list" aria-label={t.footerNav}>
         {/* Подложка едет между пунктами, а не перекрашивается скачком */}
         {activeIndex >= 0 && <span className="adminnav__pill" style={pillStyle} aria-hidden="true" />}
         {items.map((item) => (

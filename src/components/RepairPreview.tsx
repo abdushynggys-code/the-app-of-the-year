@@ -17,6 +17,25 @@ export function RepairPreview() {
     return () => observer.disconnect();
   }, []);
 
+  function tiltDevices(event: React.PointerEvent<HTMLDivElement>) {
+    if (event.pointerType !== 'mouse' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const horizontal = (event.clientX - bounds.left) / bounds.width - 0.5;
+    const vertical = (event.clientY - bounds.top) / bounds.height - 0.5;
+    preview.current?.style.setProperty('--preview-rotate-x', `${vertical * -9}deg`);
+    preview.current?.style.setProperty('--preview-rotate-y', `${horizontal * 12}deg`);
+    preview.current?.style.setProperty('--preview-light-x', `${50 + horizontal * 35}%`);
+    preview.current?.style.setProperty('--preview-light-y', `${40 + vertical * 25}%`);
+  }
+
+  function resetTilt() {
+    preview.current?.style.removeProperty('--preview-rotate-x');
+    preview.current?.style.removeProperty('--preview-rotate-y');
+    preview.current?.style.removeProperty('--preview-light-x');
+    preview.current?.style.removeProperty('--preview-light-y');
+  }
+
   return (
     <div className="repair-preview" ref={preview} data-motion={paused || !visible ? 'paused' : 'playing'}>
       <div className="repair-preview__heading">
@@ -25,12 +44,24 @@ export function RepairPreview() {
           <span aria-hidden="true">{paused ? '▷' : 'Ⅱ'}</span>{paused ? copy.playMotion : copy.pauseMotion}
         </button>
       </div>
-      <div className="repair-preview__stage" aria-hidden="true" data-repaired={repaired}>
+      <div
+        className="repair-preview__stage"
+        aria-hidden="true"
+        data-repaired={repaired}
+        onPointerMove={tiltDevices}
+        onPointerLeave={resetTilt}
+      >
         <div className="repair-preview__atmosphere"><i /><i /><i /></div>
+        <span className="repair-preview__shadow" />
         <div className="repair-preview__devices">
           <div className="repair-preview__float">
-            <div className="device-back"><i /><i /><i /><span>R.</span></div>
+            <div className="device-back">
+              <span className="device-camera-plate"><i /><i /><i /><b /></span>
+              <span className="device-back__brand">R.</span>
+            </div>
             <div className="device-front">
+              <span className="device-button device-button--volume" />
+              <span className="device-button device-button--power" />
               <div className="device-screen">
                 <div className="device-island" />
                 <span className="device-time">09:41</span>

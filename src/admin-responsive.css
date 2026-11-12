@@ -1,0 +1,73 @@
+/* Admin reflow keeps every control available, including on narrow phones. */
+.admin__body, .adminnav, .admin__list, .admin .block, .admin .dealform { min-width: 0; }
+.adminnav__mobile { display: none; }
+.reqrow__select { display: grid; place-items: center; flex: none; min-width: 44px; min-height: 44px; cursor: pointer; }
+.reqrow__pick { margin: 0; }
+.admin .req__meta, .admin .req__code, .admin .logrow, .admin .form__hint { overflow-wrap: anywhere; }
+.admin .btn, .admin .ghost, .admin .chip { white-space: normal; }
+.admin .field, .admin .field input, .admin .field select, .admin .block textarea { min-width: 0; max-width: 100%; }
+.admin .more__panel { top: calc(100% + 8px); bottom: auto; left: 0; right: auto; }
+
+@media (max-width: 1100px) {
+  /* The sidebar leaves less room for request rows on small laptops, too. */
+  .admin .reqrow__top { display: grid; grid-template-columns: 44px minmax(0, 1fr); align-items: start; gap: 12px; }
+  .admin .reqrow__summary { grid-template-columns: minmax(0, 1fr); gap: 8px; min-height: 44px; }
+  .admin .reqrow__code { flex-wrap: wrap; overflow-wrap: anywhere; }
+  .admin .reqrow__who, .admin .reqrow__meta, .admin .reqrow__status { white-space: normal; overflow: visible; overflow-wrap: anywhere; }
+  .admin .reqrow__tel { grid-column: 2; justify-self: start; min-width: 0; max-width: 100%; min-height: 44px; display: flex; align-items: center; text-align: left; white-space: normal; overflow-wrap: anywhere; }
+  .admin .reqrow__next { grid-column: 1 / -1; width: 100%; min-height: 44px; }
+}
+
+@media (max-width: 900px) {
+  .admin { padding-top: 24px; }
+  .admin__shell { grid-template-columns: minmax(0, 1fr); }
+  .adminnav { padding: 16px; background: var(--canvas-softer); border: 1px solid var(--hairline); border-radius: 16px; gap: 14px; }
+  .adminnav__mobile { display: grid; }
+  .adminnav__mobile select { background: var(--canvas); border-color: var(--hairline); min-height: 48px; }
+  .adminnav__list { display: none; }
+  .adminnav__foot { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; padding-top: 14px; }
+  .adminnav__tools { width: 100%; align-items: center; }
+  .adminnav__role { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .adminnav__leave { margin-top: 0; }
+  .admin__title { font-size: 26px; margin-bottom: 20px; }
+  .admin .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; overflow: visible; }
+  .admin .stats__card { min-width: 0; padding: 12px 6px; min-height: 76px; }
+  .admin .stats__card span { overflow-wrap: anywhere; line-height: 1.4; }
+  .admin .filters { display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, .55fr); gap: 12px; }
+  .admin .filters .field { min-width: 0; }
+  .admin .bulkbar { border-radius: 14px; padding: 16px; gap: 12px; position: static; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .admin .bulkbar > b, .admin .bulkbar > select { grid-column: 1 / -1; }
+  .admin .bulkbar select { width: 100%; min-width: 0; min-height: 48px; }
+  .admin .bulkbar .ghost { color: var(--on-ink); }
+  .admin .btn, .admin .ghost, .admin .chip, .admin .steplist__item { min-height: 44px; }
+  .admin .btn { padding-inline: 16px; }
+  .admin .reqrow { padding: 16px; }
+  .admin .reqrow__detail { gap: 24px; }
+  .admin .reqrow__pick { width: 24px; height: 24px; }
+  .admin .steplist { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .admin .steplist__item { border-radius: 12px; padding: 12px; line-height: 1.4; overflow-wrap: anywhere; }
+  .admin .steplist__item input { width: 20px; height: 20px; flex: none; margin: 0; }
+  .admin .shopno { flex-wrap: wrap; }
+  .admin .shopno input { min-width: 0; max-width: none; width: 100%; flex-basis: 180px; min-height: 48px; }
+  .admin input:not([type='checkbox']), .admin textarea, .admin select { font-size: 16px; }
+  .admin .photos { gap: 16px; }
+  .admin .photos__item button { width: 44px; height: 44px; top: 0; right: 0; font-size: 20px; }
+  .admin .admin__row { flex-direction: column; align-items: stretch; gap: 16px; }
+  .admin .admin__row > .btn-row { width: 100%; }
+  .admin .admin__row > .btn-row > .btn { flex: 1 1 120px; }
+  .admin .slots { grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
+  .admin .slot { min-width: 0; }
+  .admin .slot .btn-row > .btn { flex: 1 1 120px; }
+  .admin .more__panel { left: auto; right: 0; width: min(320px, calc(100vw - 64px)); max-height: 55vh; max-height: 55dvh; }
+  .admin .more__row { min-height: 44px; overflow-wrap: anywhere; }
+  .admin .more__row em { white-space: normal; overflow: visible; }
+  .admin .logrow > * { min-width: 0; }
+}
+
+@media (max-width: 480px) {
+  .admin .filters { grid-template-columns: minmax(0, 1fr); }
+  .admin .steplist { grid-template-columns: minmax(0, 1fr); }
+  .admin .bulkbar { grid-template-columns: minmax(0, 1fr); }
+  .admin .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .admin .stats__card:first-child { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; min-height: 52px; padding-inline: 16px; }
+}

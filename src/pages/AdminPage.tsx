@@ -970,6 +970,7 @@ export function AdminPage() {
                 {t.admin.selected}: {picked.size}
               </b>
               <select
+                aria-label={t.admin.bulkStep}
                 value={bulkStep}
                 onChange={(e) => setBulkStep(e.target.value as StepKey | '')}
               >
@@ -1006,16 +1007,20 @@ export function AdminPage() {
                 return (
                   <article key={r.id} className="card card--soft reqrow">
                     <div className="reqrow__top">
-                      <input
-                        type="checkbox"
-                        className="reqrow__pick"
-                        checked={picked.has(r.id)}
-                        onChange={() => togglePick(r.id)}
-                        aria-label={r.track_code}
-                      />
+                      <label className="reqrow__select">
+                        <input
+                          type="checkbox"
+                          className="reqrow__pick"
+                          checked={picked.has(r.id)}
+                          onChange={() => togglePick(r.id)}
+                          aria-label={r.track_code}
+                        />
+                      </label>
                       <button
                         type="button"
                         className="reqrow__summary"
+                        aria-expanded={open === r.id}
+                        aria-controls={`request-${r.id}`}
                         onClick={() => toggleOpen(r.id)}
                       >
                         <span className="reqrow__code">
@@ -1067,7 +1072,7 @@ export function AdminPage() {
                     </div>
 
                     {open === r.id && (
-                      <div className="reqrow__detail">
+                      <div className="reqrow__detail" id={`request-${r.id}`}>
                         <p className="admin__problem">{r.problem}</p>
 
                         {/* Телефон клиента может лежать тут же в ремонте —
@@ -1158,6 +1163,7 @@ export function AdminPage() {
                         <div className="block">
                           <span className="block__label">{t.admin.notes}</span>
                           <textarea
+                            aria-label={t.admin.notes}
                             rows={3}
                             placeholder={t.admin.notesPh}
                             value={draft ?? r.notes}

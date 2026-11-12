@@ -5,6 +5,7 @@ import { Footer } from './components/Footer';
 import { MobileBar } from './components/MobileBar';
 import { PageFade } from './components/PageFade';
 import { SiteSchema } from './components/SiteSchema';
+import { LoadingScreen } from './components/LoadingScreen';
 import { HomePage } from './pages/HomePage';
 import { RequestPage } from './pages/RequestPage';
 import { TrackPage } from './pages/TrackPage';
@@ -16,6 +17,7 @@ const SAVED = ['ru', 'kk', 'en'];
 
 // Здесь живут только маршруты и выбранный язык. Сами экраны — в src/pages/.
 export default function App() {
+  const [isLoading, setIsLoading] = useState(true);
   const [lang, setLang] = useState<Lang>(() => {
     const saved = localStorage.getItem('lang');
     if (saved && SAVED.includes(saved)) return saved as Lang;
@@ -31,6 +33,7 @@ export default function App() {
 
   return (
     <LangContext.Provider value={{ lang, setLang }}>
+      {isLoading && <LoadingScreen onFinish={() => setIsLoading(false)} />}
       <SiteSchema />
       <Header />
       <PageFade>

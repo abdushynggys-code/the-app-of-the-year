@@ -140,6 +140,8 @@ main h1, main h2, main h3, .contacts__value, .done__account { overflow-wrap: any
   .booking-bar__fields--track { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 760px) {
+  .step { grid-template-columns: max-content minmax(0, 1fr); column-gap: 16px; align-items: start; }
+  .step .step__num { font-size: 26px; line-height: 28px; min-width: 2ch; font-variant-numeric: tabular-nums; }
   .mobilebar__main { white-space: normal; height: auto; min-height: 52px; font-size: clamp(13px, 3.6vw, 16px); line-height: 20px; }
   .repair-hero { padding-top: 30px; }
   .repair-hero__grid { grid-template-columns: 1fr; gap: 0; }

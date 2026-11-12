@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useLang } from '../lib/i18n';
 import type { AdminTab } from './AdminNav';
 
@@ -43,6 +43,24 @@ export function AdminMore({
 }: Props) {
   const { t } = useLang();
   const box = useRef<HTMLDetailsElement>(null);
+
+  useEffect(() => {
+    const dismiss = (event: PointerEvent) => {
+      if (box.current?.open && !box.current.contains(event.target as Node)) box.current.open = false;
+    };
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && box.current?.open) {
+        box.current.open = false;
+        box.current.querySelector('summary')?.focus();
+      }
+    };
+    document.addEventListener('pointerdown', dismiss);
+    document.addEventListener('keydown', escape);
+    return () => {
+      document.removeEventListener('pointerdown', dismiss);
+      document.removeEventListener('keydown', escape);
+    };
+  }, []);
 
   // Выбрали пункт — меню закрывается. Само по себе <details> остаётся
   // открытым, и панель висела бы поверх той самой заявки, которую только
