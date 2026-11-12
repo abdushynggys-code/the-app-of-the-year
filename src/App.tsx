@@ -21,8 +21,8 @@ export default function App() {
   const [lang, setLang] = useState<Lang>(() => {
     const saved = localStorage.getItem('lang');
     if (saved && SAVED.includes(saved)) return saved as Lang;
-    // Первый заход: если браузер английский — показываем английский.
-    return navigator.language.startsWith('en') ? 'en' : 'ru';
+    // Первый заход всегда начинается на русском. Выбор пользователя сохраняется отдельно.
+    return 'ru';
   });
 
   // Запоминаем выбор языка, чтобы он не сбрасывался при перезагрузке.
